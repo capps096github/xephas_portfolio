@@ -1,0 +1,80 @@
+---
+import {
+  baseUrl,
+  developer,
+  keywords,
+  siteManifest,
+} from "../scripts/constants.js";
+
+interface Props {
+  pageTitle: string;
+  pageDescription: string;
+  pageCoverImage: string;
+}
+
+// Access passed-in component props, like `<X title="Hello, World" />`
+// These are passed in with default parameters
+const {
+  pageTitle,
+  pageCoverImage,
+  pageDescription,
+} = Astro.props;
+
+// mark as a component
+// component: true;
+---
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Astro Generator -->
+  <meta name="generator" content={Astro.generator} />
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content={pageTitle} />
+  <meta name="description" content={pageDescription} />
+  <meta name="keywords" content={keywords} />
+  <meta name="author" content={developer.author} />
+  <meta name="copyright" content={developer.copyright} />
+  <meta name="robots" content="index, follow" />
+  <meta name="rating" content="general" />
+
+  <!-- Facebook Open Graph -->
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:site_name" content={pageTitle} />
+  <meta property="og:url" content={baseUrl} />
+  <meta property="og:description" content={pageDescription} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content={pageCoverImage} />
+
+  <!-- Twitter Open Graph -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:site" content={developer.handle} />
+  <meta name="twitter:creator" content={developer.handle} />
+  <meta name="twitter:description" content={pageDescription} />
+  <meta name="twitter:image" content={pageCoverImage} />
+  <meta name="twitter:image:alt" content={pageDescription} />
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content={pageTitle} />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+  <!--TODO: Add Favicon -->
+  <link rel="icon" href="/icons/favicon.ico" sizes="any" />
+
+  <title>{pageTitle}</title>
+
+  <!-- PWA SUPPORT -->
+  <link rel="manifest" href={siteManifest} />
+
+  <!-- fonts -->
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,700&display=swap");
+  </style>
+
+</head>

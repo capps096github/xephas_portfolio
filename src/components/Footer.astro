@@ -1,0 +1,56 @@
+---
+import { developer, baseUrl } from "../scripts/constants";
+
+// Props (parameters) type declaration
+interface Props {
+  isDefault: boolean;
+}
+
+const {
+  // whether this is the default footer or not
+  isDefault,
+} = Astro.props;
+
+//
+---
+
+<footer
+  id="footer"
+  class=`flex flex-col px-4 py-4 lg:px-10 space-y-2 text-xs text-center ${isDefault?"text-white bg-xephas-navy": "text-xephas-navy"}`
+>
+  <p class="mb-2 text-lg font-bold text-xephas-yellow">{developer.copyright}</p>
+
+  <!-- names -->
+  <p class="mb-2">
+    Crafted, Engineered, and Brought to Life by
+    <a
+      href={developer.footerUrl}
+      class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+      target="_blank"
+      rel="noopener">{developer.footerDev} &rarr;</a
+    >
+    in Collaboration with
+    <a
+      href={developer.footerUrl}
+      class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+      target="_blank"
+      rel="noopener">{developer.footerCollaborator} &rarr;</a
+    >
+  </p>
+
+  <p class="uppercase mt-2">
+    Tech Stack: &nbsp;
+    <a
+      href="https://astro.build/"
+      class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+      target="_blank"
+      rel="noopener">Astro &rarr;</a
+    > &
+    <a
+      href="https://tailwindcss.com/"
+      class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+      target="_blank"
+      rel="noopener">TailwindCSS &rarr;</a
+    >
+  </p>
+</footer>
