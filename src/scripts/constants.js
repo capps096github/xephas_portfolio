@@ -30,5 +30,5 @@ export const developer = {
   footerDev: "Brian Cephas' Signature Touch",
   footerCollaborator: "Jovic Biralo",
   footerUrl: "https://github.com/capps096github",
-  footerCollaboratorUrl: "(Edit)",
+  footerCollaboratorUrl: "https://biralo256.github.io/",
 };
