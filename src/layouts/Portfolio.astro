@@ -14,9 +14,12 @@ const {
   pageCoverImage = coverImage,
 } = Astro.props;
 
-const newPageTitle = pageTitle + " | " + codeName;
+// if we are not on home page, add the code name to the page title
+const isHome = pageUrl === "/";
+const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
   <Head
     pageTitle={newPageTitle}
@@ -28,21 +31,21 @@ const newPageTitle = pageTitle + " | " + codeName;
     <section class="flex flex-col justify-between h-screen space-y-10">
       <!-- nav bar -->
       <NavBar pageUrl={pageUrl} />
-    
+
       <!-- Some spacing for visual alignment -->
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
       <main class="px-10 mx-auto lg:px-40 h-3/4">
-        <div class="flex flex-col space-y-4 w-full h-full items-center justify-center">
-   
+        <div
+          class="flex flex-col space-y-4 w-full h-full items-center justify-center"
+        >
           <h1 class="mb-2 text-4xl font-extrabold text-xephas-navy text-center">
             {headingText}
           </h1>
-          
+
           <!-- use slot, to insert page contents here-->
           <slot />
-          
         </div>
       </main>
 
@@ -63,7 +66,7 @@ const newPageTitle = pageTitle + " | " + codeName;
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
-    
+
       // Your web app's Firebase configuration
       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
@@ -73,16 +76,14 @@ const newPageTitle = pageTitle + " | " + codeName;
         storageBucket: "xephasme.appspot.com",
         messagingSenderId: "319248268150",
         appId: "1:319248268150:web:6dccd45af1f8d396eed857",
-        measurementId: "G-R5G40ZN9CM"
+        measurementId: "G-R5G40ZN9CM",
       };
-    
+
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
     </script>
 
     <!-- Install PWA Script -->
-
- 
   </body>
 </html>
