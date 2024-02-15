@@ -3,7 +3,7 @@ export const baseUrl = "https://xephas.me/";
 export const siteManifest = baseUrl + "manifest.json";
 
 //TODO: add cover image
-export const coverImage = "/images/cover.jpg";
+export const coverImage = baseUrl +  "/images/cover.webp";
 
 // title
 export const title = "Mugisa Brian (Cephas) | A Designer and Developer of Experiences";

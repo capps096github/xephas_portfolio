@@ -19,3 +19,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# .firebase folder (default firebase init)
+.firebase
+
+# .idea folder
+.idea
