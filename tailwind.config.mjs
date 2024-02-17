@@ -8,6 +8,7 @@ export default {
 			"xephas-navy": "#000525",
 			"xephas-yellow": "#fbaa00",
 			"xephas-bg": "#ffffff",
+			"xephas-hover":"#1126bf"
 		  },
 		},
 		fontFamily: {

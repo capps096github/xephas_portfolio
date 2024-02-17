@@ -1,6 +1,37 @@
 ---
 import Portfolio from "../layouts/Portfolio.astro";
+import InstallCard from "../components/InstallCard.astro";
 
+export interface Props {
+  url: string;
+  name: string;
+  description: string;
+  projectType: string;
+}
 ---
 
-<Portfolio />
+
+ <!-- <InstallCard></InstallCard> -->
+<Portfolio  pageTitle="Contact me!"
+pageUrl="/"
+header="Cover letter"
+pageDescription="dear" >
+
+<div class="flex items-center justify-center mb-8 mt-12 ">
+    <img src="images/Xephas.jpg" alt="Xephas" class="w-32 h-32 rounded-full object-cover" />
+  </div>
+  <div class="cover-letter pt-8 text-lg  mx-auto">
+    <h2 class="text-green-500">Dear Hiring Team,</h2>
+
+    <p>I am Mugisa Brian (Cephas), a Ugandan Software Engineer with over three years of experience in Cross-Platform App Development with Flutter. I am driven by a passion for crafting user-friendly and impactful applications that enrich people's lives.</p>
+
+    <p>I am not just technically skilled, but also possess a keen eye for aesthetics and user experience. My combined expertise in Flutter development and UI/UX design allows me to translate ideas into intuitive and visually appealing apps.</p>
+
+    <p>I am writing to express my strong interest in the Senior Flutter Developer position at your company. As a passionate and dedicated engineer, I am eager to contribute my skills and collaborate with your talented team.</p>
+
+    <p>I am particularly drawn to your mission of (mention company's mission) and believe I can make a valuable contribution to your team's success. I am confident in my ability to learn quickly, adapt to new projects, and consistently deliver high-quality work.</p>
+
+    <p class="text-right mt-4 text-blue-950">Let's connect!</p>
+  </div>
+
+</Portfolio>

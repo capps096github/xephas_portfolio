@@ -1,0 +1,42 @@
+[
+    {
+      "name": "Github",
+      "url": "https://github.com/capps096github",
+      "image": "icons/logo-github.svg"
+    },
+    {
+      "name": "PlayStore",
+      "url": "https://play.google.com/store/apps/dev?id=8238184494150117614",
+      "image": "icons/logo-google-playstore.svg"
+    }
+    ,
+    {
+      "name": "X",
+      "url": "https://twitter.com/xephas_official",
+      "image": "icons/logo-twitter.svg"
+    }
+    ,
+    {
+      "name": "Linkedin",
+      "url": "https://www.linkedin.com/in/xephasofficial/",
+      "image": "icons/logo-linkedin.svg"
+    }
+    ,
+    {
+      "name": "Youtube",
+      "url": "https://www.youtube.com/@flutter_era/videos",
+      "image": "icons/logo-youtube.svg"
+    }
+    ,
+    {
+      "name": "Email",
+      "url": "mailto: mugisabrian096@gmail.com",
+      "image": "icons/mail-outline.svg"
+    },
+    {
+      "name": "Stackoverflow",
+      "url": "https://stackoverflow.com/users/19142356/mugisa-brian-cephas",
+      "image": "icons/logo-stackoverflow.svg"
+    }
+  ]
+  

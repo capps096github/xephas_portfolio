@@ -2,6 +2,7 @@
 import Footer from "../components/Footer.astro";
 import Head from "../components/Head.astro";
 import NavBar from "../components/NavBar.astro";
+
 import { coverImage, description, codeName, title } from "../scripts/constants";
 
 // variables
@@ -26,9 +27,9 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
     pageCoverImage={pageCoverImage}
     pageDescription={pageDescription}
   />
-  <body class="font-mont bg-xephas-bg">
+  <body class="font-mont bg-xephas-bg ">
     <!-- site layout -->
-    <section class="flex flex-col justify-between h-screen space-y-10">
+    <section class="flex flex-col justify-between min-h-screen space-y-10  ">
       <!-- nav bar -->
       <NavBar pageUrl={pageUrl} />
 
@@ -36,7 +37,7 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
-      <main class="px-10 mx-auto lg:px-40 h-3/4">
+      <main class="px-10 mx-auto lg:px-40 h-3/4 ">
         <div
           class="flex flex-col space-y-4 w-full h-full items-center justify-center"
         >
@@ -62,8 +63,8 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
     <!-- Firebase Scripts -->
     <script type="module">
       // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
 

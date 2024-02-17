@@ -1,0 +1,38 @@
+---
+export interface Props {
+  name: string;
+  url?: string;
+  description: string;
+  projectType?: string;
+}
+
+const { name, url, description, projectType } = Astro.props;
+---
+<li class="link-card  rounded-md bg-white overflow-auto hover:xephas-hover  mt-1  ">
+    <a href={url} class="flex flex-col justify-between p-4 text-gray-700">
+      <div class="grid grid-cols-1 sm:grid-cols-2  gap-2" >
+
+      <div>
+        <h3 class="text-xl  font-semibold">{name} <span class="text-gray-500 font-semibold">&rarr;</span></h3>
+        <span class="text-gray-500 text-sm">{description}</span>
+      </div>
+
+      <div class="mt-auto flex items-center justify-center sm:justify-end space-x-2">
+        
+        {projectType && (
+          <img src={projectType} alt="project type" class="w-12 h-12" />
+        )}
+      </div>
+
+      </div>
+     
+    </a>
+  </li>
+  
+  <style>
+    .link-card {
+  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+  </style>

@@ -1,13 +1,36 @@
 ---
 import Portfolio from "../layouts/Portfolio.astro";
+import AppCards from '../components/ProjectCards.astro'
+import repoData from '../data/repos.json'
+export interface Props {
+  url: string;
+  name: string;
+  description: string;
+  projectType: string;
+}
 ---
 
 <!-- Projects -->
 <Portfolio
   pageTitle="Projects"
   pageUrl="/projects"
-  header="The Xephas Projects"
+  header="Sample Projects"
   pageDescription="This is what I've been working on."
 >
-  <p>Coming Soon | Say hello@xephas.me</p>
+
+<ul class="app-card-list">
+  {
+    repoData.map((repoData) => {
+      return (
+        <AppCards
+          name={repoData.name}
+          url={repoData.url}
+          description={repoData.description}
+          projectType={repoData.projectType}
+        />
+      );
+    })
+  }
+  </ul>
+
 </Portfolio>

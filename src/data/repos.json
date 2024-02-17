@@ -1,0 +1,35 @@
+[
+    {
+      "name": "Calcut ",
+      "url": "https://calcut.web.app/",
+      "description": "Cracked the code for 5,500+. Calcut empowers YOU with accurate cut-off points & a thriving community. Navigate admissions with confidence. ✨",
+      "projectType": "icons/calcut.svg"
+    },
+    
+    {
+      "name": "Cupertino Icons Gallery ",
+      "url": "https://cupertino-icons.web.app/",
+      "description": "A home to over 1,330 Cupertino Icons used in Flutter (Open Source with 14 GitHub Stars) used by over 2,000 Flutter Developers around the World.",
+      "projectType": "icons/calcut.svg"
+    },
+   
+    {
+      "name": "STTS Mobile App",
+      "url": "https://draaaft.web.app/",
+      "description": "STTS Mobile App for Seed Tracing and Tracking, developed during my blended internship (Remote + Physical) from June to September 2023, at Eight Tech Consults Ltd.",
+      "projectType": "icons/calcut.svg"
+    },
+    {
+      "name": "Draaaft",
+      "url": "https://draaaft.web.app/",
+      "description": "A graphics design portfolio and ordering app) with over 400 users.",
+      "projectType": "icons/calcut.svg"
+    },
+    {
+      "name": "Flutter Community Dashboard App ",
+      "url": "https://fluttercommdashboard.web.app/",
+      "description": "Built during my Participation In Dart Google Summer Of Code (Open Source)",
+      "projectType": "icons/calcut.svg"
+    }
+  ]
+  
