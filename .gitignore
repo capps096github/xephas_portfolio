@@ -21,7 +21,7 @@ pnpm-debug.log*
 .DS_Store
 
 # .firebase folder (default firebase init)
-.firebase
+.firebase/
 
 # .idea folder
-.idea
+.idea/

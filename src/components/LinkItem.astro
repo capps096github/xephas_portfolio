@@ -1,0 +1,26 @@
+---
+interface Props {
+  href: string;
+  text: string;
+  number?: string;
+}
+
+const { href, text, number = "" } = Astro.props;
+
+// no number
+const noNumber = number === "";
+// this is extracted after the # in the href e.g 1 from #1-services
+const itemNumber =
+  number === "" ? href.split("-")[0].split("#")[1] + ". " : number;
+---
+
+<p>
+  <a
+    class={noNumber
+      ? "hover:underline  transition-all text-base text-left mt-3 mb-3 hover:font-bold hover:cursor-pointer text-blue-600"
+      : "hover:underline  transition-all text-base text-left ml-4 mt-3 mb-3 hover:font-bold hover:cursor-pointer text-blue-600"}
+    href={href}
+  >
+    {itemNumber + text}
+  </a>
+</p>

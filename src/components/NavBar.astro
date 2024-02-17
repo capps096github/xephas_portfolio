@@ -1,8 +1,19 @@
 ---
 import { codeName } from "../scripts/constants";
-import { pages } from "../scripts/pages";
+import { pages,termsPages } from "../scripts/pages";
 
-const { pageUrl } = Astro.props;
+
+interface Props {
+  isDefault: boolean;
+  pageUrl: string;
+}
+
+const {
+  // whether this is the default footer or not
+  isDefault,
+  pageUrl,
+} = Astro.props;
+
 ---
 
 <!-- nav bar -->
@@ -77,10 +88,27 @@ const { pageUrl } = Astro.props;
 
   <!-- other action buttons -->
   <div class="flex items-center justify-center space-x-4">
-    <!-- Pages -->
+   <!-- Pages -->
     {
+      isDefault ?
       // @kalya can be replaced with the hotel name
       pages.map((pageItem) => (
+        <a
+          href={pageItem.href}
+          class={
+            pageItem.href === pageUrl || pageItem.otherUrls.includes(pageUrl)
+              ? "px-4 transition-all py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
+              : "text-xs transition-all line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
+          }
+        >
+          {pageItem.label}
+        </a>
+      ))
+    :
+    // Terms Pages
+    
+      // @kalya can be replaced with the hotel name
+      termsPages.map((pageItem) => (
         <a
           href={pageItem.href}
           class={
