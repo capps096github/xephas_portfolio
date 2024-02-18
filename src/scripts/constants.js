@@ -9,7 +9,7 @@ export const coverImage = baseUrl +  "/images/cover.webp";
 export const title = "Mugisa Brian (Cephas) | A Designer and Developer of Experiences";
 
 // code name
-export const codeName = "Mugisa Brian - X3PH★S";
+export const codeName = "Mugisa Brian ( X3PH★S )";
 
 export const description =
   "Hi, I am Mugisa Brian (Cephas), a Ugandan Software Engineer with over three years of ultimate experience in Cross-Platform App Development with Flutter and an astounding passion for Graphics and UI/UX Design. My purpose is to design and develop experiences that improve people's lives.";
@@ -25,8 +25,11 @@ export const year = new Date().getFullYear();
 // developer
 export const developer = {
   author: codeName,
-  copyright: `© ${year} ${codeName}`,
+  copyright: `${codeName}`,
+  copyrightYear: `© ${year}`,
   handle: "@xephas_official",
+  openSourced: "Open Sourced on GitHub",
+  repoUrl:"https://github.dev/capps096github/xephas_portfolio",
   footerDev: "Brian Cephas' Signature Touch",
   footerCollaborator: "Jovic Biralo",
   footerUrl: "https://github.com/capps096github",
