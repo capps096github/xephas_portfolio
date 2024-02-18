@@ -6,19 +6,17 @@ import {
   siteManifest,
 } from "../scripts/constants.js";
 
+import { ViewTransitions } from "astro:transitions";
+
 interface Props {
   pageTitle: string;
   pageDescription: string;
-  pageCoverImage: string;
+  pageCoverImage?: string;
 }
 
 // Access passed-in component props, like `<X title="Hello, World" />`
 // These are passed in with default parameters
-const {
-  pageTitle,
-  pageCoverImage,
-  pageDescription,
-} = Astro.props;
+const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
 
 // mark as a component
 // component: true;
@@ -28,7 +26,7 @@ const {
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
   <!-- Astro Generator -->
   <meta name="generator" content={Astro.generator} />
 
@@ -77,4 +75,16 @@ const {
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,700&display=swap");
   </style>
 
+  <!-- script for redirection -->
+  <script>
+    // check if the browser url is terms.xephas.me and if yes, redirect to /terms
+    if (typeof window !== "undefined") {
+      if (window.location.href === "https://terms.xephas.me/" || window.location.href === "https://terms.xephas.me") {
+        window.location.href = "/terms";
+      }
+    }
+  </script>
+
+  <!-- Astro page animations -->
+  <ViewTransitions />
 </head>

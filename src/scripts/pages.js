@@ -6,9 +6,6 @@ class Page {
     this.otherUrls = otherUrls.concat(href);
   }
 
-  get title() {
-    return `${this.label} Menu`;
-  }
 }
 // define data types js constructors
 // check if list contains a given item
@@ -20,11 +17,11 @@ export const pages = [
   new Page("/cv", "Resume (CV)"),
   new Page("/projects", "Projects"),
   new Page("/talks-events", "Talks & Events"),
-  new Page("/terms", "Terms"),
+  new Page("https://terms.xephas.me/", "Terms ➛"),
 ];
 
 export const termsPages = [
-  new Page("/", "Go To Portfolio"),
+  new Page("https://xephas.me/", "Go To Portfolio ➛"),
   new Page("/terms", "Terms"),
   new Page("/terms/design", "Design Terms"),
   new Page("/terms/software", "Software Terms"),
