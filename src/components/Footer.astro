@@ -1,5 +1,6 @@
 ---
 import { developer, baseUrl } from "../scripts/constants";
+import InlineLink from "./InlineLink.astro";
 
 // Props (parameters) type declaration
 interface Props {
@@ -16,73 +17,77 @@ const {
 
 <footer
   id="footer"
-  class=`flex flex-col  px-4 py-4 md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:px-10 text-xs text-center justify-center md:text-start lg:text-start ${isDefault?"text-xephas-white bg-xephas-navy": "text-xephas-navy"}`
+  class=`px-4 py-4 lg:px-10 text-xs ${isDefault?"text-xephas-white bg-xephas-navy": "text-xephas-navy"}`
 >
-  <!-- Site Owner -->
-  <div class="space-y-2 mb-2">
-    <span class="uppercase font-bold">Crafted, Engineered, and Brought to Life for:</span>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+    <!-- Site Owner -->
+    <div class="space-y-1 mb-2">
+      <span class="uppercase font-bold"
+        >Crafted, Engineered & Brought to Life for:</span
+      >
 
-    <p class="text-lg font-bold text-xephas-yellow">
-      {developer.copyright}
-    </p>
-    <p class="text-xs italic text-xephas-yellow">
-      {developer.copyrightYear} • All Rights Reserved
-    </p>
-  </div>
-
-  <!-- Credits -->
-  <div class="space-y-2 flex flex-col">
-    <!-- Developers -->
-    <div  class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-      <span class="uppercase text-sm font-bold">★ Developers:</span>
-      <p>
-        <a
-          href={developer.footerUrl}
-          class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-          target="_blank"
-          rel="noopener">{developer.footerDev}</a
-        >
-        in Collaboration with
-        <a
-          href={developer.footerCollaboratorUrl}
-          class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-          target="_blank"
-          rel="noopener">{developer.footerCollaborator}</a
-        >
+      <p class="text-lg font-bold text-xephas-yellow">
+        {developer.copyright}
+      </p>
+      <p class="text-xs italic text-xephas-yellow opacity-50">
+        {developer.copyrightYear} • All Rights Reserved
       </p>
     </div>
 
-    <!-- Tech -->
-    <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-      <span class="uppercase text-sm font-bold">★ Tech Stack:</span>
-      <p class="uppercase">
-        <a
-          href="https://astro.build/"
-          class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-          target="_blank"
-          rel="noopener">Astro</a
-        >
-        &amp;
-        <a
-          href="https://tailwindcss.com/"
-          class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-          target="_blank"
-          rel="noopener">TailwindCSS</a
-        >
-      </p>
-    </div>
+    <!-- Credits -->
+    <div class="space-y-3 flex flex-col">
+      <!-- Developers -->
+      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
+        <span class="uppercase text-sm font-bold">★ Dev:</span>
+        <div>
+          <a
+            href={developer.footerUrl}
+            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+            target="_blank"
+            rel="noopener">{developer.footerDev}</a
+          >
+          in Collaboration with
+          <a
+            href={developer.footerCollaboratorUrl}
+            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+            target="_blank"
+            rel="noopener">{developer.footerCollaborator}</a
+          >
+        </div>
+      </div>
 
-    <!-- Code -->
-    <div  class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-      <span class="uppercase text-sm font-bold">★ Source Code:</span>
-      <p>
-        <a
-          href={developer.repoUrl}
-          class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-          target="_blank"
-          rel="noopener">Open-Sourced on Github</a
-        >
-      </p>
+      <!-- Tech -->
+      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
+        <span class="uppercase text-sm font-bold">★ Tech Stack:</span>
+        <div class="uppercase">
+          <a
+            href="https://astro.build/"
+            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+            target="_blank"
+            rel="noopener">Astro</a
+          >
+          &amp;
+          <a
+            href="https://tailwindcss.com/"
+            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+            target="_blank"
+            rel="noopener">TailwindCSS</a
+          >
+        </div>
+      </div>
+
+      <!-- Code -->
+      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
+        <span class="uppercase text-sm font-bold">★ Source Code:</span>
+        <div>
+          <a
+            href={developer.repoUrl}
+            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
+            target="_blank"
+            rel="noopener">Open-Sourced on Github</a
+          >
+        </div>
+      </div>
     </div>
   </div>
 </footer>

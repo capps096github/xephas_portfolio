@@ -20,7 +20,7 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
 ---
 
 <!doctype html>
-<html lang="en" >
+<html lang="en">
   <Head
     pageTitle={newPageTitle}
     pageCoverImage={pageCoverImage}
@@ -28,23 +28,31 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
   />
   <body class="font-mont bg-xephas-bg">
     <!-- site layout -->
-    <section class="flex flex-col min-h-screen justify-between h-full space-y-10">
+    <section
+      class="flex flex-col min-h-screen justify-between h-full space-y-10"
+    >
       <!-- nav bar -->
-      <NavBar pageUrl={pageUrl}, isDefault={true} />
+      <NavBar pageUrl={pageUrl} , isDefault={true} />
 
       <!-- Some spacing for visual alignment -->
       <div class="mt-5 sm:mt-96"></div>
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
-      <main class="px-10 mx-auto lg:px-40 h-str" >
+      <main class="px-10 mx-auto lg:px-40 h-str">
         <div
           class="flex flex-col space-y-4 w-full h-full items-center justify-center"
         >
-          <h1 class="mb-2 text-4xl font-extrabold text-xephas-navy text-center">
-            {headingText}
-          </h1>
-
+          <!-- heading -->
+          {
+            isHome ? (
+              ""
+            ) : (
+              <h1 class="mb-2 text-4xl font-extrabold text-xephas-navy text-center">
+                {headingText}
+              </h1>
+            )
+          }
           <!-- use slot, to insert page contents here-->
           <slot />
         </div>

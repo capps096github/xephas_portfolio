@@ -1,17 +1,52 @@
 ---
+import InlineLink from "../components/InlineLink.astro";
 import Portfolio from "../layouts/Portfolio.astro";
-
 ---
 
 <!-- Contact -->
-<Portfolio
-  pageTitle="Contact me!"
-  pageUrl="/contact"
-  header="Contact"
-  pageDescription="Ping me if you want to work together or just say hi!"
->
-  <p>Say hello@xephas.me</p>
-   
-  <p> 
+<Portfolio>
+  <article class="text-xephas-navy">
+    <div
+      class="flex flex-col items-center md:flex-row lg:flex-row text-center md:space-x-4 lg:space-x-4 lg:text-start md:text-start"
+    >
+      <!-- profile photo on small screens -->
 
+      <div class="md:shrink-0 lg:md:shrink-0 mb-4 md:mb-0 lg:mb-0">
+        <img
+          class="mx-auto rounded-md h-80 border-2 border-xephas-navy"
+          src="/images/profile.jpg"
+          alt="Cephas"
+        />
+      </div>
+
+      <div class="h-full space-y-4">
+        <!-- title -->
+        <h1 class="text-6xl font-extrabold">Hello, I'm Cephas</h1>
+
+        <!-- Description -->
+        <p class="text-xs italic">
+          Commonly known by codenames such as<strong> “Cephas”</strong> or <strong
+          >
+            “Xephas”</strong
+          > or by my <strong> Brand Name - “X3PH★S.”</strong>
+        </p>
+
+        <p>
+          However, I am <strong>Mugisa Brian</strong>, a <strong
+            ><InlineLink target="_blank" href="https://en.wikipedia.org/wiki/Software_engineering" , text="Software Engineer" /></strong
+          > with close to <strong
+            >4 years of ultimate experience in Cross-Platform App Development
+            with <InlineLink target="_blank" href="https://flutter.dev/" , text="Flutter" /></strong
+          >and an astounding passion for <strong
+            >Graphics and UI/UX Design</strong>.
+        </p>
+      </div>
+    </div>
+
+    <h1 class="text-4xl font-extrabold text-center mt-8">
+      “ I design and develop experiences that improve people's lives. ”
+    </h1>
+      
+      <p class="text-center  mt-8">I am open to work as long as you agree to <InlineLink href="https://terms.xephas.me/" , text="My Terms of Service ➛" /></p>
+  </article>
 </Portfolio>
