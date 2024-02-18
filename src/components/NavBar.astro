@@ -1,7 +1,6 @@
 ---
 import { codeName } from "../scripts/constants";
-import { pages,termsPages } from "../scripts/pages";
-
+import { pages, termsPages } from "../scripts/pages";
 
 interface Props {
   isDefault: boolean;
@@ -13,7 +12,6 @@ const {
   isDefault,
   pageUrl,
 } = Astro.props;
-
 ---
 
 <!-- nav bar -->
@@ -23,7 +21,11 @@ const {
 >
   <!-- icon -->
   <!-- align it to center when we are on a small device -->
-  <a href="/" title=`${codeName} Logo` class="flex items-center justify-center text-xephas-white">
+  <a
+    href={isDefault ? "/" : "https://xephas.me/"}
+    title=`${codeName} Logo`
+    class="flex items-center justify-center text-xephas-white"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -34,7 +36,7 @@ const {
       height="442"
       preserveAspectRatio="xMidYMid meet"
       version="1.0"
-      ><defs><g></g></defs><g  fill-opacity="1"
+      ><defs><g></g></defs><g fill-opacity="1"
         ><g transform="translate(259.030606, 213.985689)"
           ><g
             ><path
@@ -42,7 +44,7 @@ const {
             ></path></g
           ></g
         ></g
-      ><g  fill-opacity="1"
+      ><g fill-opacity="1"
         ><g transform="translate(356.471982, 213.985689)"
           ><g
             ><path
@@ -50,7 +52,7 @@ const {
             ></path></g
           ></g
         ></g
-      ><g  fill-opacity="1"
+      ><g fill-opacity="1"
         ><g transform="translate(603.052205, 213.985689)"
           ><g
             ><path
@@ -58,7 +60,7 @@ const {
             ></path></g
           ></g
         ></g
-      ><g  fill-opacity="1"
+      ><g fill-opacity="1"
         ><g transform="translate(53.148837, 213.985689)"
           ><g
             ><path
@@ -66,7 +68,7 @@ const {
             ></path></g
           ></g
         ></g
-      ><g  fill-opacity="1"
+      ><g fill-opacity="1"
         ><g transform="translate(160.731473, 219.511679)"
           ><g
             ><path
@@ -88,35 +90,36 @@ const {
 
   <!-- other action buttons -->
   <div class="flex items-center justify-center space-x-4">
-   <!-- Pages -->
+    <!-- Pages -->
     {
-      isDefault ?
-      pages.map((pageItem) => (
-        <a
-          href={pageItem.href}
-          class={
-            pageItem.href === pageUrl || pageItem.otherUrls.includes(pageUrl)
-              ? "px-4 transition-all py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
-              : "text-xs transition-all line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
-          }
-        >
-          {pageItem.label}
-        </a>
-      ))
-    :
-    // Terms Pages
-      termsPages.map((pageItem) => (
-        <a
-          href={pageItem.href}
-          class={
-            pageItem.href === pageUrl || pageItem.otherUrls.includes(pageUrl)
-              ? "px-4 py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
-              : "text-xs line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
-          }
-        >
-          {pageItem.label}
-        </a>
-      ))
+      isDefault
+        ? pages.map((pageItem) => (
+            <a
+              href={pageItem.href}
+              class={
+                pageItem.href === pageUrl ||
+                pageItem.otherUrls.includes(pageUrl)
+                  ? "px-4 transition-all py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
+                  : "text-xs transition-all line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
+              }
+            >
+              {pageItem.label}
+            </a>
+          ))
+        : // Terms Pages
+          termsPages.map((pageItem) => (
+            <a
+              href={pageItem.href}
+              class={
+                pageItem.href === pageUrl ||
+                pageItem.otherUrls.includes(pageUrl)
+                  ? "px-4 py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
+                  : "text-xs line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
+              }
+            >
+              {pageItem.label}
+            </a>
+          ))
     }
   </div>
 </nav>
