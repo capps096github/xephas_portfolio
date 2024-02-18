@@ -1,0 +1,36 @@
+---
+import Certificate from "../components/Certificate.astro";
+import Portfolio from "../layouts/Portfolio.astro";
+import CertificateData from "../data/certificates.json";
+export interface Props {
+  title: string;
+  details?: string;
+  issuedby: string;
+  image: string;
+}
+---
+
+<!-- CV Page -->
+<Portfolio 
+  pageTitle="My CV"
+  pageUrl="/certificate"
+  header="Xephas' Certificates"
+  pageDescription="Everything you need to know about Xephas."
+>
+
+
+  {
+    CertificateData.map((CertificateData) => {
+      return (
+        <Certificate
+          title={CertificateData.title}
+          details={CertificateData.details}
+          issuedby={CertificateData.issuedby}
+          image={CertificateData.image}
+        />
+      );
+    })
+  }
+  
+
+</Portfolio>

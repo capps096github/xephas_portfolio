@@ -1,0 +1,21 @@
+---
+export interface Props {
+  title: string;
+  details?: string;
+  issuedby: string;
+  image: string;
+}
+
+const { title, details, issuedby, image } = Astro.props;
+---
+
+
+
+
+<div class="p-4  border border-gray-200 shadow-md  hover:shadow-lg">
+    <img src={image} alt="Certificate title" class="w-30 h-30  mb-4">
+    <h3 class="text-lg font-bold text-gray-900">{title}</h3>
+    <p class="text-gray-700 text-base mb-4">Issued by: {issuedby}</p>
+    <a href={details} class="inline-flex items-center px-4 py-2 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200">View Details</a>
+  </div>
+  

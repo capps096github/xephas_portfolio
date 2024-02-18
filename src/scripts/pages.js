@@ -17,7 +17,9 @@ class Page {
 export const pages = [
   new Page("/", "Portfolio", ["/food", ""]),
   new Page("/contact", "Contact"),
-  new Page("/cv", "Resume (CV)"),
+  new Page("/certificate", "Certificate(S)"),
   new Page("/projects", "Projects"),
-  new Page("/talks-events", "Talks & Events"),
+  new Page("/tech-stack", "Tech-stack"),
+  new Page("/talks-events", "Talks & Trainings"),
+  
 ];

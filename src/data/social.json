@@ -7,13 +7,15 @@
     {
       "name": "PlayStore",
       "url": "https://play.google.com/store/apps/dev?id=8238184494150117614",
-      "image": "icons/logo-google-playstore.svg"
+      "image": "icons/logo-google-playstore.svg",
+      "details": "https://play.google.com/store/apps/dev?id=8238184494150117614"
     }
     ,
     {
       "name": "X",
       "url": "https://twitter.com/xephas_official",
-      "image": "icons/logo-twitter.svg"
+      "image": "icons/logo-twitter.svg",
+      "details": "https://play.google.com/store/apps/dev?id=8238184494150117614"
     }
     ,
     {
