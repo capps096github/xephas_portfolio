@@ -5,18 +5,23 @@ interface Props {
   colors: string;
 }
 
-const { href, handle,colors } = Astro.props;
+const { href, handle, colors } = Astro.props;
 ---
 
-<a
-  class=`border-2 p-5  transition-all hover:cursor-pointer duration-300  rounded-lg ${colors}`
-  target="_blank"
-  href={href}
-  rel="noopener noreferrer"
+<article
+  class=`transition-all duration-300 border-2 hover:cursor-pointer rounded-lg group ${colors}`
 >
-  <div class="flex items-center justify-center space-y-4">
-    <!-- use slot, to insert page contents here-->
-    <slot />
-  </div>
-  <h2 class="mt-4 text-xl font-bold text-center">{handle}</h2>
-</a>
+  <a target="_blank" href={href} rel="noopener noreferrer">
+    <div class="flex flex-col">
+      <div class="flex m-4 items-center justify-center">
+        <!-- use slot, to insert svg icon-->
+        <slot />
+      </div>
+      <p
+        class="m-4 text-sm group-hover:underline truncate font-bold text-center"
+      >
+        {handle}
+      </p>
+    </div>
+  </a>
+</article>

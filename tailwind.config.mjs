@@ -7,6 +7,7 @@ export default {
 			"xephas-white": "#ffffff",
 			"xephas-navy": "#000525",
 			"xephas-yellow": "#fbaa00",
+			"xephas-black": "#000000",
 			"xephas-bg": "#ffffff",
 		  },
 		},
