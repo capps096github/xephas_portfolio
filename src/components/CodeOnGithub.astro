@@ -1,0 +1,19 @@
+---
+import InlineLink from './InlineLink.astro';
+
+
+// Props (parameters) type declaration
+interface Props {
+    repo: string;
+}
+
+const {repo} = Astro.props;
+---
+
+<InlineLink
+target="_blank"
+,
+href=`https://github.com/capps096github/${repo}`
+,
+text="(Code on GitHub)"
+/>

@@ -29,7 +29,7 @@ export const developer = {
   copyrightYear: `© ${year}`,
   handle: "@xephas_official",
   openSourced: "Open Sourced on GitHub",
-  repoUrl:"https://github.dev/capps096github/xephas_portfolio",
+  repoUrl:"https://github.com/capps096github/xephas_portfolio",
   footerDev: "Brian Cephas' Signature Touch",
   footerCollaborator: "Jovic Biralo",
   footerUrl: "https://github.com/capps096github",

@@ -14,7 +14,7 @@ class Page {
 export const pages = [
   new Page("/", "Portfolio", ["/visit", ""]),
   new Page("/contact", "Contact"),
-  new Page("/cv", "Resume (CV)"),
+  new Page("/hire-me", "Hire Me"),
   new Page("/projects", "Projects"),
   new Page("/talks-events", "Talks & Events"),
   new Page("https://terms.xephas.me/", "Terms ➛"),
