@@ -8,6 +8,7 @@
 
 - **[Astro][1]** - A modern front-end framework for building faster websites using JavaScript, HTML, and CSS.
 - **[Tailwind CSS][2]** - A utility-first CSS framework for building custom designs.
+- **[TypeScript](https://www.typescriptlang.org/)** - A strict syntactical superset of JavaScript that adds optional static typing.
 - **[Firebase][5]** - A set of backend cloud computing services and application development platforms provided by Google.
 
 ## Portfolio Overview

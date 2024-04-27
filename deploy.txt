@@ -1,0 +1,16 @@
+This has infor on how we can deploy this site;
+
+Get list of all commands used before: cat (Get-PSReadlineOption).HistorySavePath
+https://stackoverflow.com/questions/44104043/how-can-i-see-the-command-history-across-all-powershell-sessions-in-windows-serv
+
+Get-PSReadlineOption | Format-List -Property HistorySavePath
+
+
+For the firts time:
+npm run dev
+npx firebase experiments:enable webframeworks
+npx firebase init hosting
+npx firebase deploy --only hosting
+
+other times
+npx firebase deploy --only hosting
