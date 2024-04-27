@@ -28,8 +28,9 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
   />
   <body class="font-mont bg-xephas-bg text-black">
     <!-- site layout -->
+    <!-- class="flex flex-col min-h-screen justify-between h-full space-y-10" -->
     <section
-      class="flex flex-col min-h-screen justify-between h-full space-y-10"
+      class="flex flex-col space-between space-y-10"
     >
       <!-- nav bar -->
       <NavBar pageUrl={pageUrl} , isDefault={true} />
@@ -39,9 +40,9 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
-      <main class="px-4 mx-auto lg:px-40 h-str">
+        <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
         <div
-          class="flex flex-col space-y-4 w-full h-full items-center justify-center"
+          class="flex flex-col space-y-4 mb-10 w-full items-center justify-center"
         >
           <!-- heading -->
           {

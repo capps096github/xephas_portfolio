@@ -22,7 +22,7 @@ Flutter is powered by Dart, a language optimized for fast apps on any platform.
     - Take the [Dart Language Tour](https://dart.dev/language) to2 get a quick overview of Dart if you are already familiar with programming.
 
 2. [Install Flutter](https://docs.flutter.dev/get-started/install)
-3. [Frequently Asked Questions in Flutter]()
+3. [Frequently Asked Questions in Flutter](https://docs.flutter.dev/resources/faq)
 
 ## What next?
 
@@ -53,6 +53,7 @@ This is where our resources come in. We have curated a list of resources that wi
     - Flutter samples
 
 ### Official Flutter Resources
+
     - [Flutter Documentation](https://flutter.dev/docs)
     - [Flutter Books](https://docs.flutter.dev/resources/books)
     - 

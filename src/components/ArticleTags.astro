@@ -1,0 +1,27 @@
+---
+// props with contribution
+interface Props {
+  tags: string[];
+  location: string;
+}
+
+const { tags, location } = Astro.props;
+---
+
+<!-- tags -->
+<div class="flex flex-wrap gap-2 items-start justify-start">
+  <!-- loop thru the tags -->
+  {
+    tags.map((tag) => (
+      <span class="transition-all duration-300 px-4 py-1 text-xs font-bold text-xephas-navy uppercase border-2 border-xephas-navy  rounded-full bg-xephas-navy/0 group-hover:bg-xephas-navy group-hover:text-xephas-white">
+        {tag}
+      </span>
+    ))
+  }
+
+  <span
+    class="transition-all duration-300  px-4 py-1 text-xs font-bold text-xephas-white uppercase border-2 border-green-600  rounded-full bg-green-600  group-hover:bg-xephas-navy group-hover:border-xephas-navy group-hover:text-xephas-white"
+  >
+    {location}
+  </span>
+</div>
