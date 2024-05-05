@@ -3,16 +3,17 @@
 interface Props {
   text: string;
   id: string;
+  align: string;
 }
 
-const { id, text } = Astro.props;
+const { id, text, align = "text-left" } = Astro.props;
 
 const href = `#${id}`;
 ---
 
 <!-- link,h3 -->
 <h2
-  class="text-3xl transition-all  text-left mt-6 mb-3 font-extrabold text-xephas-navy"
+  class=`text-3xl transition-all  ${align} mt-6 mb-3 font-extrabold text-xephas-navy`
   id={id}
 >
   <a class="group hover:cursor-pointer" href={href}>

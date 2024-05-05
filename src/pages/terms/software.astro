@@ -1,22 +1,529 @@
 ---
 import Terms from "../../layouts/Terms.astro";
+import BackToTop from "../../components/BackToTop.astro";
+import LinkH2 from "../../components/LinkH2.astro";
+import LinkH3 from "../../components/LinkH3.astro";
+import LinkItem from "../../components/LinkItem.astro";
+import SignOff from "../../components/SignOff.astro";
+import InlineLink from "../../components/InlineLink.astro";
 ---
 
 <!-- Software Terms of Service -->
-<Terms
-  pageTitle="Software Engineering Terms of Service"
-  pageUrl="/terms/software"
+<Terms pageTitle="Software Engineering Terms of Service" pageUrl="/terms/software"
   header="My Software Engineering Terms of Service"
-  pageDescription="Terms of Service for Software Engineering Services provided by Mugisa Brian (Cephas) to clients."
->
-<article class="prose max-w-full">
-  <p class="text-3xl m-10 text-center">Coming soon... now</p>
-  <p>
-    Meanwhile, you can check out my <a href="/terms" class=`underline text-blue-600 hover:text-xephas-navy font-bold`
-    >General Terms of Service ➛</a
-    >
-    or <a href="/contact" class=`underline text-blue-600 hover:text-xephas-navy font-bold`
-    >Contact Me ➛</a> for more information.
-  </p>
-</article>
+  pageDescription="Terms of Service for Software Engineering Services provided by Mugisa Brian (Cephas) to clients. By choosing Xephas or Apta for your software development needs, you agree to abide by these terms. If you disagree, you may not access or use our services.">
+
+    <article class="rounded-lg border-2 border-xephas-navy p-6 space-y-4">
+       
+       <!-- page heading -->
+       <h1
+       id="#"
+       class="mb-2 text-4xl font-extrabold text-xephas-navy text-center"
+     >
+     My Software Engineering Terms of Service
+     </h1>
+      <p class="text-center">
+      <em>Effective Date: Wednesday, February 28th 2024</em>
+    </p>
+
+    <LinkH2 text="Intro" , id="intro" />
+
+    <div class="space-y-4">
+      <p>
+        These Terms of Service govern your engagement with <strong>Apta</strong>,
+        a software development brand founded by <strong>Mugisa Brian</strong>,
+        also known as (“<strong>Cephas</strong>” or “<strong>Xephas</strong>” “<strong>he</strong>,” or
+        “<strong>his</strong>”).
+      <p>Therefore, they apply to all software
+        development projects undertaken by or commissioned through <strong>Apta</strong>, as they are provided under the
+        <strong>Apta Software Development Services</strong> brand, regardless of whether the project is initiated
+        through
+        our official website or other communication channels.
+      </p>
+
+      <p>
+        <strong>By choosing Xephas or Apta
+          for your software development needs, you agree to abide by these terms. If
+          you disagree, you may not access or use our services.</strong>
+      </p>
+      </p>
+    </div>
+
+    <LinkH2 id="what" , text="What's Covered in These Terms" />
+
+    <p>
+      Before initiating your innovative journey with <strong>Apta Software Development
+        Services</strong>, we encourage you to take a moment to understand these <strong>Terms of
+        Service</strong> (the “Terms,” “Contract,” or “Agreement”). <strong>We recognize that
+        reviewing Terms of Service may seem meticulous, but it is crucial for
+        establishing transparent expectations between you and Apta Software
+        Development Services</strong> (“Apta,” “we,” “us,” or “our”) regarding your
+      (“Client,” “Business,” “Customer,” “Individual,” “Organisation”) use of
+      our software development services.
+    </p>
+
+    <p class="mt-4">
+      <strong>These Terms delineate how Apta operates, our business practices,
+        intellectual property rights, relevant legal regulations, and the
+        foundational beliefs or principles we uphold.</strong> Additionally, the Terms
+      articulate what you can anticipate from us as you engage with our software
+      development services and what we expect from you in return, encompassing
+      your legal rights and the governing law during the process of settling
+      disputes in case of any violation of these terms, with jurisdiction in
+      Uganda. The document also provides information on how to contact Apta for
+      dispute resolution.
+    </p>
+
+    <p class="mt-4">
+      Hence,<strong> the Terms establish the framework for our relationship
+        as you engage with Apta's services and are not designed to restrict your legal
+        rights.</strong> However, comprehending these terms is imperative because you agree to be
+      bound by these Terms by accessing or using our services. You may not access or
+      use our services if you disagree with these Terms.
+    </p>
+
+    <LinkH2 id="topics-aspects" , text="Topics & Aspects Covered" />
+    <!-- links -->
+    <div>
+      <LinkItem href="#1-services" , text="Apta Services" />
+
+      <LinkItem href="#2-third-parties" , text="Third-Party Services and Providers" />
+      <LinkItem href="#3-project-process" , text="Project Process" />
+      <LinkItem href="#4-fees-and-payment" , text="Fees and Payment" />
+      <LinkItem href="#5-ownership-intellectual-property-and-modification-rights" ,
+        text="Ownership, Intellectual Property, and Modification Rights" />
+      <LinkItem href="#6-warranties-and-disclaimers" , text="Warranties and Disclaimers" />
+      <LinkItem href="#7-limitation-of-liability" , text="Limitation of Liability" />
+      <LinkItem href="#8-entire-agreement" , text="Entire Agreement" />
+      <LinkItem href="#9-termination" , text="Termination" />
+      <LinkItem href="#10-severability" , text="Severability" />
+      <LinkItem href="#11-waiver" , text="Waiver" />
+      <LinkItem href="#12-governing-law-and-dispute-resolution" , text="Governing Law and Dispute Resolution" />
+      <LinkItem href="#13-changes-to-terms" , text="Changes to Terms" />
+      <LinkItem href="#14-contact-us" , text="Contact Us" />
+    </div>
+
+    <LinkH3 id="privacy-policy" , text="Privacy Policy" />
+    <p>
+      While not part of these terms, we encourage you to read our Privacy Policy
+      for detailed information about managing, updating, exporting, and deleting
+      your data.
+    </p>
+
+    <LinkH3 id="service-provider" , text="Service Provider" />
+    <p>
+      Apta is a software development company specializing in building
+      user-friendly and visually appealing software
+      <InlineLink href="#1-services" , text="solutions (applications and websites)" />
+    </p>
+    <p class="mt-2">We leverage cutting-edge technologies like Flutter for cross-platform app
+      development, Astro, Django, and Tailwind CSS for modern web experiences,
+      and Python, PHP, Typescript and JavaScript for interactive features, to
+      deliver efficient and scalable solutions.
+    </p>
+
+    <p class="mt-2">
+      Apta Consultants and your contractual partner are the providers of these
+      <InlineLink href="#1-services" , text="services" />. Therefore, you enter into this agreement with:
+    </p>
+    <div class="ml-4 mt-2">
+      <li>
+        <strong>Service Provider:</strong>
+        <InlineLink target="_blank" , href="" , text="Apta Consultants" />
+      </li>
+
+      <li>
+        <strong>Remote Location:</strong> 1 Apta Way, Uganda
+      </li>
+
+      <li>
+        <strong>Jurisdiction:</strong> Laws of Uganda
+      </li>
+      <li class="mt-4">
+        <strong>Co-Founder:</strong>
+        <InlineLink href="https://xephas.me" , text=" Cephas (Brian Mugisa)" />
+      </li>
+      <li>
+        <strong>About:</strong>
+        <InlineLink href="https://about.xephas.me" , text="about.xephas.me" />
+      </li>
+
+      <li>
+        <strong>Email:</strong>
+        <InlineLink href="mailto:hello@xephas.me" , text="hello@xephas.me" />
+      </li>
+    </div>
+
+    <!-- Age -->
+    <LinkH3 id="age-requirements" , text="Age Requirements" />
+
+    <div>
+      <li>
+        <strong>Minimum Age:</strong> 18 years
+      </li>
+      <li>
+        <strong>Parental Consent:</strong> Required for users under 18 years
+      </li>
+    </div>
+
+    <!-- description -->
+    <div class="space-y-4 mt-2">
+      <p>
+        If you're under the legal age, you require parental or legal guardian
+        permission to use Apta Software Development Services. Kindly request
+        your parent or guardian to review these terms with you.
+      </p>
+
+      <p>
+        As a parent or legal guardian granting permission for your child's use
+        of our services, these terms apply to you, and you are responsible for
+        overseeing their activity within our platform.
+      </p>
+
+      <p>
+        Certain Apta services might have additional age requirements outlined in
+        their specific terms and policies.
+      </p>
+    </div>
+
+    <!-- Terms of service start her -->
+    <LinkH2 id="terms-of-service-" , text="Terms of Service" />
+    <!-- Services -->
+    <LinkH2 id="1-services" , text="1. Services" />
+
+    <p>
+      Apta provides a comprehensive range of software development services,
+      including:
+    </p>
+    <div class="ml-4 mt-2 mb-2">
+      <li>Mobile App Development</li>
+      <li>Website Development</li>
+      <li>Web Development</li>
+      <li>Systems Development</li>
+      <li>Integration and automation services</li>
+      <li>Maintenance and support</li>
+      <li>Other related services</li>
+    </div>
+
+    <p>
+      Any of these services are also referred to as a <strong>"project" or "development"</strong> in the preceding
+      sections of these Terms. The specific services offered and
+      their associated fees are subject to change. We reserve the right to modify
+      or discontinue any of our services at any time with or without notice.
+    </p>
+
+    <!-- Third Parties -->
+    <LinkH3 id="2-third-parties" text="2. Third-Party Services and Providers" />
+    <p>
+    <div class="space-y-4 mt-2">
+      <p>
+        Apta Software Development Services strives to handle all aspects of
+        your project in-house. However, to ensure the efficiency and timely
+        delivery of your project, we may collaborate with vetted and trusted
+        third-party providers for specific and specialized tasks.
+      </p>
+      <p>
+        When engaging such providers, we prioritize their expertise,
+        reliability, and commitment to data security. We ensure that any
+        third-party providers are bound by confidentiality agreements and
+        adhere to data privacy practices consistent with ours. This approach
+        enables us to access a broader range of expertise and ensures
+        top-quality results across diverse project requirements. You will be
+        informed of any such collaborations and have the opportunity to
+        express any concerns before work commences.
+      </p>
+      <p>
+        By accepting these Terms of Service, you acknowledge and agree to the
+        potential involvement of third-party service providers in your
+        project.
+      </p>
+    </div>
+    </p>
+
+    <!-- Project Process -->
+    <LinkH2 id="3-project-process" , text="3. Project Process" />
+    <LinkH3 bullet="a) " id="initial-consultation-and-initiation" , text="Initial Consultation and Initiation" />
+    <p>
+      We will have a consultation to understand your project needs, goals,
+      timeline, and budget. You will provide a detailed brief outlining your
+      project requirements.
+    </p>
+    <LinkH3 bullet="b) " id="proposal-and-estimate" , text="Proposal and Estimate" />
+    <p>
+      Apta will then send or provide you with a proposal outlining the scope of
+      work, timeline, and fees.
+    </p>
+    <LinkH3 bullet="c) " id="contract-signing-and-payment-terms" , text="Contract Signing and Payment Terms" />
+    <p>
+      Upon your approval and acceptance of the proposal, you will be required to
+      sign a formal contract outlining the agreed-upon terms and make a <strong>Deposit
+        Payment of 25% of the Total Project Cost.</strong> This payment demonstrates your
+      interest and commitment to working with Apta on the project.
+    </p>
+    <LinkH3 bullet="d) " id="design-first-approach" , text="Design-First Approach" />
+    <p>
+      Apta follows a design-first approach. We will develop initial design
+      mockups and obtain your approval before proceeding with any coding. This
+      ensures the final product aligns with your vision.
+    </p>
+    <LinkH3 bullet="e) " id="development-and-feedback" , text="Development and Feedback" />
+    <p>
+      Once the design is approved, we will begin development. We will provide
+      you with opportunities for feedback and revisions throughout the process.
+      Additional revisions may be subject to additional fees. We reserve the
+      right to refuse revisions that are unreasonable or outside the scope of
+      the project. We encourage and value your feedback throughout the project
+      process, fostering a collaborative and tailored development experience.
+    </p>
+    <LinkH3 bullet="f) " id="delivery-and-payment" , text="Delivery and Payment" />
+    <p>
+      Upon completion of the project, you will receive the first deliverable
+      version. <strong>After your approval and upon receipt of a payment of 50% of the
+        remaining balance, you will receive subsequent versions and the final
+        product.</strong> Code and the final product will only be delivered upon full
+      payment of all outstanding fees.
+    </p>
+
+    <!-- Fees and Payment -->
+    <LinkH2 id="4-fees-and-payment" , text="4. Fees and Payment" />
+    <p>
+      Our payment structure at Apta is designed to align with the nature of your
+      project, reflecting its scope, complexity, timeline, and deliverables. We
+      prioritize transparency and flexibility to ensure a seamless
+      collaboration. The payment details are as follows:
+    </p>
+    <div class="ml-4 mt-2 mb-2">
+      <LinkH3 bullet="a) " id="deposit" , text="Deposit" />
+      <p>
+        <strong>A mandatory 25% deposit of the total project cost</strong> is required before the
+        project starts. This deposit serves as your commitment to engaging with
+        Apta for your software development needs.
+      </p>
+      <LinkH3 bullet="b) " id="milestone-payments" , text="Milestone Payments" />
+      <p>
+        <strong>50% of the remaining balance</strong> is due after the first deliverable
+        (Initial Version of your product).<strong> The final 25%</strong> is due upon the successful delivery of the
+        final product.
+      </p>
+      <LinkH3 bullet="c) " id="payment-methods" , text="Payment Methods" />
+      <p>
+        We accept payments through <strong>Bank Transfer, Credit/Debit Card Payments and MTN - Airtel Mobile
+          Money</strong>, providing
+        you with options for convenience.
+      </p>
+      <LinkH3 bullet="d) " id="additional-charges" , text="Additional Charges" />
+      <p>
+        Please be aware that additional standard charges and taxes may apply to
+        the transaction, and these may be detailed in the proposal we provide.
+      </p>
+      <LinkH3 bullet="e) " id="modifications-to-fees" , text="Modifications to Fees" />
+      <p>
+        Apta reserves the right to modify its fees at any time. However, any
+        changes to fees will not apply to projects that are already in progress
+        at the time of the fee adjustment.
+      </p>
+      <LinkH3 bullet="f) " id="important-notes" , text="Important Notes" />
+      <p>
+        Code and the final product will only be delivered upon full payment,
+        ensuring a fair and secure transaction.
+      </p>
+    </div>
+
+    <!-- Ownership, Intellectual Property, and Modification Rights -->
+    <LinkH2 id="5-ownership-intellectual-property-and-modification-rights" ,
+      text="5. Ownership, Intellectual Property, and Modification Rights" />
+    <div class="ml-4 mt-2 mb-2">
+      <LinkH3 bullet="a) " id="ownership" , text="Ownership" />
+      <p>
+        All original software code and related materials developed by Apta for
+        your project are considered the exclusive intellectual property of Apta.
+      </p>
+      <p class="mt-2">
+        We acknowledge and respect your investment in our services, and <strong>we grant
+          you full ownership rights to the finalized software upon clearance of
+          the final payment and successful delivery of the final product.</strong> Any
+        exceptions to this standard ownership agreement must be explicitly
+        agreed upon in writing or by email.
+      </p>
+      <LinkH3 bullet="b) " id="license" , text="License" />
+      <p>
+        Upon clearance of the final payment, <strong>you will be granted a comprehensive
+          and exclusive license to use the software for your intended purposes.</strong>
+        This license is non-exclusive and royalty-free, ensuring that you have
+        the flexibility to utilize the final product in alignment with your
+        project goals.
+      </p>
+      <LinkH3 bullet="c) " id="modification-rights" , text="Modification Rights" />
+      <p>
+        With the clearance of the final payment and delivery of the final
+        product, <strong>you gain complete modification rights.</strong> You have the freedom to
+        modify, enhance, or customize the software according to your evolving
+        needs without requiring our written permission and consent. We believe
+        in empowering you with full control over the software's evolution.
+      </p>
+      <LinkH3 bullet="d) " id="retention-of-usage-rights" , text="Retention of Usage Rights" />
+      <p>
+        While you assume ownership and modification rights, <strong>we retain the option
+          to use anonymized and non-identifiable portions of the software for
+          portfolio showcases, promotional materials, and other professional
+          purposes.</strong> Any specific restrictions on usage rights will be explicitly
+        outlined in the contractual agreement.
+      </p>
+      <LinkH3 bullet="e) " id="client-information-usage" , text="Client Information Usage" />
+      <p>
+        We respect your privacy and adhere to strict confidentiality standards.
+        Any details you provide during the project, including ordering processes
+        and development stages, will be utilized solely for creative purposes
+        related to your project. <strong>Your information will not be shared with third
+          parties without your explicit written consent.</strong>
+      </p>
+      <LinkH3 bullet="f) " id="confidentiality" , text="Confidentiality" />
+      <p>
+        Apta places utmost importance on treating all information provided by
+        you as confidential. <strong>We commit to not sharing your information with
+          third parties without your written consent. We also expect our clients
+          to maintain the confidentiality of any information about Apta and its
+          services.</strong> Non-disclosure agreements (NDAs) are available upon request
+        for additional assurance.
+      </p>
+    </div>
+
+    <!-- Warranties and Disclaimers -->
+    <LinkH2 id="6-warranties-and-disclaimers" , text="6. Warranties and Disclaimers" />
+    <p>
+      At Apta, we provide our software development services on an <strong>"as is"</strong> and
+      <strong>"as available"</strong> basis. While we strive for excellence, we make no
+      warranties, express or implied, regarding the quality, accuracy,
+      completeness, performance, or outcome of our services. We are committed to
+      delivering high-quality solutions, but we cannot guarantee error-free or
+      uninterrupted service. Apta is not liable for any errors or omissions in
+      the project materials, or any damages arising from the use of our
+      services.
+    </p>
+
+    <!-- Limitation of Liability -->
+    <LinkH2 id="7-limitation-of-liability" , text="7. Limitation of Liability" />
+    <p>
+      Our liability to you for any damages arising out of or related to these
+      Terms or from the use or inability to use our services is limited to the
+      amount of fees paid by you for the project. We strive to provide reliable
+      and effective solutions, but we are not liable for any indirect,
+      incidental, consequential, or punitive damages that may arise from the use
+      of our services.
+    </p>
+
+    <!-- Entire Agreement -->
+    <LinkH2 id="8-entire-agreement" , text="8. Entire Agreement" />
+    <p>
+      These <strong>Terms constitute the entire agreement between you and Apta regarding
+        the subject matter hereof and supersede all prior or contemporaneous
+        communications, representations, or agreements, whether oral or written.</strong>
+      We aim to maintain clarity and transparency in our business relationships,
+      and these Terms serve as the foundation for our collaboration.
+    </p>
+
+    <!-- Termination -->
+    <LinkH2 id="9-termination" , text="9. Termination" />
+    <!-- By You -->
+    <LinkH3 bullet="a) " id="by-you" , text="By You:" />
+    <p>
+      You have the right to terminate this contract agreement for any reason, at
+      any time before the delivery of the final product by providing written
+      notice to us. <strong>In such a case, you will not be entitled to a refund of any
+        unused portion of the Deposit as it is non-refundable.</strong> You may also
+      terminate these Terms by ceasing to use our services.
+    </p>
+    <!-- By Us -->
+    <LinkH3 bullet="b) " id="by-us" , text="By Us:" />
+    <p>
+      Apta reserves the right to terminate this contract agreement or your
+      access to our services at any time for any reason, with or without notice.
+      <strong>Some reasons for termination may include (but are not limited to):</strong>
+    </p>
+    <div class="ml-4 mt-2">
+      <li>
+        Failure to pay the Deposit or any other outstanding fees within the
+        stipulated timeframe.
+      </li>
+      <li>
+        Providing inaccurate or misleading information during the ordering
+        process.
+      </li>
+      <li>
+        Engaging in conduct that is abusive, disrespectful, or harassing towards
+        our team.
+      </li>
+      <li>Breach of any other provision of these Terms.</li>
+    </div>
+
+    <!-- Severability -->
+    <LinkH2 id="10-severability" , text="10. Severability" />
+    <p>
+      <strong>If any provision of these Terms is held to be invalid or unenforceable,
+        this Severability Clause, comes into effect.</strong> The
+      purpose of this provision is to address situations where a particular part
+      of the Terms is deemed by a court or legal authority to be unenforceable
+      or invalid. In such cases, rather than rendering the entire agreement
+      void, the problematic provision will be "struck" or removed, and the rest
+      of the Terms will remain in full force and effect. This ensures that the
+      overall agreement remains valid and enforceable to the maximum extent
+      permitted by law, even if specific provisions are found to be
+      unenforceable.
+    </p>
+
+    <!-- Waiver -->
+    <LinkH2 id="11-waiver" , text="11. Waiver" />
+    <p>
+      The Waiver section addresses the concept of waiving certain rights or
+      claims in the context of breaches or defaults under the Terms. In legal
+      terms, a waiver is the voluntary relinquishment or surrender of a known
+      right or privilege. <strong>This provision clarifies that if one party (either
+        Apta or the client) chooses not to enforce a particular right or remedy in
+        response to a breach or default by the other party, it does not constitute
+        a permanent waiver of that right. In other words, if a party decides not
+        to take immediate action against a breach, it doesn't mean they waive
+        their right to take action in the future for the same or any other breach.</strong>
+      This provision ensures that parties can still enforce their rights if
+      circumstances change or if they choose to enforce them at a later time.
+    </p>
+
+    <!-- Governing Law and Dispute Resolution -->
+    <LinkH2 id="12-governing-law-and-dispute-resolution" , text="12. Governing Law and Dispute Resolution" />
+    <p>
+      These Terms shall be governed by and construed following the <strong>Laws of
+        Uganda</strong> without regard to its conflict of laws provisions. Any dispute
+      arising out of or relating to these Terms shall be subject to and will be
+      settled by binding arbitration and the exclusive jurisdiction of the
+      courts of Uganda.
+    </p>
+
+    <!-- Changes to Terms -->
+    <LinkH2 id="13-changes-to-terms" , text="13. Changes to Terms" />
+    <p>
+      Apta reserves the right to modify or replace these Terms of Service at any
+      time by posting the revised Terms on its website. You will be notified of
+      any changes, and your continued use of Apta's services after such
+      modifications constitutes acceptance of the new terms.
+    </p>
+
+    <p class="mt-4">By engaging with
+      Apta, you acknowledge that you have read, understood, and agreed to these
+      Terms of Service.
+    </p>
+
+    <!-- Contact Us -->
+    <LinkH2 id="14-contact-us" , text="14. Contact Us" />
+    <p>
+      If you have any questions about these Terms, please contact us at
+      <InlineLink href="mailto:inquiry@xephas.me" text="inquiry@xephas.me" />We
+      are committed to providing clarity and support throughout our engagement
+      with you.
+    </p>
+
+    <!-- sign off -->
+    <SignOff />
+
+    <!-- Back to Top -->
+    <BackToTop />
+  </article>
 </Terms>

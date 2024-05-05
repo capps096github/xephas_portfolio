@@ -2,7 +2,7 @@
 import Portfolio from "../layouts/Portfolio.astro";
 import LinkH2 from "../components/LinkH2.astro";
 import LinkH3 from "../components/LinkH3.astro";
-import Signature from "../components/Signature.astro";
+import SignOff from "../components/SignOff.astro";
 import InlineLink from "../components/InlineLink.astro";
 import CodeOnGithub from "../components/CodeOnGithub.astro";
 ---
@@ -14,10 +14,10 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
   header="Wanna work with me? Read on."
   pageDescription="Here's how you can hire me for your next project. I'm available for freelance work, contract work, and full-time employment. I'm also open to collaborations and partnerships. Let's talk!"
 >
-  <LinkH2 text="My Cover Letter" , id="cover-letter" />
 
-  <article class="rounded-lg border-2 border-xephas-navy p-6 space-y-4">
-    <p>Greetings to you,</p>
+<article class="rounded-lg border-2 border-xephas-navy p-6 space-y-4">
+    <LinkH2 text="My Cover Letter" align="text-center" , id="cover-letter" />
+      <p class="mt-4">Greetings to you,</p>
     <p>
       I am <strong>Mugisa Brian (Cephas)</strong>, a Ugandan Software Engineer
       with over three years of ultimate experience in Cross-Platform App
@@ -505,13 +505,8 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
           and experiences align with your team’s needs in greater detail.
         </p>
       </div>
-
-      <div class="flex flex-col justify-end items-end space-y-2 mt-8">
-        <p>Yours Sincerely,</p>
-        <p class="uppercase font-bold">Mugisa Brian (Cephas)</p>
-        <p>Mugisa Brian (Cephas)</p>
-        <Signature />
-      </div>
+    
+      <SignOff />
     </div>
   </article>
 </Portfolio>

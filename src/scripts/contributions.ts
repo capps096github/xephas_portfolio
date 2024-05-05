@@ -4,7 +4,6 @@ export const contributions: CommunityContribution[] = [
     {
         event_title: "Beyond the Basics: An Accelerator to Mastering Flutter with a Comprehensive Toolkit of Resources",
         date: "Saturday, 30th March 2024",
-
         location: "Online, (Flutter Kampala Meetup)",
         categories: ["Speaker", "Flutter Talk"],
         cover_image: "images/fl_meet_kla.webp",

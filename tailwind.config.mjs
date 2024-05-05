@@ -5,7 +5,8 @@ export default {
 		extend: {
 		  colors: {
 			"xephas-white": "#ffffff",
-			"xephas-navy": "#000000",
+			"xephas-navy": "#000525",
+			// "xephas-navy": "#000000",
 			"xephas-green": "#16a34a",
 			// "xephas-navy": "#800000",
 			// "xephas-navy": "#0852A8",

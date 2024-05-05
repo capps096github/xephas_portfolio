@@ -40,18 +40,8 @@ const newPageTitle = pageTitle + " | " + codeName;
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
-      <main class="px-4 mx-auto lg:px-40 h-3/4">
-        <div class="flex flex-col space-y-4 w-full h-full">
-          <!-- logo -->
-          {showLogo ? <XephasDraaaftLogo /> : ""}
-          <!-- page heading -->
-          <h1
-            id="#"
-            class="mb-2 text-4xl font-extrabold text-xephas-navy text-center"
-          >
-            {headingText}
-          </h1>
-
+        <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
+          <div class="flex flex-col  mb-10 space-y-4 w-full h-full">
           <!-- use slot, to insert page contents here-->
           <slot />
         </div>
