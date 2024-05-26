@@ -3,7 +3,7 @@
 interface Props {
   text: string;
   id: string;
-  align: string;
+  align?: string;
 }
 
 const { id, text, align = "text-left" } = Astro.props;

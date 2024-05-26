@@ -3,9 +3,10 @@
 interface Props {
   tags: string[];
   location: string;
+  highlight?: string;
 }
 
-const { tags, location } = Astro.props;
+const { tags, location, highlight } = Astro.props;
 ---
 
 <!-- tags -->
@@ -20,7 +21,13 @@ const { tags, location } = Astro.props;
   }
 
   <span
-    class="transition-all duration-300  px-4 py-1 text-xs font-bold text-xephas-white uppercase border-2 border-green-600  rounded-full bg-green-600  group-hover:bg-xephas-navy group-hover:border-xephas-navy group-hover:text-xephas-white"
+    class="transition-all duration-300  px-4 py-1 text-xs font-bold text-xephas-blue uppercase border-2 border-xephas-blue  rounded-full bg-xephas-blue/10  group-hover:bg-xephas-blue group-hover:border-xephas-blue group-hover:text-xephas-white"
+  >
+    {highlight}
+  </span>
+
+  <span
+    class="transition-all duration-300  px-4 py-1 text-xs font-bold text-green-600 uppercase border-2 border-green-600  rounded-full bg-green-600/10  group-hover:bg-green-600 group-hover:border-green-600 group-hover:text-xephas-white"
   >
     {location}
   </span>

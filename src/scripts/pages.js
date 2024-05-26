@@ -12,8 +12,9 @@ class Page {
 // add script tags to astro pages
 // PWAs in astro
 export const pages = [
-  new Page("/", "Portfolio", ["/visit", ""]),
+  new Page("/", "Bio", ["/visit", ""]),
   new Page("/community", "Community", ["/talks"]),
+  new Page("/cv", "CV (Resume)"),
   new Page("/hire-me", "Hire Me"),
   new Page("/contact", "Contact"),
   // new Page("/projects", "Projects"),

@@ -11,6 +11,10 @@ import {
   containsVideo,
   containsTwitter,
   containsGithub,
+  containsWeb,
+  containsDevLib,
+  containsProfile,
+  containsApp,
 } from "../scripts/community";
 
 const { contribution } = Astro.props;
@@ -19,9 +23,21 @@ const github_url = contribution.github_url;
 const slides_url = contribution.slides_url;
 const video_url = contribution.video_url;
 const twitter_url = contribution.twitter_url;
+const web_link = contribution.web_link;
+const play_link = contribution.play_link;
+const dev_library = contribution.dev_library;
+const profile_link = contribution.profile_link;
 
 // has slides
 const hasSlides = containsSlides(contribution);
+// has web app
+const hasWeb = containsWeb(contribution);
+// has dev library
+const hasDevLib = containsDevLib(contribution);
+// has dev library
+const hasProfile = containsProfile(contribution);
+// has app
+const hasApp = containsApp(contribution);
 // has video
 const hasVideo = containsVideo(contribution);
 // has twitter
@@ -31,14 +47,14 @@ const hasGithub = containsGithub(contribution);
 ---
 
 <footer class="flex flex-wrap gap-2 items-center mt-4">
-  {hasSlides &&
+  {(hasSlides || hasWeb) &&
           <!-- slides -->
    <a
-    href={slides_url}
+    href={hasSlides? slides_url:web_link }
     target="_blank"
     class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase rounded-md text-xephas-white bg-xephas-blue hover:cursor-pointer"
   >
-   Open Slides
+  {hasSlides?"Open Slides": "Open Web App"}
 
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -53,6 +69,74 @@ const hasGithub = containsGithub(contribution);
       </svg>
   </a>
 }
+ 
+  {hasApp &&
+          <!-- app -->
+   <a
+    href={play_link}
+    target="_blank"
+    class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase rounded-md text-xephas-white bg-green-600 hover:cursor-pointer"
+  >
+  Get it on Playstore
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24"
+      viewBox="0 -960 960 960"
+      class="fill-current ml-2"
+      width="24"
+    >
+      <path
+        d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z"
+      ></path>
+      </svg>
+  </a>
+}
+
+  {hasDevLib &&
+   <a
+    href={dev_library}
+    target="_blank"
+    class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase border border-xephas-blue rounded-md text-xephas-blue bg-xephas-white hover:cursor-pointer"
+  >
+  View on Google Dev Library
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24"
+      viewBox="0 -960 960 960"
+      class="fill-current ml-2"
+      width="24"
+    >
+      <path
+        d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z"
+      ></path>
+      </svg>
+  </a>
+}
+  {hasProfile &&
+   <a
+    href={profile_link}
+    target="_blank"
+    class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase rounded-md text-xephas-white bg-xephas-black hover:cursor-pointer"
+  >
+  View Profile
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24"
+      viewBox="0 -960 960 960"
+      class="fill-current ml-2"
+      width="24"
+    >
+      <path
+        d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z"
+      ></path>
+      </svg>
+  </a>
+}
+
+
 { hasGithub &&
   <!-- Github -->
   <a

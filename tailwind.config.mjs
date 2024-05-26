@@ -13,6 +13,7 @@ export default {
 			"xephas-yellow": "#fbaa00",
 			"xephas-black": "#000000",
 			"xephas-blue": "#2563eb",
+			"xephas-orange": "#f97316",
 			"xephas-bg": "#ffffff",
 		  },
 		},

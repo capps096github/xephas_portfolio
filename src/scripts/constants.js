@@ -35,3 +35,6 @@ export const developer = {
   footerUrl: "https://github.com/capps096github",
   footerCollaboratorUrl: "https://biralo256.github.io",
 };
+
+// name of my CV, it keeps changing though
+export const cvFileName= "MUGISA BRIAN (CEPHAS) - CV as of 11th June 2024.pdf";

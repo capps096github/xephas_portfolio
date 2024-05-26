@@ -4,6 +4,15 @@ import Head from "../components/Head.astro";
 import NavBar from "../components/NavBar.astro";
 import { coverImage, description, codeName, title } from "../scripts/constants";
 
+interface Props {
+  pageTitle?: string;
+  pageUrl?: string;
+  header?: string;
+  pageDescription?: string;
+  pageCoverImage?: string;
+  showHeader?: boolean;
+}
+
 // variables
 // Access passed-in component props, like `<X title="Hello, World" />`
 const {
@@ -11,6 +20,7 @@ const {
   header: headingText = title,
   pageUrl = "/",
   pageDescription = description,
+  showHeader = true,
   pageCoverImage = coverImage,
 } = Astro.props;
 
@@ -40,16 +50,16 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
       <div class="mt-5 sm:mt-96"></div>
 
       <!-- main -->
-        <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
+      <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
         <div
           class="flex flex-col space-y-4 mb-10 w-full items-center justify-center"
         >
           <!-- heading -->
           {
-            isHome ? (
+            (isHome || !showHeader )? (
               ""
             ) : (
-              <h1 class="mb-2 text-4xl font-extrabold text-xephas-navy text-center">
+              <h1 class="mb-2 text-5xl font-extrabold text-xephas-navy text-center">
                 {headingText}
               </h1>
             )
