@@ -4,6 +4,7 @@ import LinkH2 from "../components/LinkH2.astro";
 import LinkH3 from "../components/LinkH3.astro";
 import SignOff from "../components/SignOff.astro";
 import InlineLink from "../components/InlineLink.astro";
+import BackToTop from "../components/BackToTop.astro";
 import CodeOnGithub from "../components/CodeOnGithub.astro";
 ---
 
@@ -14,10 +15,13 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
   header="Wanna work with me? Read on."
   pageDescription="Here's how you can hire me for your next project. I'm available for freelance work, contract work, and full-time employment. I'm also open to collaborations and partnerships. Let's talk!"
 >
-
-<article class="rounded-lg border-2 border-xephas-navy p-6 space-y-4">
+  <article class="rounded-lg border-2 border-xephas-navy p-6 space-y-4">
     <LinkH2 text="My Cover Letter" align="text-center" , id="cover-letter" />
-      <p class="mt-4">Greetings to you,</p>
+    <p id="#" class="mt-2 font-bold text-xs text-xephas-blue italic text-center">
+      Last Updated: 28th May, 2024
+    </p>
+
+    <p class="mt-4">Greetings to you,</p>
     <p>
       I am <strong>Mugisa Brian (Cephas)</strong>, a Ugandan Software Engineer
       with over three years of ultimate experience in Cross-Platform App
@@ -136,17 +140,26 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
       <!-- Community -->
       <LinkH3 text="Developer Community Contributions" bullet="b)" />
       <p>
-        I am actively involved in the Ugandan
-        Developer (Flutter) Community since 2022, contributing as a <strong>Speaker and Facilitator (Trainer)</strong> in prominent
-        events such as <strong>Flutter Forward Kampala 2023</strong> and <strong>DroidCon Uganda 2023</strong>.
-        Additionally, I've conducted training sessions at events like the
-        <strong>Flutter Series Training Bootcamp</strong>, where I mentored over 100 student
-        developers in 2022 and 2023 at the Google Developer Students Club,
-        Makerere University. Moreover, I've participated in online sessions,
-        including a <strong>Twitter Space hosted by Eight Tech Institute to discuss the Flutter developer
-        landscape in Uganda</strong>, February 2024,
-        and Speaking at the <strong>Flutter Kampala Meetup</strong> and <strong>IWD (International
-        Women's Day) Mbarara</strong> in March 2024. <InlineLink href="/community" text="Learn more about my community contributions." />
+        I am actively involved in the Ugandan Developer (Flutter) Community
+        since 2022, contributing as a <strong
+          >Speaker and Facilitator (Trainer)</strong
+        > in prominent events such as <strong
+          >Flutter Forward Kampala 2023</strong
+        > and <strong>DroidCon Uganda 2023</strong>. Additionally, I've
+        conducted training sessions at events like the
+        <strong>Flutter Series Training Bootcamp</strong>, where I mentored over
+        100 student developers in 2022 and 2023 at the Google Developer Students
+        Club, Makerere University. Moreover, I've participated in online
+        sessions, including a <strong
+          >Twitter Space hosted by Eight Tech Institute to discuss the Flutter
+          developer landscape in Uganda</strong
+        >, February 2024, and Speaking at the <strong
+          >Flutter Kampala Meetup</strong
+        > and <strong>IWD (International Women's Day) Mbarara</strong> in March 2024.
+        <InlineLink
+          href="/community"
+          text="Learn more about my community contributions."
+        />
       </p>
 
       <!-- firebase -->
@@ -446,6 +459,14 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
         <li>
           <InlineLink
             target="_blank"
+            href="https://www.figma.com/design/W2TVKvgk4OOc58zd5VsB0h/ICT4Farmers-App?node-id=0-1&t=LXNLibwCL5wJDh8a-1"
+            ,
+            text="ICT4Farmers Mobile App"
+          /> (Mobile App)
+        </li>
+        <li>
+          <InlineLink
+            target="_blank"
             href="https://www.figma.com/file/zAMNGqIcTmOo2xq3tJjSu6/ORACLE-CODELAB-DESKTOP-AND-MOBILE-UI?type=design&node-id=0%3A1&mode=design&t=qT96BEOF0XCdZSZQ-1"
             ,
             text=" Oracle Codelabs redesign"
@@ -505,8 +526,11 @@ import CodeOnGithub from "../components/CodeOnGithub.astro";
           and experiences align with your team’s needs in greater detail.
         </p>
       </div>
-    
+
       <SignOff />
+
+      <!-- Back to Top -->
+      <BackToTop />
     </div>
   </article>
 </Portfolio>

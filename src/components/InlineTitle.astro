@@ -1,0 +1,12 @@
+---
+// Props (parameters) type declaration
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<h1 class="text-5xl font-extrabold text-xephas-navy text-center">
+  {text}
+</h1>

@@ -1,29 +1,87 @@
 ---
 import Portfolio from "../layouts/Portfolio.astro";
-import { contributions } from "../scripts/contributions";
-import LeftArticle from "../components/LeftArticle.astro";
-import RightArticle from "../components/RightArticle.astro";
+import { contributions, cupertino, stackoverflow } from "../scripts/contributions";
+import { impacts } from "../scripts/impacts";
+import CommunityArticle from "../components/CommunityArticle.astro";
+import InlineTitle from "../components/InlineTitle.astro";
+import Space from "../components/Space.astro";
 ---
 
 <!-- Community -->
 <Portfolio
-  pageTitle="Community"
+  pageTitle="Community Impact"
   pageUrl="/community"
-  header="My Community Talks, Trainings & Events"
+  header="My Community Impact (Open-Source, Talks, Trainings & Events)"
   pageDescription="Various trainings, talks and events I have been a part of."
+  showHeader={false}
 >
+
+<div class="space-y-20">
+
+<!-- impact summary -->
+<div>
+<InlineTitle text="TL:DR; Impact By Numbers"/>
+<Space of="mt-5"/>
+<div class="w-full md:grid-cols-2 lg:grid-cols-3 justify-items-stretch grid-cols-1 gap-2 grid">
+    {
+      impacts.map((impact, index) => {
+        // span
+        const col_span = impact.col_span?? "md:col-span-1";
+        // is even
+        const isEven = index % 2 === 0;
+
+        const backg = isEven
+          ? "hover:text-xephas-navy text-white bg-xephas-navy hover:bg-xephas-yellow"
+          : "hover:text-xephas-navy text-xephas-white bg-xephas-blue hover:bg-xephas-yellow";
+
+        return (
+        <article class=`hover:cursor-pointer ${backg} ${col_span} rounded-lg p-4 transition-all duration-300  justify-center text-center items-center`>
+          <h1 class="text-2xl text-center uppercase tracking-tight font-bold pb-2 border-b border-b-current hover:border-b-current">
+            {impact.title}
+          </h1>
+          <h2 class="p-4 text-6xl font-spartan text-center tracking-tight font-extrabold">
+            {impact.numbers}
+          </h2>
+          <p class="font-bold text-center">{impact.sub_title}</p>
+        </article>);
+      })
+    }
+</div>
+</div>
+
+<!-- cupertino -->
+<div>
+<InlineTitle text="Open Source: Cupertino Icons Gallery"/>
+<Space of="mt-5"/>
+ <CommunityArticle bg="border-xephas-blue bg-xephas-blue/10" contribution={cupertino} />
+</div>
+
+<!-- stack over flow -->
+<div>
+<InlineTitle text="My Stack Overflow Profile"/>
+<Space of="mt-5"/>
+ <CommunityArticle bg="border-xephas-orange bg-xephas-orange/10" contribution={stackoverflow} />
+</div>
+  
+  <!-- talks -->
+<div>
+  <InlineTitle text="Flutter Developer Talks, Trainings, Interviews & Events"/>
+<Space of="mt-5"/>
+<div class="grid grid-cols-1 gap-4 content-stretch md:grid-cols-2">
   {
     contributions.map((contribution, index) => {
-      // is even
-      const isEven = index % 2 === 0;
+       // is even
+       const isThird = index % 3 === 0;
+
+        // span
+        const col_span = isThird? "md:col-span-2" : "md:col-span-1";
       
-      
-      // if is even, render aticle 2 else article 1
-      return isEven ? (
-        <LeftArticle contribution={contribution} />
-      ) : (
-        <RightArticle contribution={contribution} />
-      );
-    })
+      return (
+      <CommunityArticle span={col_span} contribution={contribution} />
+   )})
   }
+  </div>
+</div>
+
+</div>
 </Portfolio>
