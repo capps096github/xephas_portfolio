@@ -12,5 +12,8 @@ npx firebase experiments:enable webframeworks
 npx firebase init hosting
 npx firebase deploy --only hosting
 
+build
+npm run build
+
 other times
 npx firebase deploy --only hosting
