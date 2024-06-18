@@ -13,7 +13,7 @@ class Page {
 // PWAs in astro
 export const pages = [
   new Page("/", "Bio", ["/visit", ""]),
-  new Page("/community", "Community", ["/talks"]),
+  new Page("/community", "Community"),
   new Page("/cv", "CV (Resume)"),
   new Page("/hire-me", "Hire Me"),
   new Page("/contact", "Contact"),
