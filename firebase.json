@@ -1,16 +1,12 @@
 {
   "hosting": {
+    "site": "xephasme",
     "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "redirects":[{
-      "source": "/terms",
-      "destination": "https://terms.xephas.me",
-      "type": 302
-    }],
     "frameworksBackend": {
       "region": "europe-west1"
     }

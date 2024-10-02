@@ -18,7 +18,7 @@ export const pages = [
   new Page("/hire-me", "Hire Me"),
   new Page("/contact", "Contact"),
   // new Page("/projects", "Projects"),
-  new Page("https://terms.xephas.me/", "Terms ➛"),
+  new Page("/terms", "Terms ➛"),
 ];
 
 export const termsPages = [
