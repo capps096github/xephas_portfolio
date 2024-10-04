@@ -60,30 +60,22 @@ const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content={pageTitle} />
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon"  type="image/svg+xml" href="/icons/apple-touch-icon.png" />
 
   <!--TODO: Add Favicon -->
-  <link rel="icon" href="/icons/favicon.ico" sizes="any" />
+  <!-- <link rel="icon" href="/icons/favicon.ico" sizes="any" /> -->
+  <link rel="shortcut icon" type="image/svg+xml" href="/icons/favicon_star.svg" />
+
 
   <title>{pageTitle}</title>
 
   <!-- PWA SUPPORT -->
-  <link rel="manifest" href={siteManifest} />
+  <!-- <link rel="manifest" href={siteManifest} /> -->
 
   <!-- fonts -->
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,700&display=swap");
   </style>
-
-  <!-- script for redirection -->
-  <!-- <script>
-    // check if the browser url is terms.xephas.me and if yes, redirect to /terms
-    if (typeof window !== "undefined") {
-      if (window.location.href === "https://terms.xephas.me/" || window.location.href === "https://terms.xephas.me") {
-        window.location.href = "/terms";
-      }
-    }
-  </script> -->
 
   <!-- Astro page animations -->
   <ViewTransitions />
