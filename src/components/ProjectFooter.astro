@@ -1,0 +1,138 @@
+---
+import { projContainsDesign, projContainsGithub, projContainsPlay, projContainsVideo, projContainsWeb, type Project } from "../scripts/project";
+
+// props with contribution
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+const github_url = project.github_url;
+const video_url = project.video_url;
+const web_link = project.web_link;
+const play_link = project.play_link;
+const design_link = project.design_link;
+
+// has web app
+const hasWeb = projContainsWeb(project);
+// has app
+const hasApp = projContainsPlay(project);
+// has video
+const hasVideo = projContainsVideo(project);
+// has github
+const hasGithub = projContainsGithub(project);
+// has design
+const hasUIDesign = projContainsDesign(project);
+---
+
+<footer class="flex flex-wrap gap-2 items-center mt-4">
+  <!-- slides -->
+  {
+    hasWeb && (
+      <a
+        href={web_link}
+        target="_blank"
+        class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase rounded-md text-xephas-white bg-xephas-blue hover:cursor-pointer"
+      >
+        Open Web App
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          viewBox="0 -960 960 960"
+          class="fill-current ml-2"
+          width="24"
+        >
+          <path d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z" />
+        </svg>
+      </a>
+    )
+  }
+
+  <!-- app -->
+  {
+    hasApp && (
+      <a
+        href={play_link}
+        target="_blank"
+        class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase rounded-md text-xephas-white bg-green-600 hover:cursor-pointer"
+      >
+        Get it on Playstore
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          viewBox="0 -960 960 960"
+          class="fill-current ml-2"
+          width="24"
+        >
+          <path d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z" />
+        </svg>
+      </a>
+    )
+  }
+
+<!-- design -->
+  {
+    hasUIDesign && (
+      <a
+        href={design_link}
+        target="_blank"
+        class="px-4 inline-flex flex-row items-center py-2 text-xs font-extrabold text-center uppercase border border-xephas-black rounded-md text-xephas-black bg-xephas-white hover:cursor-pointer"
+      >
+        Open UI Design
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          viewBox="0 -960 960 960"
+          class="fill-current ml-2"
+          width="24"
+        >
+          <path d="M480-840q74 0 139.5 28.5T734-734q49 49 77.5 114.5T840-480q0 74-28.5 139.5T734-226q-49 49-114.5 77.5T480-120q-41 0-79-9t-76-26l61-61q23 8 46.5 12t47.5 4q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 24 4 47.5t12 46.5l-60 60q-18-36-27-74.5t-9-79.5q0-74 28.5-139.5T226-734q49-49 114.5-77.5T480-840Zm40 520v-144L176-120l-56-56 344-344H320v-80h280v280h-80Z" />
+        </svg>
+      </a>
+    )
+  }
+
+  <!-- Github -->
+  {
+    hasGithub && (
+      <a
+        href={github_url}
+        target="_blank"
+        class="inline-flex flex-row items-center px-4 py-2 text-xs font-extrabold text-center uppercase rounded-lg text-white bg-slate-800 hover:cursor-pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          viewBox="0 0 512 512"
+          class="fill-current mr-2"
+          width="24"
+        >
+          <path d="M256 32C132.3 32 32 134.9 32 261.7c0 101.5 64.2 187.5 153.2 217.9a17.56 17.56 0 003.8.4c8.3 0 11.5-6.1 11.5-11.4 0-5.5-.2-19.9-.3-39.1a102.4 102.4 0 01-22.6 2.7c-43.1 0-52.9-33.5-52.9-33.5-10.2-26.5-24.9-33.6-24.9-33.6-19.5-13.7-.1-14.1 1.4-14.1h.1c22.5 2 34.3 23.8 34.3 23.8 11.2 19.6 26.2 25.1 39.6 25.1a63 63 0 0025.6-6c2-14.8 7.8-24.9 14.2-30.7-49.7-5.8-102-25.5-102-113.5 0-25.1 8.7-45.6 23-61.6-2.3-5.8-10-29.2 2.2-60.8a18.64 18.64 0 015-.5c8.1 0 26.4 3.1 56.6 24.1a208.21 208.21 0 01112.2 0c30.2-21 48.5-24.1 56.6-24.1a18.64 18.64 0 015 .5c12.2 31.6 4.5 55 2.2 60.8 14.3 16.1 23 36.6 23 61.6 0 88.2-52.4 107.6-102.3 113.3 8 7.1 15.2 21.1 15.2 42.5 0 30.7-.3 55.5-.3 63 0 5.4 3.1 11.5 11.4 11.5a19.35 19.35 0 004-.4C415.9 449.2 480 363.1 480 261.7 480 134.9 379.7 32 256 32z" />
+        </svg>
+        View Code
+      </a>
+    )
+  }
+  <!-- Youtube -->
+  {
+    hasVideo && (
+      <a
+        href={video_url}
+        target="_blank"
+        class="inline-flex flex-row items-center px-4 py-2 text-xs font-extrabold text-center uppercase rounded-lg text-white bg-red-600 hover:cursor-pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24"
+          class="fill-current mr-2"
+          width="24"
+          viewBox="0 0 512 512"
+        >
+          <path d="M508.64 148.79c0-45-33.1-81.2-74-81.2C379.24 65 322.74 64 265 64h-18c-57.6 0-114.2 1-169.6 3.6C36.6 67.6 3.5 104 3.5 149 1 184.59-.06 220.19 0 255.79q-.15 53.4 3.4 106.9c0 45 33.1 81.5 73.9 81.5 58.2 2.7 117.9 3.9 178.6 3.8q91.2.3 178.6-3.8c40.9 0 74-36.5 74-81.5 2.4-35.7 3.5-71.3 3.4-107q.34-53.4-3.26-106.9zM207 353.89v-196.5l145 98.2z" />
+        </svg>
+        Watch Video
+      </a>
+    )
+  }
+</footer>
