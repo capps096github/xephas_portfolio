@@ -1,7 +1,5 @@
 ---
-import Footer from "../components/Footer.astro";
 import Head from "../components/Head.astro";
-import NavBar from "../components/NavBar.astro";
 import { coverImage, description, codeName, title } from "../scripts/constants";
 
 interface Props {
@@ -37,47 +35,9 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
     pageDescription={pageDescription}
   />
   <body class="font-mont bg-xephas-bg text-black">
-    <!-- site layout -->
-    <!-- class="flex flex-col min-h-screen justify-between h-full space-y-10" -->
-    <section
-      class="flex flex-col min-h-screen justify-between h-full space-between space-y-10"
-    >
-      <!-- nav bar -->
-      <NavBar pageUrl={pageUrl} , isDefault={true} />
-
-      <!-- Some spacing for visual alignment -->
-      <div class="mt-5 sm:mt-96"></div>
-      <div class="mt-5 sm:mt-96"></div>
-
-      <!-- main -->
-      <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
-        <div
-          class="flex flex-col space-y-4 mb-10 w-full items-center justify-center"
-        >
-          <!-- heading -->
-          {
-            (isHome || !showHeader )? (
-              ""
-            ) : (
-              <h1 class="mb-2 text-5xl font-extrabold text-xephas-navy text-center">
-                {headingText}
-              </h1>
-            )
-          }
-          <!-- use slot, to insert page contents here-->
-          <slot />
-        </div>
-      </main>
-
-      <!-- footer -->
-      <!-- this is how we pass in booleans {true or false} -->
-      <Footer isDefault={true} />
-
-      <!-- close -->
-    </section>
-    <!-- end layout -->
-
     <!-- App Scripts -->
+    <!-- use slot, to insert page contents here-->
+    <slot />
 
     <!-- Firebase Scripts -->
     <script type="module">

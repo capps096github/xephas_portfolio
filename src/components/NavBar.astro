@@ -1,125 +1,188 @@
----
-import { codeName } from "../scripts/constants";
-import { pages, termsPages } from "../scripts/pages";
-
-interface Props {
-  isDefault: boolean;
-  pageUrl: string;
-}
-
-const {
-  // whether this is the default footer or not
-  isDefault,
-  pageUrl,
-} = Astro.props;
----
-
-<!-- nav bar -->
-<nav
-  class="fixed top-0 left-0 right-0 px-2 py-2 text-xephas-white md:flex md:justify-between lg:flex lg:justify-between bg-xephas-navy"
-  id="main-nav"
+<!-- Header and Navigation Component -->
+<header
+  class="fixed top-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md z-50 border-b border-slate-800"
 >
-  <!-- icon -->
-  <!-- align it to center when we are on a small device -->
-  <a
-    href={isDefault ? "/" : "https://xephas.me/"}
-    title=`${codeName} Logo`
-    class="flex items-center justify-center text-xephas-white"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      width="1005"
-      zoomAndPan="magnify"
-      class="fill-current h-12 w-28 hover:cursor-pointer"
-      viewBox="0 0 753.75 331.499995"
-      height="442"
-      preserveAspectRatio="xMidYMid meet"
-      version="1.0"
-      ><defs><g></g></defs><g fill-opacity="1"
-        ><g transform="translate(259.030606, 213.985689)"
-          ><g
-            ><path
-              d="M 35.375 -62.066406 L 35.375 -94.707031 L 52.902344 -94.707031 C 63.996094 -94.707031 70.75 -88.4375 70.75 -78.308594 C 70.75 -68.5 63.996094 -62.066406 52.902344 -62.066406 Z M 55.636719 -42.933594 C 78.144531 -42.933594 93.101562 -57.726562 93.101562 -78.46875 C 93.101562 -99.050781 78.144531 -114.003906 55.636719 -114.003906 L 13.023438 -114.003906 L 13.023438 0 L 35.214844 0 L 35.214844 -42.933594 Z M 55.636719 -42.933594 "
-            ></path></g
-          ></g
-        ></g
-      ><g fill-opacity="1"
-        ><g transform="translate(356.471982, 213.985689)"
-          ><g
-            ><path
-              d="M 107.25 0 L 107.25 -114.003906 L 84.898438 -114.003906 L 84.898438 -68.175781 L 35.214844 -68.175781 L 35.214844 -114.003906 L 13.023438 -114.003906 L 13.023438 0 L 35.214844 0 L 35.214844 -47.273438 L 84.898438 -47.273438 L 84.898438 0 Z M 107.25 0 "
-            ></path></g
-          ></g
-        ></g
-      ><g fill-opacity="1"
-        ><g transform="translate(603.052205, 213.985689)"
-          ><g
-            ><path
-              d="M 89.722656 -86.828125 C 87.152344 -99.691406 76.539062 -116.414062 48.882812 -116.414062 C 27.335938 -116.414062 9.164062 -100.980469 9.164062 -80.71875 C 9.164062 -63.515625 20.902344 -51.777344 39.074219 -48.078125 L 54.992188 -44.863281 C 63.835938 -43.09375 68.820312 -37.949219 68.820312 -31.355469 C 68.820312 -23.316406 62.226562 -17.367188 50.328125 -17.367188 C 34.25 -17.367188 26.371094 -27.496094 25.40625 -38.75 L 4.824219 -33.285156 C 6.59375 -17.042969 19.9375 2.410156 50.167969 2.410156 C 76.699219 2.410156 91.332031 -15.277344 91.332031 -32.800781 C 91.332031 -48.882812 80.234375 -62.386719 59.492188 -66.40625 L 43.574219 -69.464844 C 35.214844 -71.070312 31.195312 -76.054688 31.195312 -82.328125 C 31.195312 -89.882812 38.269531 -96.796875 49.042969 -96.796875 C 63.515625 -96.796875 68.660156 -86.988281 69.785156 -80.71875 Z M 89.722656 -86.828125 "
-            ></path></g
-          ></g
-        ></g
-      ><g fill-opacity="1"
-        ><g transform="translate(53.148837, 213.985689)"
-          ><g
-            ><path
-              d="M 104.675781 -114.003906 L 78.789062 -114.003906 L 53.867188 -74.609375 L 29.425781 -114.003906 L 2.734375 -114.003906 L 40.039062 -57.082031 L 2.574219 0 L 28.621094 0 L 53.382812 -39.394531 L 77.984375 0 L 104.835938 0 L 67.371094 -56.921875 Z M 104.675781 -114.003906 "
-            ></path></g
-          ></g
-        ></g
-      ><g fill-opacity="1"
-        ><g transform="translate(160.731473, 219.511679)"
-          ><g
-            ><path
-              d="M 38.3125 -51.5625 C 40.820312 -52.457031 43.863281 -53.355469 48.878906 -53.355469 C 59.976562 -53.355469 67.855469 -47.085938 67.855469 -36.164062 C 67.855469 -26.496094 60.515625 -18.621094 48.160156 -18.621094 C 35.988281 -18.621094 27.570312 -27.214844 27.035156 -39.03125 L 3.222656 -34.375 C 4.65625 -14.859375 21.125 2.6875 48.160156 2.6875 C 76.269531 2.6875 92.742188 -15.753906 92.742188 -35.808594 C 92.742188 -57.113281 76.628906 -70.542969 59.082031 -71.257812 L 89.160156 -96.324219 L 89.160156 -116.195312 L 6.984375 -116.195312 L 6.984375 -94.890625 L 57.828125 -94.890625 L 27.394531 -68.75 Z M 38.3125 -51.5625 "
-            ></path></g
-          ></g
-        ></g
-      ><g fill="#fbaa00" fill-opacity="1"
-        ><g transform="translate(464.063553, 207.381107)"
-          ><g
-            ><path
-              d="M 85.0625 -67.410156 L 69.773438 -114.109375 L 69.214844 -114.109375 L 53.925781 -67.410156 L 5.28125 -67.410156 L 5.28125 -66.855469 L 44.617188 -38.359375 L 29.1875 8.617188 L 29.605469 8.757812 L 69.496094 -20.152344 L 109.382812 8.757812 L 109.800781 8.617188 L 94.375 -38.359375 L 133.707031 -66.855469 L 133.707031 -67.410156 Z M 85.0625 -67.410156 "
-            ></path></g
-          ></g
-        ></g
-      ></svg
-    >
-  </a>
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center">
+        <span class="text-xl font-bold text-white"
+          >X3PH<span class="text-yellow-500">★</span>S</span
+        >
+      </a>
 
-  <!-- other action buttons -->
-  <div class="flex items-center justify-center space-x-4">
-    <!-- Pages -->
-    {
-      isDefault
-        ? pages.map((pageItem) => (
-            <a
-              href={pageItem.href}
-              class={
-                pageItem.href === pageUrl ||
-                pageItem.otherUrls.includes(pageUrl)
-                  ? "px-4 transition-all py-2 text-xs font-bold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
-                  : "text-xs transition-all line-clamp-1 text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
-              }
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <a
+          href="/bio"
+          class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200"
+          >BIO</a
+        >
+        <a
+          href="/works"
+          class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200"
+          >MY WORKS</a
+        >
+        <a
+          href="/community"
+          class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200"
+          >COMMUNITY</a
+        >
+        <a
+          href="/resume"
+          class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200"
+          >CV (RESUME)</a
+        >
+        <a
+          href="/hire-me"
+          class="ml-2 px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-md hover:bg-yellow-400 transition duration-200"
+          >HIRE ME</a
+        >
+        <a
+          href="/contact"
+          class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200"
+          >CONTACT</a
+        >
+        <div class="relative group">
+          <button
+            class="px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-800 rounded-md transition duration-200 flex items-center"
+          >
+            TERMS
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {pageItem.label}
-            </a>
-          ))
-        : // Terms Pages
-          termsPages.map((pageItem) => (
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div
+            class="absolute right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-1 hidden group-hover:block border border-slate-700"
+          >
             <a
-              href={pageItem.href}
-              class={
-                pageItem.href === pageUrl ||
-                pageItem.otherUrls.includes(pageUrl)
-                  ? "px-4 py-2 text-xs font-extrabold text-center uppercase rounded-full text-xephas-navy bg-xephas-yellow hover:cursor-pointer"
-                  : "text-xs line-clamp-1 font-bold text-center uppercase text-xephas-white hover:underline hover:cursor-pointer"
-              }
+              href="/terms"
+              class="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700"
+              >Terms of Service</a
             >
-              {pageItem.label}
-            </a>
-          ))
-    }
+            <a
+              href="/privacy"
+              class="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700"
+              >Privacy Policy</a
+            >
+            <a
+              href="/cookies"
+              class="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700"
+              >Cookie Policy</a
+            >
+          </div>
+        </div>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button
+        type="button"
+        class="md:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-slate-800 focus:outline-none"
+        aria-label="Toggle menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
   </div>
-</nav>
+
+  <!-- Mobile Navigation (Hidden by default) -->
+  <div class="md:hidden hidden" id="mobile-menu">
+    <div
+      class="px-2 pt-2 pb-3 space-y-1 bg-slate-800 border-t border-slate-700"
+    >
+      <a
+        href="/bio"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >BIO</a
+      >
+      <a
+        href="/works"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >MY WORKS</a
+      >
+      <a
+        href="/community"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >COMMUNITY</a
+      >
+      <a
+        href="/resume"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >CV (RESUME)</a
+      >
+      <a
+        href="/hire-me"
+        class="block px-3 py-2 bg-yellow-500 text-slate-900 font-medium rounded-md hover:bg-yellow-400"
+        >HIRE ME</a
+      >
+      <a
+        href="/contact"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >CONTACT</a
+      >
+      <a
+        href="/terms"
+        class="block px-3 py-2 text-gray-300 hover:text-white hover:bg-slate-700 rounded-md"
+        >TERMS</a
+      >
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Toggle Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const mobileMenuButton = document.querySelector(
+      'button[aria-label="Toggle menu"]'
+    );
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    mobileMenuButton.addEventListener("click", () => {
+      const expanded =
+        mobileMenuButton.getAttribute("aria-expanded") === "true";
+      mobileMenuButton.setAttribute("aria-expanded", String(!expanded));
+      mobileMenu.classList.toggle("hidden");
+
+      if (!expanded) {
+        // Change to close icon
+        mobileMenuButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          `;
+      } else {
+        // Change back to menu icon
+        mobileMenuButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          `;
+      }
+    });
+  });
+</script>
+
+<!-- Add spacing for fixed header -->
+<div class="pt-16"></div>

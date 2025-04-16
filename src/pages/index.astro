@@ -1,81 +1,19 @@
 ---
-import InlineLink from "../components/InlineLink.astro";
+import Hero from "../components/Hero.astro";
+import HomeProjects from "../components/HomeProjects.astro";
+import NavBar from "../components/NavBar.astro";
+import Partners from "../components/Partners.astro";
+import ProjectDetail from "../components/ProjectDetail.astro";
+import Projects from "../components/Projects.astro";
 import Portfolio from "../layouts/Portfolio.astro";
-import Space from "../components/Space.astro";
-
 ---
 
-<!-- Home -->
+<!-- Contact -->
 <Portfolio>
-  <!-- header -->
-  <div class="text-center mb-5">
-    <!-- title -->
-    <h1 class="text-5xl font-extrabold text-xephas-navy">
-      Hello,<br /> It's Cephas here...
-    </h1>
-
-    <!-- Description -->
-    <p class="text-xs mt-2">
-      <strong> Codename (Preferred Name): </strong>
-      <strong> “Cephas”</strong> or <strong> “Xephas”</strong> or <strong
-        class="uppercase">“X3PH★S”</strong>
-    </p>
-    <p class="text-xs mt-2">
-      <strong> Pronunciation: </strong>
-      <strong> “Say-fuhs”</strong> or <strong> “See-fuhs”</strong>
-    </p>
-  </div>
-
-  <div class="flex flex-col md:flex-row mb-12">
-    <!-- image -->
-    <div
-      class="w-full items-center justify-center overflow-hidden md:w-1/2 h-1/2 lg:w-1/3"
-    >
-      <img
-        src="/images/profile.jpg"
-        class=`rounded-lg bg-xephas-navy/5  h-full w-full md:h-full `
-      />
-    </div>
-
-    <!-- contents -->
-    <div
-      class="md:w-1/2 lg:w-2/3 md:ml-5 duration-300 flex-col justify-between content-between text-center md:text-left"
-    >
-      <p class="mb-2 mt-2 md:mt-0 text-2xl">
-        I am Mugisa Brian (Cephas), a Software Engineer with over 4 years of
-        ultimate experience in Cross-Platform App Development with Flutter and
-        an astounding passion for Graphics & UI/UX Design.
-      </p>
-
-      <h1 class="text-4xl font-extrabold mt-8 text-xephas-navy">
-        I design and develop experiences that improve people's lives.
-      </h1>
-    </div>
-  </div>
-      
-  <Space of="mt-10"/>
-
-  <div class="space-y-6 text-center">
-    <p>
-      Wanna Hire me? Here are My <InlineLink
-        href="/works"
-        ,
-        text="Works (Projects)"
-      /> ,
-      <InlineLink href="/cv" , text="CV (Resume)" /> , <InlineLink
-        href="/hire-me"
-        ,
-        text="Cover Letter"
-      /> and
-      <InlineLink href="/community" , text="Community Contributions" />
-    </p>
-    <p>
-      For Freelance and Contractual Work in regards to Software Development and
-      Graphics or UI/UX Design, Here are <InlineLink
-        href="/terms"
-        ,
-        text="My Terms of Service"
-      />
-    </p>
-  </div>
+  <NavBar />
+  <Hero />
+  <Partners />
+  <HomeProjects />
+  <Projects />
+  <ProjectDetail />
 </Portfolio>

@@ -1,0 +1,406 @@
+<!-- Project Details Page Template -->
+<section class="py-16 bg-slate-900">
+    <div class="container mx-auto px-4">
+      <!-- Project Header -->
+      <div class="max-w-4xl mx-auto mb-12">
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <!-- Back Button -->
+          <a href="/works" class="flex items-center text-indigo-400 hover:text-indigo-300 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Back to Projects</span>
+          </a>
+          
+          <!-- Categories -->
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-indigo-900 text-indigo-300 text-xs px-3 py-1 rounded-full">Flutter</span>
+            <span class="bg-blue-900 text-blue-300 text-xs px-3 py-1 rounded-full">Firebase</span>
+            <span class="bg-green-900 text-green-300 text-xs px-3 py-1 rounded-full">Education</span>
+          </div>
+        </div>
+        
+        <h1 class="text-4xl font-bold text-white mb-4">Calcut - Calculate Cut-Off Points & Get Course Suggestions</h1>
+        <p class="text-xl text-gray-300">A free app helping hundreds of students in Uganda calculate their cut-off points in split seconds.</p>
+      </div>
+      
+      <!-- Project Gallery -->
+      <div class="max-w-6xl mx-auto mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Main Image -->
+          <div class="md:col-span-2 bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+            <img src="https://via.placeholder.com/800x500" alt="Calcut App Main Screenshot" class="w-full h-full object-cover">
+          </div>
+          
+          <!-- Side Images -->
+          <div class="grid grid-cols-1 gap-6">
+            <div class="bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+              <img src="https://via.placeholder.com/400x250" alt="Calcut App Screenshot 2" class="w-full h-full object-cover">
+            </div>
+            <div class="bg-slate-800 rounded-lg overflow-hidden shadow-lg">
+              <img src="https://via.placeholder.com/400x250" alt="Calcut App Screenshot 3" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Project Details Content -->
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row gap-12 mb-16">
+          <!-- Project Description -->
+          <div class="w-full md:w-2/3">
+            <h2 class="text-2xl font-bold text-white mb-6">Project Overview</h2>
+            
+            <div class="prose prose-lg prose-invert max-w-none">
+              <p>
+                Calcut is a free, highly-ranked intuitive, Seamless and Efficient Cross-Platform application built for hundreds of students in Uganda to calculate their Cut-Off Points (Academic Weights) in a matter of split seconds and discover the possible courses they can enrol for at the University based on the subjects they offered while at their Advanced Level (A-level) in High School.
+              </p>
+              
+              <p>
+                The app provides a streamlined interface for students to input their A-level subjects and grades, and instantly receive accurate calculations of their academic weights. This automation eliminates the manual calculation errors and saves significant time for students during the crucial university application process.
+              </p>
+              
+              <h3>Key Features</h3>
+              
+              <ul>
+                <li>Instant cut-off point calculation based on Uganda's university admission criteria</li>
+                <li>Personalized course recommendations based on calculated points</li>
+                <li>Comprehensive database of available university courses and their requirements</li>
+                <li>Offline functionality for areas with limited connectivity</li>
+                <li>Regular updates to reflect the latest university admission policies</li>
+              </ul>
+              
+              <h3>Technical Challenges</h3>
+              
+              <p>
+                One of the major challenges was implementing the complex weighting algorithm that accurately reflects the Ugandan university admission system. This required extensive research and collaboration with education consultants to ensure the calculations aligned with official policies.
+              </p>
+              
+              <p>
+                Another challenge was optimizing the app for offline use while maintaining a comprehensive course database. This was achieved through a sophisticated caching system and data compression techniques.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Project Metadata -->
+          <div class="w-full md:w-1/3">
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 sticky top-24">
+              <h3 class="text-xl font-bold text-white mb-4">Project Details</h3>
+              
+              <div class="space-y-4">
+                <div>
+                  <h4 class="text-sm text-gray-400 mb-1">Client/Type</h4>
+                  <p class="text-white font-medium">Personal Project</p>
+                </div>
+                
+                <div>
+                  <h4 class="text-sm text-gray-400 mb-1">Launch Date</h4>
+                  <p class="text-white font-medium">August 2022</p>
+                </div>
+                
+                <div>
+                  <h4 class="text-sm text-gray-400 mb-1">Technologies</h4>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="bg-indigo-900 text-indigo-300 text-xs px-3 py-1 rounded-full">Flutter</span>
+                    <span class="bg-blue-900 text-blue-300 text-xs px-3 py-1 rounded-full">Firebase</span>
+                    <span class="bg-red-900 text-red-300 text-xs px-3 py-1 rounded-full">Google Cloud Platform</span>
+                    <span class="bg-purple-900 text-purple-300 text-xs px-3 py-1 rounded-full">Express.js (Backend)</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 class="text-sm text-gray-400 mb-1">User Base</h4>
+                  <p class="text-white font-medium">6,500+ Users</p>
+                </div>
+                
+                <div>
+                  <h4 class="text-sm text-gray-400 mb-1">App Rating</h4>
+                  <div class="flex items-center">
+                    <div class="flex mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                    <span class="text-white font-medium">4.8/5.0</span>
+                  </div>
+                </div>
+                
+                <div class="pt-4 mt-4 border-t border-slate-700">
+                  <div class="flex justify-between space-x-4">
+                    <a href="https://play.google.com/store/apps/details?id=com.cephas.calcut" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 text-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5.26 3.691l.034-.09 5.346 5.345L6.88 12.705l-3.74-3.738c-.889-.889-.889-2.3 0-3.188l2.12-2.088zm1.5-1.5l2.85-2.85c.223-.223.53-.346.85-.346.32 0 .627.123.85.346L17 5.03 12.345 9.684 6.76 4.098l-.034.057.034-.057zm13.5 5.328L14.089 12.69l-5.344-5.344L14.06 2.03l5.254 5.254c.223.223.346.53.346.85 0 .32-.123.627-.346.85l-5.254 5.254zm-1.473 1.473L13.5 14.28 8.846 9.626l5.317-5.317 5.317 5.317-1.527-1.527 1.527 1.527zm-7.735 3.173c-.223.223-.53.346-.85.346-.32 0-.627-.123-.85-.346L4 9.684 8.654 5.03 14 10.375 9.346 15.03zm-5.317 1.527L2.03 9.965a1.207 1.207 0 01.346-.85c.223-.223.53-.346.85-.346l5.254 5.254-4.527 4.527z" fill="currentColor"/>
+                      </svg>
+                      <span>Get on Playstore</span>
+                    </a>
+                    
+                    <a href="https://github.com/cephas/calcut" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-600 transition duration-300 text-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.303 3.438 9.8 8.207 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.386-1.332-1.755-1.332-1.755-1.09-.744.083-.729.083-.729 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.796 24 17.3 24 12c0-6.63-5.37-12-12-12z" fill="currentColor"/>
+                      </svg>
+                      <span>View Code</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Development Process -->
+        <div class="mb-16">
+          <h2 class="text-2xl font-bold text-white mb-8">Development Process</h2>
+          
+          <div class="relative">
+            <!-- Process Timeline -->
+            <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-indigo-600"></div>
+            
+            <!-- Timeline Items -->
+            <div class="space-y-12">
+              <!-- Step 1 -->
+              <div class="relative pl-16">
+                <div class="absolute left-0 top-0 w-12 h-12 flex items-center justify-center bg-indigo-700 rounded-full border-4 border-slate-900 z-10">
+                  <span class="text-white font-bold">01</span>
+                </div>
+                
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h3 class="text-xl font-bold text-white mb-4">Research & Planning</h3>
+                  <p class="text-gray-300 mb-4">
+                    The project began with extensive research into the Ugandan university admission system, including interviews with students, education consultants, and university administrators. This helped establish the exact formulas and criteria for cut-off point calculations.
+                  </p>
+                  <p class="text-gray-300">
+                    A comprehensive database of university courses and their specific requirements was compiled, ensuring the app could provide accurate course recommendations based on calculated points.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Step 2 -->
+              <div class="relative pl-16">
+                <div class="absolute left-0 top-0 w-12 h-12 flex items-center justify-center bg-indigo-700 rounded-full border-4 border-slate-900 z-10">
+                  <span class="text-white font-bold">02</span>
+                </div>
+                
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h3 class="text-xl font-bold text-white mb-4">UI/UX Design</h3>
+                  <p class="text-gray-300 mb-4">
+                    The user interface was designed with a focus on simplicity and efficiency, ensuring that students could quickly input their subjects and grades without confusion. Prototypes were tested with a focus group of students to refine the user experience.
+                  </p>
+                  <p class="text-gray-300">
+                    Special attention was paid to creating an intuitive flow for users, with clear instructions and instant feedback throughout the calculation process.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Step 3 -->
+              <div class="relative pl-16">
+                <div class="absolute left-0 top-0 w-12 h-12 flex items-center justify-center bg-indigo-700 rounded-full border-4 border-slate-900 z-10">
+                  <span class="text-white font-bold">03</span>
+                </div>
+                
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h3 class="text-xl font-bold text-white mb-4">Development & Testing</h3>
+                  <p class="text-gray-300 mb-4">
+                    The app was developed using Flutter to ensure cross-platform compatibility, with Firebase providing backend services for data storage and user authentication. The complex calculation algorithms were implemented with extensive unit testing to ensure accuracy.
+                  </p>
+                  <p class="text-gray-300">
+                    Beta testing was conducted with a diverse group of students from different regions in Uganda, allowing for identification and resolution of edge cases in the calculation system.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Step 4 -->
+              <div class="relative pl-16">
+                <div class="absolute left-0 top-0 w-12 h-12 flex items-center justify-center bg-indigo-700 rounded-full border-4 border-slate-900 z-10">
+                  <span class="text-white font-bold">04</span>
+                </div>
+                
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h3 class="text-xl font-bold text-white mb-4">Launch & Iteration</h3>
+                  <p class="text-gray-300 mb-4">
+                    The app was launched on the Google Play Store in August 2022, quickly gaining traction among Ugandan students. User feedback was actively collected and analyzed to inform subsequent updates and feature additions.
+                  </p>
+                  <p class="text-gray-300">
+                    Regular updates have been released to expand the course database, refine the calculation algorithms, and improve the user interface based on real-world usage patterns.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Outcome & Impact -->
+        <div class="mb-16">
+          <h2 class="text-2xl font-bold text-white mb-8">Outcome & Impact</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Metric 1 -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+              <div class="w-16 h-16 bg-indigo-900/60 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">6,500+</h3>
+              <p class="text-gray-300">Active Users</p>
+            </div>
+            
+            <!-- Metric 2 -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+              <div class="w-16 h-16 bg-green-900/60 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">98%</h3>
+              <p class="text-gray-300">Calculation Accuracy</p>
+            </div>
+            
+            <!-- Metric 3 -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+              <div class="w-16 h-16 bg-yellow-900/60 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">4.8/5.0</h3>
+              <p class="text-gray-300">User Rating</p>
+            </div>
+          </div>
+          
+          <div class="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
+            <h3 class="text-xl font-bold text-white mb-4">User Testimonials</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Testimonial 1 -->
+              <div class="bg-slate-700 rounded-lg p-4 relative">
+                <div class="absolute -top-3 left-4 text-indigo-400 text-4xl">"</div>
+                <p class="text-gray-300 italic mt-4 mb-4">
+                  Calcut saved me so much time and stress during my university application process. The cut-off point calculations are spot-on, and the course suggestions helped me discover programs I hadn't even considered!
+                </p>
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full overflow-hidden mr-3">
+                    <img src="https://via.placeholder.com/100" alt="Student Avatar" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <h4 class="text-white font-medium">David Mukasa</h4>
+                    <p class="text-gray-400 text-sm">Student, Makerere University</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Testimonial 2 -->
+              <div class="bg-slate-700 rounded-lg p-4 relative">
+                <div class="absolute -top-3 left-4 text-indigo-400 text-4xl">"</div>
+                <p class="text-gray-300 italic mt-4 mb-4">
+                  As a career guidance counselor, I recommend Calcut to all my students. It's incredibly accurate and helps students make informed decisions about their university applications based on their actual academic performance.
+                </p>
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full overflow-hidden mr-3">
+                    <img src="https://via.placeholder.com/100" alt="Teacher Avatar" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <h4 class="text-white font-medium">Sarah Namakula</h4>
+                    <p class="text-gray-400 text-sm">Career Counselor, Kampala</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- More Projects -->
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-8">More Projects Like This</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Related Project 1 -->
+            <div class="group bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-slate-700 transition-all duration-300 hover:shadow-indigo-900/30 hover:shadow-xl">
+              <div class="relative overflow-hidden h-48">
+                <img src="https://via.placeholder.com/600x400" alt="Related Project 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4">
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-indigo-900/70 backdrop-blur-sm text-indigo-300 text-xs px-3 py-1 rounded-full">Flutter</span>
+                    <span class="bg-blue-900/70 backdrop-blur-sm text-blue-300 text-xs px-3 py-1 rounded-full">Firebase</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-white mb-2">Cupertino Icons Gallery</h3>
+                <p class="text-gray-300 mb-4">An open-source home to over 1,328 Flutter Cupertino icons.</p>
+                <a href="/works/cupertino-icons" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center">
+                  <span>View Project</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Related Project 2 -->
+            <div class="group bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-slate-700 transition-all duration-300 hover:shadow-indigo-900/30 hover:shadow-xl">
+              <div class="relative overflow-hidden h-48">
+                <img src="https://via.placeholder.com/600x400" alt="Related Project 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4">
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-indigo-900/70 backdrop-blur-sm text-indigo-300 text-xs px-3 py-1 rounded-full">Flutter</span>
+                    <span class="bg-green-900/70 backdrop-blur-sm text-green-300 text-xs px-3 py-1 rounded-full">Hospitality</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-white mb-2">Kalya Courts Hotel</h3>
+                <p class="text-gray-300 mb-4">Hotel management and booking system with sleek, user-friendly interface.</p>
+                <a href="/works/kalya-courts" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center">
+                  <span>View Project</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Related Project 3 -->
+            <div class="group bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-slate-700 transition-all duration-300 hover:shadow-indigo-900/30 hover:shadow-xl">
+              <div class="relative overflow-hidden h-48">
+                <img src="https://via.placeholder.com/600x400" alt="Related Project 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-4">
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-indigo-900/70 backdrop-blur-sm text-indigo-300 text-xs px-3 py-1 rounded-full">Flutter</span>
+                    <span class="bg-red-900/70 backdrop-blur-sm text-red-300 text-xs px-3 py-1 rounded-full">E-Commerce</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-white mb-2">Shopfliz</h3>
+                <p class="text-gray-300 mb-4">Online food shop with seamless ordering and delivery tracking.</p>
+                <a href="/works/shopfliz" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center">
+                  <span>View Project</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
