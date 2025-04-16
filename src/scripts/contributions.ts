@@ -32,6 +32,45 @@ export const stackoverflow: CommunityContribution = {
 
 export const contributions: CommunityContribution[] = [
 
+    //
+    {
+        event_title: "Crafting Reusable Flutter App Templates Using Mason",
+        date: "Sunday, 17th November 2024",
+        location: "In-person (MoTIV, Kampala)",
+        categories: ["Speaker", "Flutter Talk", "Advanced"],
+        cover_image: "images/dcug24.webp",
+        highlight: "-- attendees",
+        description: "In this talk, I explored how reusable app templates revolutionized the way Flutter development teams work, ensuring consistency, ease of onboarding, and rapid project initiation. I discussed the problem of starting new projects from scratch and how it was a tiresome and time-consuming process. To address this, I highlighted the advantages of reusable templates, such as maintaining uniform code standards, facilitating new team member onboarding, and providing a base architecture with a single command. I also covered how to create and maintain these templates, including how to structure them, what to include, and how to keep them up to date. By the end of the talk, attendees gained a solid understanding of how to create and use reusable app templates to streamline their Flutter development process.",
+        slides_url: "https://share.xephas.me/dcug24",
+        github_url: "https://git.new/dcug24",
+    },
+
+    // 
+    {
+        event_title: "Crafting Reusable Flutter App Templates Using Mason",
+        date: "Saturday, 7th November 2024",
+        location: "In-person (Nairobi, Kenya - United States International University-Africa)",
+        categories: ["Speaker", "Flutter Talk", "Advanced"],
+        cover_image: "images/fcke24.webp",
+        highlight: "60+ attendees",
+        description: "In this talk, I explored how reusable app templates revolutionized the way Flutter development teams work, ensuring consistency, ease of onboarding, and rapid project initiation. I discussed the problem of starting new projects from scratch and how it was a tiresome and time-consuming process. To address this, I highlighted the advantages of reusable templates, such as maintaining uniform code standards, facilitating new team member onboarding, and providing a base architecture with a single command. I also covered how to create and maintain these templates, including how to structure them, what to include, and how to keep them up to date. By the end of the talk, attendees gained a solid understanding of how to create and use reusable app templates to streamline their Flutter development process.",
+        slides_url: "https://share.xephas.me/fcke24-slides",
+        github_url: "https://git.new/fcke24",
+    },
+
+    // 26th October '24
+    {
+        event_title: "Standing Out as a Flutter Developer",
+        date: "Saturday, 26th October 2024",
+        location: "In-person (GDG on Campus, Makerere University)",
+        categories: ["Speaker", "Flutter Talk", "Inspirational"],
+        cover_image: "images/gdg-muk.webp",
+        highlight: "-- attendees",
+        description: "I shared valuable resources and strategies to help both aspiring and experienced Flutter developers differentiate themselves in the competitive job market. We explored how to build a standout portfolio, the importance of contributing to open-source projects, and how engaging with the Flutter community can unlock new opportunities. Attendees also learned tips for networking effectively and leveraging community events to enhance their careers. Whether they were just starting or looking to grow, this session equipped them with actionable insights to thrive as Flutter developers.",
+        slides_url: "https://www.canva.com/design/DAGUj4LBsPA/mb_sVX0pTZZLzpWIjC7BWg/view?utm_content=DAGUj4LBsPA&utm_campaign=designshare&utm_medium=link&utm_source=editor",
+        github_url: "https://share.xephas.me/gdg-muk",
+    },
+
 
     // 30th March '24
     {
