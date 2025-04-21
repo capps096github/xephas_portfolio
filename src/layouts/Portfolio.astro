@@ -1,5 +1,6 @@
 ---
 import Head from "../components/Head.astro";
+import NavAppBar from "../components/NavAppBar.astro";
 import { coverImage, description, codeName, title } from "../scripts/constants";
 
 interface Props {
@@ -34,7 +35,10 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
     pageCoverImage={pageCoverImage}
     pageDescription={pageDescription}
   />
-  <body class="font-mont bg-xephas-bg text-black">
+  <body class="font-mont bg-app-bg text-black">
+    <!-- nav bar -->
+    <NavAppBar pageUrl={pageUrl}/>
+
     <!-- App Scripts -->
     <!-- use slot, to insert page contents here-->
     <slot />
@@ -64,6 +68,19 @@ const newPageTitle = isHome ? pageTitle : pageTitle + " | " + codeName;
       const analytics = getAnalytics(app);
     </script>
 
+
+  <!-- this is added on every page for the nav bar to act accordingly -->
+  <!-- <script type="module" >
+    import "../src/scripts/navbar.js";
+  </script> -->
+  <script type="module" is:inline data-astro-rerun>
+    import "../src/scripts/navbar.js";
+  </script>
+
+<!-- <script type="module">
+  import { setupNavbar } from "../src/scripts/navbar.js";
+  setupNavbar();
+</script> -->
     <!-- Install PWA Script -->
   </body>
 </html>

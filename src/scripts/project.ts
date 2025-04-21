@@ -1,4 +1,3 @@
-
 // a project has a title and a description
 // cover image is a must
 // tech stack is a must
@@ -69,6 +68,12 @@ export class Project {
         this.design_link = design_link;
         this.video_url = video_url;
     }
+
+    // Helper method to check if a technology string contains a specific keyword
+    // hasTechnology(keyword: string): boolean {
+    //     const tags = [...this.tech_stack, ...this.project_type];
+    //     return tags.map(t => t.toLowerCase()).includes(keyword.toLowerCase());
+    // }
 }
 
 

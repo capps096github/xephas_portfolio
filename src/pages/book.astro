@@ -1,0 +1,24 @@
+<!-- Calendly Integration Component -->
+<section id="schedule" class="py-12 bg-slate-900">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl font-bold text-white mb-4">Schedule a Meeting</h2>
+          <p class="text-gray-400 mb-8">Book a time to discuss your project needs or potential collaboration opportunities.</p>
+        </div>
+        
+        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border border-indigo-700">
+          <!-- Calendly inline widget -->
+          <div id="calendly-embed" class="min-h-[650px] rounded-lg overflow-hidden">
+            <!-- Customize the following URL to your actual Calendly link -->
+            <div class="calendly-inline-widget" data-url="https://calendly.com/your-username/30min" style="min-width:320px;height:650px;"></div>
+            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+          </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+          <p class="text-gray-400 text-sm">Prefer email? <a href="#contact-form" class="text-indigo-400 hover:text-indigo-300 underline">Use the contact form</a> instead.</p>
+        </div>
+      </div>
+    </div>
+  </section>

@@ -17,8 +17,7 @@ export const pages = [
   new Page("/community", "Community"),
   new Page("/cv", "CV (Resume)"),
   new Page("/hire-me", "Hire Me"),
-  new Page("/contact", "Contact"),
-  new Page("/terms", "Terms ➛"),
+  new Page("/socials", "Socials"),
 ];
 
 export const termsPages = [

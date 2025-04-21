@@ -6,7 +6,7 @@ import {
   siteManifest,
 } from "../scripts/constants.js";
 
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   pageTitle: string;
@@ -78,5 +78,5 @@ const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
   </style>
 
   <!-- Astro page animations -->
-  <ViewTransitions />
+  <ClientRouter />
 </head>

@@ -1,0 +1,140 @@
+---
+import { pages, termsPages } from "../scripts/pages";
+import LetsTalk from "./LetsTalk.astro";
+import Logo from "./Logo.astro";
+
+interface Props {
+  isTermsPage?: boolean;
+  is404Page?: boolean;
+  pageUrl: string;
+  fixedStyle?: boolean; // New prop to force a specific style
+}
+
+const {
+  // whether this is the default footer or not
+  isTermsPage = false,
+  pageUrl,
+  is404Page = false,
+} = Astro.props;
+
+// Determine initial navbar class based on client-side JS availability
+const initialNavbarClass = "fixed top-0 right-0 left-0 self-start bg-white w-full mx-auto z-50 transition-all duration-300 backdrop-blur-sm";
+---
+
+<!-- nav bar with initial styling -->
+<header
+  id="main-navbar"
+  class={initialNavbarClass}
+>
+  <div class="mx-auto px-4 py-2">
+    <div class="flex justify-between items-center">
+      <!-- icon -->
+      <div class="flex items-center mr-4">
+        <Logo isDefault={false} />
+      </div>
+
+      <!-- nav items -->
+      <nav class="hidden md:hidden lg:flex  items-center justify-center space-x-6 font-bold">
+        <!-- Pages -->
+        {
+          isTermsPage
+          ? // Terms Pages
+              termsPages.map((pageItem) => (
+                <a
+                  href={pageItem.href}
+                  class={
+                    pageItem.href === pageUrl ||
+                    pageItem.otherUrls.includes(pageUrl)
+                      ? "px-4 py-2 text-xs font-extrabold text-center uppercase rounded-full text-app-navy bg-app-yellow hover:cursor-pointer"
+                      : "text-xs line-clamp-1 font-bold text-center uppercase text-app-navy hover:underline hover:cursor-pointer"
+                  }
+                >
+                  {pageItem.label}
+                </a>
+              ))
+            : pages.map((pageItem) => (
+                <a
+                  href={pageItem.href}
+                  class={
+                    pageItem.href === pageUrl ||
+                    pageItem.otherUrls.includes(pageUrl)
+                      ? "px-4 transition-all py-2 text-xs font-bold text-center uppercase rounded-full hover:text-app-blue hover:border-app-blue hover:border bg-app-blue hover:bg-white text-app-white hover:cursor-pointer"
+                      : "text-xs transition-all line-clamp-1 text-center uppercase text-app-navy hover:underline hover:cursor-pointer"
+                  }
+                >
+                  {pageItem.label}
+                </a>
+              ))
+            
+        }
+      </nav>
+
+      <!-- let's talk -->
+      <!-- buttons -->
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <!-- web app -->
+        <span class="lg:inline">
+          <LetsTalk />
+        </span>
+        
+        <button
+          class="lg:hidden flex items-center bg-navy/10 text-navy p-2 rounded-full"
+          id="mobile-menu-button"
+        >
+          <!-- Hamburger Icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 icon-hamburger"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+
+          <!-- Close (X) Icon - Initially Hidden -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 hidden icon-close"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- mobile menu -->
+    <div class="lg:hidden hidden mx-auto container" id="mobile-menu">
+      <div class="px-2 pt-2 pb-4 space-y-1">
+        {
+          pages.map((pageItem) => (
+            <a
+              href={is404Page ? `/${pageItem.href}` : `${pageItem.href}`}
+              class="block px-3 py-2 rounded-md text-base font-medium text-navy hover:bg-navy/10"
+            >
+              {pageItem.label}
+            </a>
+          ))
+        }
+
+        <LetsTalk
+          isFullMobile={true}
+          props="md:inline flex flex-row"
+          color="mt-2 md:hidden text-white bg-navy hover:bg-blue-600"
+        />
+      </div>
+    </div>
+
+  </div>
+</header>

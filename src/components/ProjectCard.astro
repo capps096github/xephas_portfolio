@@ -1,0 +1,76 @@
+---
+import { Project } from "../scripts/project";
+import ProjectTag from "./ProjectTag.astro";
+
+interface Props {
+  project: Project;
+}
+
+// Access passed-in component props, like `<X title="Hello, World" />`
+// These are passed in with default parameters
+const { project } = Astro.props;
+
+// Get the tags from the project
+const tags = [...project.tech_stack, ...project.project_type];
+---
+
+<div
+  class="group bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-slate-700 transition-all duration-300 hover:shadow-indigo-900/30 hover:shadow-xl"
+>
+  <div class="relative overflow-hidden h-48">
+    <img
+      src=`${project.cover_image}`
+      alt=`${project.title}`
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"
+    >
+      <!-- <div class="absolute bottom-0 left-0 right-0 p-4">
+      <div class="flex flex-wrap gap-2">
+        {tags && tags.map((tag: string) => <ProjectTag category={tag} />)}
+      </div>
+    </div> -->
+    </div>
+  </div>
+
+  <div class="p-6 flex flex-col">
+    <div>
+      <h3 class="text-xl font-bold text-white mb-2">{project.title}</h3>
+      <p class="text-gray-300 mb-4 line-clamp-3 overflow-hidden">
+        {project.description}
+      </p>
+
+      <div class="flex flex-wrap gap-2">
+        {tags && tags.map((tag: string) => <ProjectTag category={tag} />)}
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mt-6">
+      <div class="flex items-center text-gray-400 text-sm">
+        <span>6,500+ Users</span>
+        <span class="mx-2">•</span>
+        <span>4.8 ★</span>
+      </div>
+      <a
+        href="/works/calcut"
+        class="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center"
+      >
+        <span>Details</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 ml-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>

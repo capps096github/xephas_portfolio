@@ -1,0 +1,56 @@
+---
+interface Props {
+  category: string;
+}
+
+const { category } = Astro.props;
+
+// Updated to check if a keyword is contained within any technology string
+function hasKeyword(category: string, keyword: string): boolean {
+  return category.toLowerCase().includes(keyword.toLowerCase());
+}
+
+// Determine tag color based on keywords found within the category string
+let bg = "bg-slate-900/70";
+let text = "text-slate-300";
+
+// Check for tech keywords using the contains approach
+if (hasKeyword(category, "flutter")) {
+  bg = "bg-indigo-900/70";
+  text = "text-indigo-300";
+} else if (hasKeyword(category, "firebase")) {
+  bg = "bg-amber-900/70";
+  text = "text-amber-300";
+} else if (hasKeyword(category, "express") || hasKeyword(category, "node")) {
+  bg = "bg-green-900/70";
+  text = "text-green-300";
+} else if (hasKeyword(category, "cloud")) {
+  bg = "bg-purple-900/70";
+  text = "text-purple-300";
+} else if (hasKeyword(category, "astro")) {
+  bg = "bg-orange-900/70";
+  text = "text-orange-300";
+} else if (hasKeyword(category, "tailwind")) {
+  bg = "bg-cyan-900/70";
+  text = "text-cyan-300";
+} else if (hasKeyword(category, "django") || hasKeyword(category, "python")) {
+  bg = "bg-green-800/70";
+  text = "text-green-200";
+} else if (hasKeyword(category, "php")) {
+  bg = "bg-blue-900/70";
+  text = "text-blue-300";
+} else if (hasKeyword(category, "react")) {
+  bg = "bg-blue-800/70";
+  text = "text-blue-200";
+} else if (hasKeyword(category, "open source")) {
+  bg = "bg-emerald-900/70";
+  text = "text-emerald-300";
+} else if (hasKeyword(category, "personal")) {
+  bg = "bg-violet-900/70";
+  text = "text-violet-300";
+}
+---
+
+<span class={`${bg} backdrop-blur-sm ${text} text-xs px-3 py-1 rounded-full`}>
+  {category}
+</span>
