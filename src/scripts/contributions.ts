@@ -32,14 +32,27 @@ export const stackoverflow: CommunityContribution = {
 
 export const contributions: CommunityContribution[] = [
 
-    //
+    // 28th August '25
+    {
+        event_title: "Classes in Dart & How They Can Be Used in Flutter Apps",
+        date: "Thursday, 28th August 2025",
+        location: "Online (GDG Kabale University)",
+        categories: ["Speaker", "Flutter Training", "Beginner"],
+        cover_image: "images/kuc25.webp",
+        highlight: "30+ attendees",
+        description: "In this session, I explain how classes in Dart act as blueprints for creating objects and organizing code. You’ll see how they are used throughout Flutter apps to define data models, build custom widgets, and make projects more structured, reusable, and easier to maintain.",
+        video_url: "https://ggl.link/gdg-ku-classes",
+        github_url: "https://git.new/gdg-ku-classes",
+    },
+
+    // 17th November '24
     {
         event_title: "Crafting Reusable Flutter App Templates Using Mason",
         date: "Sunday, 17th November 2024",
         location: "In-person (MoTIV, Kampala)",
         categories: ["Speaker", "Flutter Talk", "Advanced"],
         cover_image: "images/dcug24.webp",
-        highlight: "-- attendees",
+        highlight: "50+ attendees",
         description: "In this talk, I explored how reusable app templates revolutionized the way Flutter development teams work, ensuring consistency, ease of onboarding, and rapid project initiation. I discussed the problem of starting new projects from scratch and how it was a tiresome and time-consuming process. To address this, I highlighted the advantages of reusable templates, such as maintaining uniform code standards, facilitating new team member onboarding, and providing a base architecture with a single command. I also covered how to create and maintain these templates, including how to structure them, what to include, and how to keep them up to date. By the end of the talk, attendees gained a solid understanding of how to create and use reusable app templates to streamline their Flutter development process.",
         slides_url: "https://share.xephas.me/dcug24",
         github_url: "https://git.new/dcug24",
