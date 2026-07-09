@@ -1,0 +1,50 @@
+---
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+const navLinks: NavLink[] = [
+  { label: "Personal", href: "#personal" },
+  { label: "Client Work", href: "#clients" },
+  { label: "Community", href: "#community" },
+  { label: "CV", href: "/cv" },
+  { label: "Terms", href: "/terms" },
+];
+---
+
+<header class="fixed inset-x-0 top-4 z-50 flex justify-center px-4 sm:top-5">
+  <nav
+    class="flex w-full max-w-6xl items-center justify-between gap-4 rounded-full border border-black/10 bg-white/80 px-4 py-2.5 backdrop-blur-md sm:px-6 sm:py-3"
+    style="box-shadow: 0 8px 30px -12px rgba(10,10,10,0.18);"
+  >
+    <a href="#top" class="flex shrink-0 items-center" aria-label="X3PH★S home">
+      <img
+        src="/images/design/xephas-star-logo.svg"
+        alt="X3PH★S"
+        class="block h-5 sm:h-[22px]"
+      />
+    </a>
+
+    <div
+      class="hidden items-center gap-6 text-[11px] font-medium tracking-[0.18em] text-black/70 uppercase md:flex lg:gap-8"
+    >
+      {
+        navLinks.map((link) => (
+          <a href={link.href} class="transition-colors hover:text-black">
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <a
+      href="https://wa.me/256758294212"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="shrink-0 rounded-full bg-[#0a0a0a] px-4 py-2.5 text-[11px] font-medium tracking-[0.16em] whitespace-nowrap text-white uppercase transition-opacity hover:opacity-85 sm:px-5"
+    >
+      Book a call ↗
+    </a>
+  </nav>
+</header>
