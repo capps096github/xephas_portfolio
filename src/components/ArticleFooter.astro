@@ -47,8 +47,8 @@ const hasGithub = containsGithub(contribution);
 ---
 
 <footer class="flex flex-wrap gap-2 items-center mt-4">
+  <!-- slides -->
   {(hasSlides || hasWeb) &&
-          <!-- slides -->
    <a
     href={hasSlides? slides_url:web_link }
     target="_blank"
@@ -70,8 +70,8 @@ const hasGithub = containsGithub(contribution);
   </a>
 }
  
+  <!-- app -->
   {hasApp &&
-          <!-- app -->
    <a
     href={play_link}
     target="_blank"
@@ -137,8 +137,8 @@ const hasGithub = containsGithub(contribution);
 }
 
 
-{ hasGithub &&
   <!-- Github -->
+{ hasGithub &&
   <a
     href={github_url}
     target="_blank"
@@ -160,8 +160,8 @@ const hasGithub = containsGithub(contribution);
 
   </a>
 }
-{ hasVideo &&
   <!-- Youtube -->
+{ hasVideo &&
   <a
     href={video_url}
     target="_blank"
@@ -182,9 +182,9 @@ const hasGithub = containsGithub(contribution);
     Watch Video
   </a>
 }
+  <!-- Tweet -->
   {
   hasTwitter &&
-  <!-- Tweet -->
   <a
     href={twitter_url}
     target="_blank"

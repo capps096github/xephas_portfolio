@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Keep using the existing JS Tailwind config (custom xephas-* colors, font-mont) */
+@config "../../tailwind.config.mjs";
