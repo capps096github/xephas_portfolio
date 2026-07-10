@@ -1,38 +1,27 @@
 ---
-interface NavLink {
-  label: string;
-  href: string;
-}
-
-const navLinks: NavLink[] = [
-  { label: "Personal", href: "#personal" },
-  { label: "Client Work", href: "#clients" },
-  { label: "Community", href: "#community" },
-  { label: "CV", href: "/cv" },
-  { label: "Terms", href: "/terms" },
-];
+import { navLinks, navCta } from "../scripts/nav";
 ---
 
 <header
   id="main-navbar"
   class="fixed inset-x-0 top-0 z-50 mx-auto w-full bg-transparent transition-all duration-300"
 >
-  <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-    <a href="#top" class="flex shrink-0 items-center" aria-label="X3PH★S home">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2.5 sm:px-6">
+    <a href="/#top" class="flex shrink-0 items-center" aria-label="X3PH★S home">
       <img
-        src="/images/design/xephas-star-logo.svg"
+        src="/images/design/xephas-star-logo-black.svg"
         alt="X3PH★S"
-        class="block h-5 sm:h-[22px]"
+        class="block h-7 sm:h-8"
       />
     </a>
 
     <nav
-      class="hidden items-center gap-6 text-[11px] font-medium tracking-[0.18em] text-black/70 uppercase md:flex lg:gap-8"
+      class="hidden items-center gap-6 text-[11px] font-semibold tracking-[0.18em] text-black/80 uppercase md:flex lg:gap-8"
       aria-label="Primary"
     >
       {
         navLinks.map((link) => (
-          <a href={link.href} class="transition-colors hover:text-black">
+          <a href={link.href} class="nav-underline text-black">
             {link.label}
           </a>
         ))
@@ -41,12 +30,12 @@ const navLinks: NavLink[] = [
 
     <div class="flex items-center gap-2">
       <a
-        href="https://wa.me/256758294212"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="hidden shrink-0 rounded-full bg-[#0a0a0a] px-4 py-2.5 text-[11px] font-medium tracking-[0.16em] whitespace-nowrap text-white uppercase transition-opacity hover:opacity-85 sm:px-5 md:inline-block"
+        href={navCta.href}
+        target={navCta.external ? "_blank" : undefined}
+        rel={navCta.external ? "noopener noreferrer" : undefined}
+        class="btn-anim hidden shrink-0 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.16em] whitespace-nowrap text-white uppercase sm:px-7 md:inline-block"
       >
-        Book a call
+        {navCta.label}
       </a>
 
       <button
@@ -92,19 +81,19 @@ const navLinks: NavLink[] = [
         navLinks.map((link) => (
           <a
             href={link.href}
-            class="rounded-xl px-4 py-3 text-[11px] font-medium tracking-[0.18em] text-black/70 uppercase transition-colors hover:bg-black/5 hover:text-black"
+            class="rounded-xl px-4 py-3 text-[11px] font-semibold tracking-[0.18em] text-black uppercase transition-colors hover:bg-black/5"
           >
             {link.label}
           </a>
         ))
       }
       <a
-        href="https://wa.me/256758294212"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-2 rounded-full bg-[#0a0a0a] px-4 py-3 text-center text-[11px] font-medium tracking-[0.16em] text-white uppercase transition-opacity hover:opacity-85"
+        href={navCta.href}
+        target={navCta.external ? "_blank" : undefined}
+        rel={navCta.external ? "noopener noreferrer" : undefined}
+        class="btn-anim mt-2 rounded-full bg-[#0a0a0a] px-4 py-3 text-center text-[11px] font-semibold tracking-[0.16em] text-white uppercase"
       >
-        Book a call
+        {navCta.label}
       </a>
     </div>
   </div>
@@ -133,8 +122,6 @@ const navLinks: NavLink[] = [
       "sm:rounded-full",
       "bg-white/80",
       "backdrop-blur-md",
-      "border",
-      "border-black/10",
     ];
     const topClasses = ["top-0", "w-full", "bg-transparent"];
 

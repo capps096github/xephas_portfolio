@@ -1,12 +1,11 @@
 ---
 import "../styles/global.css";
-import Footer from "../components/Footer.astro";
 import Head from "../components/Head.astro";
-import NavBar from "../components/NavBar.astro";
+import FloatingNav from "../components/FloatingNav.astro";
+import Footer from "../components/Footer.astro";
+import { termsPages } from "../scripts/pages.js";
 import { coverImage, description, codeName, title } from "../scripts/constants";
 
-// variables
-// Access passed-in component props, like `<X title="Hello, World" />`
 const {
   pageTitle = title,
   header: headingText = title,
@@ -15,8 +14,6 @@ const {
   pageCoverImage = coverImage,
 } = Astro.props;
 
-// if we are not on home page, add the code name to the page title
-const showLogo = pageUrl === "/terms/design";
 const newPageTitle = pageTitle + " | " + codeName;
 ---
 
@@ -27,46 +24,76 @@ const newPageTitle = pageTitle + " | " + codeName;
     pageCoverImage={pageCoverImage}
     pageDescription={pageDescription}
   />
-  <body class="font-mont bg-xephas-bg">
-    <!-- site layout -->
-    <section
-      class="flex flex-col min-h-screen justify-between h-full space-y-10"
-    >
-      <!-- nav bar -->
-      <NavBar pageUrl={pageUrl} , isDefault={false} />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
 
-      <!-- Some spacing for visual alignment -->
-      <div class="mt-5 sm:mt-96"></div>
-      <div class="mt-5 sm:mt-96"></div>
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-12 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">Terms</div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[30px] leading-[1.1] font-semibold tracking-[-0.02em] text-balance sm:text-4xl lg:text-5xl"
+        data-reveal
+      >
+        {headingText}
+      </h1>
 
-      <!-- main -->
-        <main class="px-4 mx-auto max-w-7xl md:px-20 h-str">
-          <div class="flex flex-col  mb-10 space-y-4 w-full h-full">
-          <!-- use slot, to insert page contents here-->
-          <slot />
-        </div>
-      </main>
-
-      <!-- footer -->
-      <!-- this is how we pass in booleans {true or false} -->
-      <Footer isDefault={true} />
-
-      <!-- close -->
+      <!-- Terms sub-nav (looped) -->
+      <nav
+        class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[11px] tracking-[0.16em] uppercase"
+        aria-label="Terms navigation"
+      >
+        {
+          termsPages.map((page) => {
+            const isActive = page.href === pageUrl;
+            return (
+              <a
+                href={page.href}
+                aria-current={isActive ? "page" : undefined}
+                class:list={[
+                  "link-underline inline-block font-semibold",
+                  isActive ? "is-active text-[#0a0a0a]" : "text-[#888]",
+                ]}
+              >
+                {page.label}
+              </a>
+            );
+          })
+        }
+      </nav>
     </section>
-    <!-- end layout -->
 
-    <!-- App Scripts -->
+    <!-- CONTENT -->
+    <main class="px-6 py-14 sm:px-10">
+      <div
+        class="terms-prose mx-auto max-w-3xl text-[15px] leading-[1.7] text-[#444]"
+        data-reveal
+      >
+        <slot />
+      </div>
+    </main>
+
+    <Footer />
+
+    <style is:global>
+      /* Readable defaults for the slotted legal copy in the editorial theme */
+      .terms-prose p {
+        margin-bottom: 0.9rem;
+      }
+      .terms-prose li {
+        margin-left: 1.1rem;
+        list-style: disc;
+        margin-bottom: 0.35rem;
+      }
+      .terms-prose strong {
+        color: #0a0a0a;
+      }
+    </style>
 
     <!-- Firebase Scripts -->
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
 
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
         apiKey: "AIzaSyBqLGG656obraE1lKkTIOrJH6EQzLrDZyM",
         authDomain: "xephasme.firebaseapp.com",
@@ -77,11 +104,36 @@ const newPageTitle = pageTitle + " | " + codeName;
         measurementId: "G-R5G40ZN9CM",
       };
 
-      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
     </script>
 
-    <!-- Install PWA Script -->
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.08 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
   </body>
 </html>

@@ -1,17 +1,19 @@
 ---
+import ArrowRight from "../icons/ArrowRight.astro";
 ---
 
 <!-- ============ COMMUNITY TEASER ============ -->
-<div id="community" class="border-b border-[#0a0a0a]">
+<section id="community" aria-label="Community" class="border-b border-[#0a0a0a]">
   <div class="flex items-baseline justify-between px-6 pt-14 pb-3 sm:px-10">
-    <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
-      03 — Community
-    </div>
+    <h2 class="text-[11px] font-normal tracking-[0.18em] text-[#888] uppercase">
+      04 — Community
+    </h2>
     <a
       href="/community"
-      class="border-b border-[#0a0a0a] pb-0.5 text-[11px] tracking-[0.16em] uppercase"
+      class="link-anim group inline-flex items-center gap-1.5 border-b border-[#0a0a0a] pb-0.5 text-[11px] tracking-[0.16em] uppercase"
     >
-      Full timeline →
+      Full timeline
+      <ArrowRight class="icon-shift-x h-3.5 w-3.5" />
     </a>
   </div>
   <div class="max-w-205 px-6 pt-3 pb-14 sm:px-10" data-reveal>
@@ -27,4 +29,4 @@
       <div class="border-t border-b border-[#ddd] py-4">Where it all started.</div>
     </div>
   </div>
-</div>
+</section>

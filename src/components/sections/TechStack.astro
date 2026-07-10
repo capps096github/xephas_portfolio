@@ -1,0 +1,40 @@
+---
+import { techStack } from "../../scripts/tech_stack";
+---
+
+<!-- ============ TECH STACK ============ -->
+<section id="tech-stack" aria-label="Tech Stack" class="spotlight">
+  <div
+    class="flex flex-col gap-3 px-6 pt-14 pb-9 sm:flex-row sm:items-baseline sm:justify-between sm:px-10 sm:gap-0"
+  >
+    <h2 class="text-[11px] font-normal tracking-[0.18em] text-[#888] uppercase">
+      03 — Tech Stack
+    </h2>
+    <div class="max-w-120 text-[13px] text-[#555] sm:text-right">
+      The tools I build with every day — from AI-assisted engineering to
+      cross-platform delivery.
+    </div>
+  </div>
+
+  <div
+    class="grid grid-cols-1 gap-x-10 gap-y-10 px-6 pb-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-3"
+    data-reveal
+  >
+    {
+      techStack.map((group) => (
+        <div>
+          <h3 class="mb-4 border-t border-[#e5e3df] pt-4 text-[11px] font-normal tracking-[0.16em] text-[#888] uppercase">
+            {group.title}
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {group.items.map((item) => (
+              <span class="rounded-full border border-black/10 bg-white px-4 py-2 text-[13px] text-[#333] transition-colors duration-200 hover:bg-[#0a0a0a] hover:text-white">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,87 @@
+---
+import {
+  Project,
+  projContainsWeb,
+  projContainsPlay,
+  projContainsGithub,
+  projContainsVideo,
+} from "../scripts/project";
+import ArrowUpRight from "./icons/ArrowUpRight.astro";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+// cover_image values look like "images/kalya_menu.png" or a full URL.
+const src = project.cover_image?.startsWith("http")
+  ? project.cover_image
+  : project.cover_image
+    ? `/${project.cover_image.replace(/^\/+/, "")}`
+    : undefined;
+
+interface Link {
+  label: string;
+  href: string;
+}
+const links: Link[] = [];
+if (projContainsWeb(project)) links.push({ label: "Live", href: project.web_link! });
+if (projContainsPlay(project)) links.push({ label: "Play Store", href: project.play_link! });
+if (projContainsGithub(project)) links.push({ label: "Source", href: project.github_url! });
+if (projContainsVideo(project)) links.push({ label: "Watch", href: project.video_url! });
+---
+
+<article
+  class="group flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white"
+  data-reveal
+>
+  {
+    src && (
+      <div class="flex items-center justify-center overflow-hidden bg-[#f7f6f4]">
+        <img
+          src={src}
+          alt={project.title}
+          loading="lazy"
+          class="aspect-[16/10] w-full object-cover transition-[transform,filter] duration-500 [@media(hover:hover)]:grayscale group-hover:scale-[1.03] group-hover:grayscale-0"
+        />
+      </div>
+    )
+  }
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="font-xeroda text-xl font-semibold tracking-[-0.01em] sm:text-2xl">
+      {project.title}
+    </h3>
+    <p class="mt-3 flex-1 text-sm leading-[1.6] text-[#555]">
+      {project.description}
+    </p>
+
+    <div class="mt-5 flex flex-wrap gap-2">
+      {
+        project.tech_stack.map((tech) => (
+          <span class="rounded-full border border-black/10 px-3 py-1 text-[11px] tracking-[0.04em] text-[#666]">
+            {tech}
+          </span>
+        ))
+      }
+    </div>
+
+    {
+      links.length > 0 && (
+        <div class="mt-6 flex flex-wrap gap-5">
+          {links.map((link) => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-anim group inline-flex items-center gap-1.5 border-b border-[#0a0a0a] pb-0.5 text-[11px] tracking-[0.16em] uppercase"
+            >
+              {link.label}
+              <ArrowUpRight class="icon-shift h-3.5 w-3.5" />
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</article>

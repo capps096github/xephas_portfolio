@@ -7,8 +7,10 @@ import StatementPortrait from "../components/sections/StatementPortrait.astro";
 import Marquee from "../components/sections/Marquee.astro";
 import PersonalProjects from "../components/sections/PersonalProjects.astro";
 import ClientProjects from "../components/sections/ClientProjects.astro";
+import SchoolProjectsCta from "../components/sections/SchoolProjectsCta.astro";
+import TechStack from "../components/sections/TechStack.astro";
 import CommunityTeaser from "../components/sections/CommunityTeaser.astro";
-import FooterCta from "../components/sections/FooterCta.astro";
+import Footer from "../components/Footer.astro";
 import { coverImage, description, title } from "../scripts/constants";
 ---
 
@@ -18,13 +20,17 @@ import { coverImage, description, title } from "../scripts/constants";
   <body class="bg-white text-[#0a0a0a] antialiased">
     <FloatingNav />
 
-    <HeroWordmark />
-    <StatementPortrait />
-    <Marquee />
-    <PersonalProjects />
-    <ClientProjects />
-    <CommunityTeaser />
-    <FooterCta />
+    <main>
+      <HeroWordmark />
+      <StatementPortrait />
+      <Marquee />
+      <PersonalProjects />
+      <ClientProjects />
+      <SchoolProjectsCta />
+      <TechStack />
+      <CommunityTeaser />
+    </main>
+    <Footer />
 
     <!-- Firebase Scripts -->
     <script type="module">
@@ -43,6 +49,11 @@ import { coverImage, description, title } from "../scripts/constants";
 
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
+    </script>
+
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../scripts/spotlight";
     </script>
 
     <!-- Scroll reveal -->

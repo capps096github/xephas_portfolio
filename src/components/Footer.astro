@@ -1,98 +1,144 @@
 ---
-import { developer } from "../scripts/constants";
-
-// Props (parameters) type declaration
-interface Props {
-  isDefault: boolean;
-}
-
-const {
-  // whether this is the default footer or not
-  isDefault,
-} = Astro.props;
-
-//
+import { socialLinks, contactInfo } from "../scripts/social";
+import { navLinks } from "../scripts/nav";
+import { year, codeName } from "../scripts/constants";
 ---
 
-<footer
-  id="footer"
-  class=`px-4 py-4 lg:px-10 text-xs ${isDefault?"text-xephas-white bg-xephas-navy": "text-xephas-navy"}`
->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-    <!-- Site Owner -->
-    <div class="space-y-1 mb-2">
-      <span class="uppercase font-bold"
-        >Crafted, Engineered & Brought to Life for:</span
+<!-- ============ REUSABLE FOOTER (Noir) ============ -->
+<footer class="spotlight spotlight-dark bg-[#0a0a0a] px-6 pt-20 text-[#f4f2ef] sm:px-10 sm:pt-24">
+  <!-- CTA — appears everywhere the footer is used -->
+  <div class="pb-20 text-center" data-reveal>
+    <h2
+      class="font-xeroda text-4xl leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[60px] lg:leading-[1.05]"
+    >
+      Let's build something<br />amazing together.
+    </h2>
+    <div class="mt-6 text-[13px] tracking-[0.14em] text-[#888] uppercase">
+      {contactInfo.email} · {contactInfo.phone} · @xephasofficial
+    </div>
+    <div class="mt-8 inline-flex flex-wrap justify-center gap-3">
+      <a
+        href={contactInfo.whatsapp}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-anim rounded-full bg-[#f4f2ef] px-8 py-4 text-[13px] font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase"
       >
+        Book a call
+      </a>
+      <a
+        href={`mailto:${contactInfo.email}`}
+        class="btn-anim rounded-full border border-[#555] px-8 py-4 text-[13px] font-semibold tracking-[0.14em] uppercase hover:border-[#f4f2ef]"
+      >
+        Email me
+      </a>
+    </div>
+  </div>
 
-      <p class="text-lg font-bold text-xephas-yellow">
-        {developer.copyright}
-      </p>
-      <p class="text-xs italic text-xephas-yellow opacity-50">
-        {developer.copyrightYear} • All Rights Reserved
-      </p>
+  <div
+    class="grid grid-cols-1 gap-12 border-t border-[#2a2a2a] pt-14 pb-14 md:grid-cols-[1.4fr_1fr_1fr] lg:gap-16"
+  >
+    <!-- Brand + contact + socials -->
+    <div>
+      <img
+        src="/images/design/xephas-star-logo.svg"
+        alt="X3PH★S"
+        class="h-14 brightness-0 invert sm:h-16"
+      />
+      <div class="mt-4 max-w-80 text-[13px] leading-[1.6] text-[#b5b2ad]">
+        A designer &amp; developer of experiences.
+      </div>
+
+      <div class="mt-6 space-y-1.5 text-[13px] text-[#b5b2ad]">
+        <div>
+          <a
+            href={`mailto:${contactInfo.email}`}
+            class="link-underline inline-block text-[#d9d6d1]"
+          >
+            {contactInfo.email}
+          </a>
+        </div>
+        <div>{contactInfo.phone}</div>
+        <div>{contactInfo.location}</div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-2.5">
+        {
+          socialLinks.map((social) => {
+            const isHttp = social.href.startsWith("http");
+            return (
+              <a
+                href={social.href}
+                target={isHttp ? "_blank" : undefined}
+                rel={isHttp ? "noopener noreferrer" : undefined}
+                aria-label={social.name}
+                title={`${social.name} · ${social.handle}`}
+                class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-[#d9d6d1] transition-all duration-200 hover:scale-110 hover:border-white/40 hover:bg-white/15 hover:text-white active:scale-95"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox={social.viewBox ?? "0 0 512 512"}
+                  class="h-5 w-5 fill-current"
+                  set:html={social.icon}
+                />
+              </a>
+            );
+          })
+        }
+      </div>
     </div>
 
-    <!-- Credits -->
-    <div class="space-y-3 flex flex-col">
-      <!-- Developers -->
-      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-        <span class="uppercase text-sm font-bold">★ Dev:</span>
-        <div>
-          <a
-            href={developer.footerUrl}
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            target="_blank"
-            rel="noopener">{developer.footerDev}</a
-          >
-          in Collaboration with
-          <a
-            href={developer.footerCollaboratorUrl}
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            target="_blank"
-            rel="noopener">{developer.footerCollaborator}</a
-          >
-        </div>
+    <!-- Explore -->
+    <div>
+      <div class="mb-4 text-[11px] tracking-[0.18em] text-[#777] uppercase">
+        Explore
       </div>
+      <ul class="space-y-2.5 text-[13px] text-[#b5b2ad]">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a href={link.href} class="link-underline inline-block text-[#d9d6d1]">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
-      <!-- Tech -->
-      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-        <span class="uppercase text-sm font-bold">★ Tech Stack:</span>
-        <div class="uppercase">
-          <a
-            href="https://astro.build/"
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            target="_blank"
-            rel="noopener">Astro</a
-          > ,
-          <a
-            href="https://www.typescriptlang.org/"
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            target="_blank"
-            rel="noopener">Typescript</a
-          >
-          &amp;
-          <a
-            href="https://tailwindcss.com/"
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            target="_blank"
-            rel="noopener">TailwindCSS</a
-          >
-        </div>
+    <!-- Work with me -->
+    <div>
+      <div class="mb-4 text-[11px] tracking-[0.18em] text-[#777] uppercase">
+        Work with me
       </div>
-
-      <!-- Code -->
-      <div class="flex flex-col md:flex-row lg:flex-row space-x-2 space-y-1">
-        <span class="uppercase text-sm font-bold">★ Source Code:</span>
-        <div>
-          <a
-            href={developer.repoUrl}
-            target="_blank"
-            class=`underline text-xephas-yellow font-bold ${isDefault? "text-xephas-white": ""}`
-            rel="noopener">Open-Sourced on Github</a
-          >
-        </div>
+      <div class="flex flex-col items-start gap-3">
+        <a
+          href={contactInfo.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-anim rounded-full bg-[#f4f2ef] px-6 py-3 text-[11px] font-semibold tracking-[0.16em] text-[#0a0a0a] uppercase"
+        >
+          Book a call
+        </a>
+        <a
+          href={`mailto:${contactInfo.email}`}
+          class="btn-anim rounded-full border border-[#555] px-6 py-3 text-[11px] font-semibold tracking-[0.16em] uppercase hover:border-[#f4f2ef]"
+        >
+          Email me
+        </a>
       </div>
     </div>
   </div>
+
+  <div
+    class="flex flex-col items-center gap-4 border-t border-[#2a2a2a] py-6 text-[11px] tracking-[0.14em] text-[#777] uppercase sm:flex-row sm:justify-between sm:gap-0"
+  >
+    <span>© {year} {codeName}</span>
+    <span>{contactInfo.email} · {contactInfo.phone}</span>
+  </div>
 </footer>
+
+<!-- Wires up the CTA spotlight here so the effect works on every page that
+     renders the footer, not just the landing page. -->
+<script>
+  import "../scripts/spotlight";
+</script>
