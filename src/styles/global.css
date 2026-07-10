@@ -183,6 +183,14 @@
   filter: invert(1);
 }
 
+/* On touch devices there is no cursor to reveal the spotlight, so hide the
+   pattern layer entirely rather than faking a static wash. */
+@media (hover: none) {
+  .spotlight::before {
+    display: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Hero wordmark entrance + sheen.
    `wordmark-anim` gives the X3PH★S logo a soft fade/scale-in on load, then a
