@@ -2,3 +2,25 @@
 
 /* Keep using the existing JS Tailwind config (custom xephas-* colors, font-mont) */
 @config "../../tailwind.config.mjs";
+
+@font-face {
+  font-family: "Xeroda";
+  src: url("/fonts/Xeroda-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Type system:
+   - Body / everything default → Montserrat (loaded in Head.astro)
+   - Titles / display headlines → Xeroda (font-face above) */
+@layer base {
+  body {
+    font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Utility for titles — apply to any heading/title element. */
+.font-xeroda {
+  font-family: "Xeroda", "Montserrat", sans-serif;
+}
