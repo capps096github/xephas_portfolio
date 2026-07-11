@@ -1,13 +1,14 @@
 
-export const baseUrl = "https://xephas.me/";
+export const baseUrl = "https://xephasme.web.app";
+// export const baseUrl = "https://xephas.me/";
 export const siteManifest = baseUrl + "manifest.json";
 
 // OG / social share cover image (actual file is 1920x1080)
-export const coverImage = baseUrl + "images/xephas-og.png";
+export const coverImage = baseUrl + "images/xephas-og.png?v=" + Date.now();
 export const coverImageWidth = "1920";
 export const coverImageHeight = "1080";
 export const coverImageAlt =
-  "X3PH★S — Mugisa Brian Cephas, Software Engineer and UI/UX Designer";
+  "X3PH★S — Mugisa Brian Cephas, Software Engineer, Business Analyst and UI/UX Designer";
 
 // title
 export const title = "Mugisa Brian (Cephas) | A Designer and Developer of Experiences";
@@ -16,7 +17,7 @@ export const title = "Mugisa Brian (Cephas) | A Designer and Developer of Experi
 export const codeName = "Mugisa Brian ( X3PH★S )";
 
 export const description =
-  "Mugisa Brian (Cephas), aka Xephas — Ugandan software engineer and UI/UX designer with 5+ years building secure, cross-platform Flutter apps for institutions worldwide.";
+  "Mugisa Brian (Cephas), aka Xephas — Ugandan software engineer, business analyst and UI/UX designer with 5+ years building secure, cross-platform Flutter apps for institutions worldwide.";
 
 
 //   these are the keywords that will be used to search engine optimization for the website
@@ -42,7 +43,7 @@ export const personSchema = {
   address: {
     "@type": "PostalAddress",
     addressLocality: "Kampala",
-    addressRegion: "Wandegeya, Makerere",
+    addressRegion: "Central Region",
     addressCountry: "UG",
   },
   nationality: "Ugandan",

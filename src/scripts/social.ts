@@ -80,5 +80,5 @@ export const contactInfo = {
   email: "hello@xephas.me",
   phone: "+256 758 294 212",
   whatsapp: "https://wa.me/256758294212",
-  location: "Wandegeya, Makerere · Kampala, Uganda",
+  location: "Kampala, Uganda",
 };
