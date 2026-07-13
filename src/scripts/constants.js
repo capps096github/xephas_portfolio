@@ -56,6 +56,7 @@ export const personSchema = {
     "https://stackoverflow.com/users/19142356/mugisa-brian-cephas",
     "https://medium.com/@xephas_official",
     "https://play.google.com/store/apps/dev?id=8238184494150117614",
+    "https://apps.apple.com/us/developer/brian-cephas-mugisa/id1858221418",
   ],
   knowsAbout: [
     "Flutter",
