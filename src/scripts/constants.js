@@ -1,5 +1,5 @@
 
-export const baseUrl = "https://xephasme.web.app";
+export const baseUrl = "https://xephasme.web.app/";
 // export const baseUrl = "https://xephas.me/";
 export const siteManifest = baseUrl + "manifest.json";
 
