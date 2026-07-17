@@ -1,0 +1,178 @@
+---
+import { navLinks, navCta } from "../scripts/nav";
+---
+
+<header
+  id="main-navbar"
+  class="fixed inset-x-0 top-0 z-50 mx-auto w-full bg-transparent transition-all duration-300"
+>
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2.5 sm:px-6">
+    <a href="/#top" class="flex shrink-0 items-center" aria-label="X3PH★S home">
+      <img
+        src="/images/design/xephas-star-logo-black.svg"
+        alt="X3PH★S"
+        class="block h-7 sm:h-8"
+      />
+    </a>
+
+    <nav
+      class="hidden items-center gap-6 text-[11px] font-semibold tracking-[0.18em] text-black/80 uppercase md:flex lg:gap-8"
+      aria-label="Primary"
+    >
+      {
+        navLinks.map((link) => (
+          <a href={link.href} class="nav-underline text-black">
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={navCta.href}
+        target={navCta.external ? "_blank" : undefined}
+        rel={navCta.external ? "noopener noreferrer" : undefined}
+        class="btn-anim hidden shrink-0 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.16em] whitespace-nowrap text-white uppercase sm:px-7 md:inline-block"
+      >
+        {navCta.label}
+      </a>
+
+      <button
+        id="mobile-menu-button"
+        type="button"
+        class="flex items-center justify-center rounded-full border border-black/10 bg-white/70 p-2.5 text-[#0a0a0a] backdrop-blur-md md:hidden"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg
+          class="icon-hamburger h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg
+          class="icon-close hidden h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden px-4 pb-4 md:hidden">
+    <div class="flex flex-col gap-1 rounded-2xl border border-black/10 bg-white/95 p-3 backdrop-blur-md">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="rounded-xl px-4 py-3 text-[11px] font-semibold tracking-[0.18em] text-black uppercase transition-colors hover:bg-black/5"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a
+        href={navCta.href}
+        target={navCta.external ? "_blank" : undefined}
+        rel={navCta.external ? "noopener noreferrer" : undefined}
+        class="btn-anim mt-2 rounded-full bg-[#0a0a0a] px-4 py-3 text-center text-[11px] font-semibold tracking-[0.16em] text-white uppercase"
+      >
+        {navCta.label}
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  function setupFloatingNav() {
+    const navbar = document.getElementById("main-navbar");
+    const menuButton = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (!navbar || !menuButton || !mobileMenu) return;
+
+    // Guard against double-init: setup runs on initial load AND on
+    // astro:page-load, which would otherwise attach duplicate listeners
+    // (making each menu click toggle twice = no-op).
+    if (navbar.dataset.navInit === "true") return;
+    navbar.dataset.navInit = "true";
+
+    const hamburgerIcon = menuButton.querySelector(".icon-hamburger");
+    const closeIcon = menuButton.querySelector(".icon-close");
+
+    const scrolledClasses = [
+      "sm:top-4",
+      "sm:w-10/12",
+      "sm:max-w-5xl",
+      "sm:rounded-full",
+      "bg-white/80",
+      "backdrop-blur-md",
+    ];
+    const topClasses = ["top-0", "w-full", "bg-transparent"];
+
+    function updateNavbarStyle(scrollY: number) {
+      if (!navbar) return;
+      if (scrollY <= 10) {
+        navbar.classList.remove(...scrolledClasses);
+        navbar.classList.add(...topClasses);
+      } else {
+        navbar.classList.remove(...topClasses);
+        navbar.classList.add(...scrolledClasses);
+      }
+    }
+
+    function closeMobileMenu() {
+      mobileMenu?.classList.add("hidden");
+      hamburgerIcon?.classList.remove("hidden");
+      closeIcon?.classList.add("hidden");
+      menuButton?.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleMobileMenu() {
+      const isHidden = mobileMenu?.classList.contains("hidden");
+      mobileMenu?.classList.toggle("hidden");
+      hamburgerIcon?.classList.toggle("hidden");
+      closeIcon?.classList.toggle("hidden");
+      menuButton?.setAttribute("aria-expanded", isHidden ? "true" : "false");
+    }
+
+    menuButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleMobileMenu();
+    });
+
+    mobileMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMobileMenu);
+    });
+
+    document.addEventListener("click", (event) => {
+      if (
+        !mobileMenu?.contains(event.target as Node) &&
+        !menuButton?.contains(event.target as Node)
+      ) {
+        closeMobileMenu();
+      }
+    });
+
+    window.addEventListener("scroll", () => updateNavbarStyle(window.scrollY));
+    updateNavbarStyle(window.scrollY);
+  }
+
+  setupFloatingNav();
+  document.addEventListener("astro:page-load", setupFloatingNav);
+</script>

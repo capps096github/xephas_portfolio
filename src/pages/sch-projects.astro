@@ -1,0 +1,153 @@
+---
+import "../styles/global.css";
+import Head from "../components/Head.astro";
+import FloatingNav from "../components/FloatingNav.astro";
+import Footer from "../components/Footer.astro";
+import SchoolProjectCard from "../components/SchoolProjectCard.astro";
+import ArrowUpRight from "../components/icons/ArrowUpRight.astro";
+import { flutterList, webList } from "../scripts/projects_list";
+import { codeName } from "../scripts/constants";
+
+const pageTitle = "School Projects | " + codeName;
+const pageDescription =
+  "Course and campus builds from my time studying Software Engineering at Makerere University — Flutter, web and open-source projects.";
+
+// UX design work (Figma) — kept from the previous /sch-projects page, now data-driven.
+const designWork = [
+  { label: "Olum App", href: "https://www.figma.com/file/p1PsTwseY0P8zew4cW9M5U/Olum-Version-1-(Final)", note: "Mobile App" },
+  { label: "EAC_HCPI App", href: "https://www.figma.com/file/PkrFTMQHWdE7oHONSGRS9i/EAC_HCPI", note: "Mobile App" },
+  { label: "STTS Sahel Mobile App", href: "https://www.figma.com/file/KjRHMTjszC7qndny0i2S8e/STTS-Sahel-Mobile-App-UX-Design", note: "Mobile App" },
+  { label: "ICT4Farmers Mobile App", href: "https://www.figma.com/design/W2TVKvgk4OOc58zd5VsB0h/ICT4Farmers-App", note: "Mobile App" },
+  { label: "Oracle Codelabs redesign", href: "https://www.figma.com/file/zAMNGqIcTmOo2xq3tJjSu6/ORACLE-CODELAB-DESKTOP-AND-MOBILE-UI", note: "Mobile & Web" },
+  { label: "UTB Web Dashboard", href: "https://www.figma.com/file/eQoWrGAOyD9HtwXMq4NxAy/UTB-Project", note: "Web" },
+  { label: "KinderCare Website", href: "https://www.figma.com/file/SxBDT2vUWOI4TWIHmYfBQI/KinderCare-Web", note: "Web" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <Head pageTitle={pageTitle} pageDescription={pageDescription} />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
+
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        School Projects
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+        data-reveal
+      >
+        Course &amp; Campus projects from my time in school.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Beyond my extensive expertise in Flutter, I've ventured across Java,
+        Python, TypeScript, Astro, Django, PHP, C, C++ and Arduino. These
+        university and open-source projects show my versatility across mobile,
+        web and backend — a companion to the personal and client work on the
+        <a href="/#personal" class="link-underline inline-block font-bold text-[#0a0a0a]">home page</a>.
+      </p>
+    </section>
+
+    <!-- FLUTTER -->
+    <section id="flutter" class="px-6 pt-14 pb-6 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+        Flutter
+      </h2>
+    </section>
+    <div class="grid grid-cols-1 gap-6 px-6 pb-14 sm:px-10 md:grid-cols-2 lg:grid-cols-3">
+      {flutterList.map((project) => <SchoolProjectCard project={project} />)}
+    </div>
+
+    <!-- WEB -->
+    <section id="web" class="bg-[#f7f6f4] px-6 pt-14 pb-6 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+        Web
+      </h2>
+    </section>
+    <div class="grid grid-cols-1 gap-6 bg-[#f7f6f4] px-6 pb-14 sm:px-10 md:grid-cols-2 lg:grid-cols-3">
+      {webList.map((project) => <SchoolProjectCard project={project} />)}
+    </div>
+
+    <!-- UX DESIGN -->
+    <section id="ux-design" class="border-t border-[#0a0a0a] px-6 pt-14 pb-16 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+        UX Design
+      </h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Alongside development I work deeply in UI/UX design. A selection of
+        standout projects crafted in Figma:
+      </p>
+      <div class="mt-8 grid max-w-3xl grid-cols-1 gap-x-10 sm:grid-cols-2" data-reveal>
+        {
+          designWork.map((d) => (
+            <a
+              href={d.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex items-baseline justify-between gap-4 border-t border-[#e5e3df] py-4 text-[15px] transition-opacity hover:opacity-70"
+            >
+              <span class="inline-flex items-center gap-1.5 border-b border-[#0a0a0a] pb-0.5">
+                {d.label}
+                <ArrowUpRight class="icon-shift h-3.5 w-3.5" />
+              </span>
+              <span class="text-[11px] tracking-[0.12em] text-[#999] uppercase">
+                {d.note}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <Footer />
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBqLGG656obraE1lKkTIOrJH6EQzLrDZyM",
+        authDomain: "xephasme.firebaseapp.com",
+        projectId: "xephasme",
+        storageBucket: "xephasme.appspot.com",
+        messagingSenderId: "319248268150",
+        appId: "1:319248268150:web:6dccd45af1f8d396eed857",
+        measurementId: "G-R5G40ZN9CM",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>

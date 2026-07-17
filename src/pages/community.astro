@@ -1,87 +1,218 @@
 ---
-import Portfolio from "../layouts/Portfolio.astro";
-import { contributions, cupertino, stackoverflow } from "../scripts/contributions";
-import { impacts } from "../scripts/impacts";
-import CommunityArticle from "../components/CommunityArticle.astro";
-import InlineTitle from "../components/InlineTitle.astro";
-import Space from "../components/Space.astro";
+import "../styles/global.css";
+import Head from "../components/Head.astro";
+import FloatingNav from "../components/FloatingNav.astro";
+import Footer from "../components/Footer.astro";
+import { timeline } from "../scripts/timeline";
+import ArrowUpRight from "../components/icons/ArrowUpRight.astro";
+import {
+  containsVideo,
+  containsSlides,
+  containsGithub,
+  containsTwitter,
+  containsWeb,
+  containsApp,
+  containsProfile,
+  containsDevLib,
+  type CommunityContribution,
+} from "../scripts/community";
+import { codeName } from "../scripts/constants";
+
+const pageTitle = "Community | " + codeName;
+const pageDescription =
+  "A chronological timeline of talks, trainings, open-source work and events — over 10,000 developers impacted across East Africa.";
+
+interface Link {
+  label: string;
+  href: string;
+}
+function linksFor(c: CommunityContribution): Link[] {
+  const links: Link[] = [];
+  if (containsVideo(c)) links.push({ label: "Watch", href: c.video_url! });
+  if (containsSlides(c)) links.push({ label: "Slides", href: c.slides_url! });
+  if (containsGithub(c)) links.push({ label: "Code", href: c.github_url! });
+  if (containsWeb(c)) links.push({ label: "Live", href: c.web_link! });
+  if (containsApp(c)) links.push({ label: "Play Store", href: c.play_link! });
+  if (containsProfile(c)) links.push({ label: "Profile", href: c.profile_link! });
+  if (containsDevLib(c)) links.push({ label: "Dev Library", href: c.dev_library! });
+  if (containsTwitter(c)) links.push({ label: "Post", href: c.twitter_url! });
+  return links;
+}
+
+function imgSrc(cover: string): string {
+  return cover.startsWith("http") ? cover : `/${cover.replace(/^\/+/, "")}`;
+}
+
+// Precompute where the year label should change along the spine.
+let prevYear = "";
+const rows = timeline.map((entry) => {
+  const showYear = entry.year !== prevYear;
+  prevYear = entry.year;
+  return { entry, showYear };
+});
 ---
 
-<!-- Community -->
-<Portfolio
-  pageTitle="Community Impact"
-  pageUrl="/community"
-  header="My Community Impact (Open-Source, Talks, Trainings & Events)"
-  pageDescription="Various trainings, talks and events I have been a part of."
-  showHeader={false}
->
+<!doctype html>
+<html lang="en">
+  <Head pageTitle={pageTitle} pageDescription={pageDescription} />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
 
-<div class="space-y-20">
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        Community
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+        data-reveal
+      >
+        Talks, trainings &amp; open-source.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        As a developer evangelist and community speaker since 2022, I've
+        positively impacted over 10,000 developers through speaking engagements,
+        trainings, mentoring and open-source contributions across Uganda and the
+        region — including a featured session in Nairobi, Kenya.
+      </p>
+    </section>
 
-<!-- impact summary -->
-<div>
-<InlineTitle text="TL:DR; Impact By Numbers"/>
-<Space of="mt-5"/>
-<div class="w-full md:grid-cols-2 lg:grid-cols-3 justify-items-stretch grid-cols-1 gap-2 grid">
-    {
-      impacts.map((impact, index) => {
-        // span
-        const col_span = impact.col_span?? "md:col-span-1";
-        // is even
-        const isEven = index % 2 === 0;
+    <!-- TIMELINE -->
+    <section class="px-6 py-14 sm:px-10">
+      <div class="relative mx-auto max-w-4xl">
+        <!-- spine -->
+        <div class="absolute top-0 bottom-0 left-[7px] w-px bg-[#e5e3df] sm:left-[calc(6rem+7px)]"></div>
 
-        const backg = isEven
-          ? "hover:text-xephas-navy text-white bg-xephas-navy hover:bg-xephas-yellow"
-          : "hover:text-xephas-navy text-xephas-white bg-xephas-blue hover:bg-xephas-yellow";
+        <div class="flex flex-col gap-14">
+          {
+            rows.map(({ entry, showYear }) => {
+              const links = linksFor(entry);
+              return (
+                <div class="relative pl-8 sm:grid sm:grid-cols-[6rem_1fr] sm:gap-0 sm:pl-0" data-reveal>
+                  {/* Year marker on the spine */}
+                  <div class="hidden sm:block sm:pr-8">
+                    {showYear && (
+                      <div class="font-xeroda text-2xl font-semibold text-[#0a0a0a]">
+                        {entry.year}
+                      </div>
+                    )}
+                  </div>
 
-        return (
-        <article class=`hover:cursor-pointer ${backg} ${col_span} rounded-lg p-4 transition-all duration-300  justify-center text-center items-center`>
-          <h1 class="text-2xl text-center uppercase tracking-tight font-bold pb-2 border-b border-b-current hover:border-b-current">
-            {impact.title}
-          </h1>
-          <h2 class="p-4 text-6xl font-spartan text-center tracking-tight font-extrabold">
-            {impact.numbers}
-          </h2>
-          <p class="font-bold text-center">{impact.sub_title}</p>
-        </article>);
-      })
-    }
-</div>
-</div>
+                  {/* Node dot */}
+                  <div class="absolute top-1.5 left-0 h-3.5 w-3.5 rounded-full border-2 border-[#0a0a0a] bg-white sm:left-[calc(6rem+1px)]" />
 
-<!-- cupertino -->
-<div>
-<InlineTitle text="Open Source: Cupertino Icons Gallery"/>
-<Space of="mt-5"/>
- <CommunityArticle bg="border-xephas-blue bg-xephas-blue/10" contribution={cupertino} />
-</div>
+                  {/* Content */}
+                  <div class="sm:pl-8">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_22rem] lg:gap-8">
+                      <div>
+                        {showYear && (
+                          <div class="mb-1 font-xeroda text-lg font-semibold sm:hidden">
+                            {entry.year}
+                          </div>
+                        )}
+                        <div class="text-[11px] tracking-[0.16em] text-[#888] uppercase">
+                          {entry.date} · {entry.location}
+                        </div>
+                        <h3 class="font-xeroda mt-2 text-xl font-semibold tracking-[-0.01em]">
+                          {entry.event_title}
+                        </h3>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                          {entry.categories.map((cat) => (
+                            <span class="rounded-full border border-black/10 px-3 py-1 text-[10px] tracking-[0.08em] text-[#666] uppercase">
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                        <p class="mt-4 line-clamp-3 max-w-2xl text-sm leading-[1.65] text-[#555]">
+                          {entry.description}
+                        </p>
+                        {entry.highlight && (
+                          <div class="mt-3 text-[13px] font-semibold text-[#0a0a0a]">
+                            ★ {entry.highlight}
+                          </div>
+                        )}
+                        {links.length > 0 && (
+                          <div class="mt-5 flex flex-wrap gap-5">
+                            {links.map((link) => (
+                              <a
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="link-anim group inline-flex items-center gap-1.5 border-b border-[#0a0a0a] pb-0.5 text-[11px] tracking-[0.16em] uppercase"
+                              >
+                                {link.label}
+                                <ArrowUpRight class="icon-shift h-3.5 w-3.5" />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-<!-- stack over flow -->
-<div>
-<InlineTitle text="My Stack Overflow Profile"/>
-<Space of="mt-5"/>
- <CommunityArticle bg="border-xephas-orange bg-xephas-orange/10" contribution={stackoverflow} />
-</div>
-  
-  <!-- talks -->
-<div>
-  <InlineTitle text="Flutter Developer Talks, Trainings, Interviews & Events"/>
-<Space of="mt-5"/>
-<div class="grid grid-cols-1 gap-4 content-stretch md:grid-cols-2">
-  {
-    contributions.map((contribution, index) => {
-       // is even
-       const isThird = index % 3 === 0;
+                      <div class="order-first aspect-[16/9] w-full overflow-hidden rounded-2xl bg-[#f7f6f4] lg:order-none">
+                        <img
+                          src={imgSrc(entry.cover_image)}
+                          alt={entry.event_title}
+                          loading="lazy"
+                          class="h-full w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
 
-        // span
-        const col_span = isThird? "md:col-span-2" : "md:col-span-1";
-      
-      return (
-      <CommunityArticle span={col_span} contribution={contribution} />
-   )})
-  }
-  </div>
-</div>
+    <Footer />
 
-</div>
-</Portfolio>
+    <!-- Firebase Scripts -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBqLGG656obraE1lKkTIOrJH6EQzLrDZyM",
+        authDomain: "xephasme.firebaseapp.com",
+        projectId: "xephasme",
+        storageBucket: "xephasme.appspot.com",
+        messagingSenderId: "319248268150",
+        appId: "1:319248268150:web:6dccd45af1f8d396eed857",
+        measurementId: "G-R5G40ZN9CM",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>

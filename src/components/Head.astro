@@ -1,22 +1,31 @@
 ---
 import {
   baseUrl,
+  coverImageAlt,
+  coverImageHeight,
+  coverImageWidth,
   developer,
   keywords,
+  personSchema,
   siteManifest,
+  websiteSchema,
 } from "../scripts/constants.js";
 
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   pageTitle: string;
   pageDescription: string;
   pageCoverImage?: string;
+  /** Path relative to baseUrl for this page's canonical URL, e.g. "" for home, "community/" for /community */
+  canonicalPath?: string;
 }
 
 // Access passed-in component props, like `<X title="Hello, World" />`
 // These are passed in with default parameters
-const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
+const { pageTitle, pageCoverImage, pageDescription, canonicalPath = "" } = Astro.props;
+
+const canonicalUrl = baseUrl + canonicalPath;
 
 // mark as a component
 // component: true;
@@ -38,14 +47,24 @@ const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
   <meta name="copyright" content={developer.copyright} />
   <meta name="robots" content="index, follow" />
   <meta name="rating" content="general" />
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href={canonicalUrl} />
 
   <!-- Facebook Open Graph -->
   <meta property="og:title" content={pageTitle} />
   <meta property="og:site_name" content={pageTitle} />
-  <meta property="og:url" content={baseUrl} />
+  <meta property="og:url" content={canonicalUrl} />
   <meta property="og:description" content={pageDescription} />
   <meta property="og:type" content="website" />
   <meta property="og:image" content={pageCoverImage} />
+  <meta property="og:image:secure_url" content={pageCoverImage} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content={coverImageWidth} />
+  <meta property="og:image:height" content={coverImageHeight} />
+  <meta property="og:image:alt" content={coverImageAlt} />
+  <meta property="og:locale" content="en_US" />
 
   <!-- Twitter Open Graph -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -54,7 +73,7 @@ const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
   <meta name="twitter:creator" content={developer.handle} />
   <meta name="twitter:description" content={pageDescription} />
   <meta name="twitter:image" content={pageCoverImage} />
-  <meta name="twitter:image:alt" content={pageDescription} />
+  <meta name="twitter:image:alt" content={coverImageAlt} />
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -77,6 +96,10 @@ const { pageTitle, pageCoverImage, pageDescription } = Astro.props;
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,700&display=swap");
   </style>
 
+  <!-- Structured data (JSON-LD) for search engines and AI answer/generative engines -->
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+
   <!-- Astro page animations -->
-  <ViewTransitions />
+  <ClientRouter />
 </head>

@@ -1,81 +1,87 @@
 ---
-import InlineLink from "../components/InlineLink.astro";
-import Portfolio from "../layouts/Portfolio.astro";
-import Space from "../components/Space.astro";
-
+import "../styles/global.css";
+import Head from "../components/Head.astro";
+import FloatingNav from "../components/FloatingNav.astro";
+import HeroWordmark from "../components/sections/HeroWordmark.astro";
+import StatementPortrait from "../components/sections/StatementPortrait.astro";
+import Marquee from "../components/sections/Marquee.astro";
+import PersonalProjects from "../components/sections/PersonalProjects.astro";
+import ClientProjects from "../components/sections/ClientProjects.astro";
+import SchoolProjectsCta from "../components/sections/SchoolProjectsCta.astro";
+import TechStack from "../components/sections/TechStack.astro";
+import CommunityTeaser from "../components/sections/CommunityTeaser.astro";
+import Footer from "../components/Footer.astro";
+import { coverImage, description, title } from "../scripts/constants";
 ---
 
-<!-- Home -->
-<Portfolio>
-  <!-- header -->
-  <div class="text-center mb-5">
-    <!-- title -->
-    <h1 class="text-5xl font-extrabold text-xephas-navy">
-      Hello,<br /> It's Cephas here...
-    </h1>
+<!doctype html>
+<html lang="en">
+  <Head pageTitle={title} pageCoverImage={coverImage} pageDescription={description} />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
 
-    <!-- Description -->
-    <p class="text-xs mt-2">
-      <strong> Codename (Preferred Name): </strong>
-      <strong> “Cephas”</strong> or <strong> “Xephas”</strong> or <strong
-        class="uppercase">“X3PH★S”</strong>
-    </p>
-    <p class="text-xs mt-2">
-      <strong> Pronunciation: </strong>
-      <strong> “Say-fuhs”</strong> or <strong> “See-fuhs”</strong>
-    </p>
-  </div>
+    <main>
+      <HeroWordmark />
+      <StatementPortrait />
+      <Marquee />
+      <PersonalProjects />
+      <ClientProjects />
+      <SchoolProjectsCta />
+      <TechStack />
+      <CommunityTeaser />
+    </main>
+    <Footer />
 
-  <div class="flex flex-col md:flex-row mb-12">
-    <!-- image -->
-    <div
-      class="w-full items-center justify-center overflow-hidden md:w-1/2 h-1/2 lg:w-1/3"
-    >
-      <img
-        src="/images/profile.jpg"
-        class=`rounded-lg bg-xephas-navy/5  h-full w-full md:h-full `
-      />
-    </div>
+    <!-- Firebase Scripts -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-    <!-- contents -->
-    <div
-      class="md:w-1/2 lg:w-2/3 md:ml-5 duration-300 flex-col justify-between content-between text-center md:text-left"
-    >
-      <p class="mb-2 mt-2 md:mt-0 text-2xl">
-        I am Mugisa Brian (Cephas), a Software Engineer with over 4 years of
-        ultimate experience in Cross-Platform App Development with Flutter and
-        an astounding passion for Graphics & UI/UX Design.
-      </p>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBqLGG656obraE1lKkTIOrJH6EQzLrDZyM",
+        authDomain: "xephasme.firebaseapp.com",
+        projectId: "xephasme",
+        storageBucket: "xephasme.appspot.com",
+        messagingSenderId: "319248268150",
+        appId: "1:319248268150:web:6dccd45af1f8d396eed857",
+        measurementId: "G-R5G40ZN9CM",
+      };
 
-      <h1 class="text-4xl font-extrabold mt-8 text-xephas-navy">
-        I design and develop experiences that improve people's lives.
-      </h1>
-    </div>
-  </div>
-      
-  <Space of="mt-10"/>
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
 
-  <div class="space-y-6 text-center">
-    <p>
-      Wanna Hire me? Here are My <InlineLink
-        href="/works"
-        ,
-        text="Works (Projects)"
-      /> ,
-      <InlineLink href="/cv" , text="CV (Resume)" /> , <InlineLink
-        href="/hire-me"
-        ,
-        text="Cover Letter"
-      /> and
-      <InlineLink href="/community" , text="Community Contributions" />
-    </p>
-    <p>
-      For Freelance and Contractual Work in regards to Software Development and
-      Graphics or UI/UX Design, Here are <InlineLink
-        href="/terms"
-        ,
-        text="My Terms of Service"
-      />
-    </p>
-  </div>
-</Portfolio>
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../scripts/spotlight";
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>

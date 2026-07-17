@@ -62,8 +62,10 @@ let flutterDashboard = new Project({
 });
 
 /// flutter projects
+// NOTE: `calcut` is intentionally excluded here — it is featured as a Personal
+// Project on the landing page (see landing_projects.ts). School Projects only
+// lists course/campus builds.
 export const flutterList: Project[] = [
-    calcut,
     kalyaCourtsWebApp,
     cupertinoIcons,
     thumbsapp,

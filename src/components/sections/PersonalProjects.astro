@@ -1,0 +1,21 @@
+---
+import { personalProjects } from "../../scripts/landing_projects";
+import ProjectFeatureCard from "../ProjectFeatureCard.astro";
+---
+
+<!-- ============ PERSONAL PROJECTS ============ -->
+<section id="personal" aria-label="Personal Projects">
+  <div
+    class="flex flex-col gap-3 px-6 pt-14 pb-9 sm:flex-row sm:items-baseline sm:justify-between sm:px-10 sm:gap-0"
+  >
+    <h2 class="text-[11px] font-normal tracking-[0.18em] text-[#888] uppercase">
+      01 — Personal Projects
+    </h2>
+    <div class="max-w-120 text-[13px] text-[#555] sm:text-right">
+      Live platforms I design, build and maintain myself — proof of long-term
+      reliability beyond initial delivery.
+    </div>
+  </div>
+
+  {personalProjects.map((project) => <ProjectFeatureCard project={project} />)}
+</section>

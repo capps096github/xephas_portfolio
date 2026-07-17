@@ -1,0 +1,93 @@
+---
+import type { LandingProject } from "../scripts/landing_projects";
+import ArrowUpRight from "./icons/ArrowUpRight.astro";
+
+interface Props {
+  project: LandingProject;
+}
+
+const { project } = Astro.props;
+const isMeta = Array.isArray(project.meta) && project.meta.length > 0;
+---
+
+<!-- Reusable feature card — drives both Personal (caption) and Client (meta grid) projects -->
+<div
+  class="group grid grid-cols-1 items-center gap-6 px-6 py-8 sm:px-10 lg:grid-cols-2 lg:gap-12"
+  data-reveal
+>
+  <!-- IMAGE -->
+  <div
+    class:list={[
+      "flex items-center justify-center overflow-hidden rounded-2xl bg-[#f7f6f4]",
+      project.imageLeft ? "order-2 lg:order-1" : "order-2",
+    ]}
+  >
+    <img
+      src={project.image}
+      alt={project.imageAlt}
+      loading="lazy"
+      class="h-full w-full object-cover transition-all duration-500 [@media(hover:hover)]:grayscale group-hover:scale-[1.03] group-hover:grayscale-0"
+    />
+  </div>
+
+  <!-- TEXT -->
+  <div
+    class:list={[
+      "flex flex-col justify-between gap-8 py-4",
+      project.imageLeft ? "order-1 lg:order-2" : "order-1",
+    ]}
+  >
+    <div>
+      <div class="flex items-baseline justify-between">
+        <h3 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-[32px]">
+          {project.name}
+        </h3>
+        <div class="ml-6 text-[11px] whitespace-nowrap tracking-[0.16em] text-[#888]">
+          {project.code}
+        </div>
+      </div>
+      <div class="mt-4 max-w-150 text-sm leading-[1.65] text-[#444]">
+        {project.description}
+      </div>
+
+      {
+        isMeta && (
+          <div class="mt-7 grid max-w-150 grid-cols-1 gap-x-8 gap-y-3 text-xs leading-[1.6] text-[#444] sm:grid-cols-2">
+            {project.meta!.map((m) => (
+              <div>
+                <span class="text-[10px] tracking-[0.12em] text-[#999] uppercase">
+                  {m.label}
+                </span>
+                <br />
+                {m.value}
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-6">
+      {
+        project.caption && (
+          <div class="text-[11px] tracking-[0.16em] text-[#888] uppercase">
+            {project.caption}
+          </div>
+        )
+      }
+      {
+        project.link && (
+          <a
+            href={project.link.href}
+            target={project.link.href.startsWith("http") ? "_blank" : undefined}
+            rel={project.link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            class="link-underline group inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap tracking-[0.16em] text-[#0a0a0a] uppercase"
+          >
+            {project.link.label}
+            <ArrowUpRight class="icon-shift h-3.5 w-3.5" />
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

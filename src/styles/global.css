@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* Keep using the existing JS Tailwind config (custom xephas-* colors, font-mont) */
+@config "../../tailwind.config.mjs";
+
+@font-face {
+  font-family: "Xeroda";
+  src: url("/fonts/Xeroda-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Type system:
+   - Body / everything default → Montserrat (loaded in Head.astro)
+   - Titles / display headlines → Xeroda (font-face above) */
+@layer base {
+  body {
+    font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Utility for titles — apply to any heading/title element. */
+.font-xeroda {
+  font-family: "Xeroda", "Montserrat", sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Button / link animations — ported from linkyoo_web.
+   Linkyoo's canonical CTA feel: lift + slight scale + soft shadow on hover,
+   press-in on active. Apply `btn-anim` to any pill button.
+   `link-anim` gives text links a subtle upward nudge; `icon-shift` nudges a
+   trailing icon (e.g. the arrow-up-right) diagonally on group hover.
+--------------------------------------------------------------------------- */
+@utility btn-anim {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@utility link-anim {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.7;
+  }
+}
+
+/* Trailing icon nudge — pair the icon's parent link with `group` and give the
+   icon this class so it shifts up-right when the link is hovered. */
+@utility icon-shift {
+  transition: transform 0.2s ease;
+  .group:hover & {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* Horizontal variant — for a trailing right-arrow that slides right on hover. */
+@utility icon-shift-x {
+  transition: transform 0.2s ease;
+  .group:hover & {
+    transform: translateX(3px);
+  }
+}
+
+/* Link underline — text stays its own colour; a thin underline wipes in from
+   the left on hover instead of a colour change. Used site-wide on links.
+   `nav-underline` is the same effect (kept as an alias for the navbar). */
+@utility link-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1.5px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Persistent underline for the current/active link (e.g. the selected terms
+   tab). Pair `is-active` with `link-underline`. */
+.link-underline.is-active::after {
+  transform: scaleX(1);
+}
+
+@utility nav-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1.5px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  &:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hover spotlight pattern.
+   Add `spotlight` to any positioned section. It paints a decorative SVG
+   pattern layer that is normally invisible and only "revealed" through a
+   soft-edged circular mask that follows the cursor. Driven by the
+   --spot-x / --spot-y custom properties set from JS (see spotlight.ts), plus
+   --spot-o for the fade in/out of the whole layer on enter/leave.
+
+   The mask is a radial gradient: opaque in the centre, transparent past the
+   radius, so the pattern only shows inside the moving circle with a fading
+   border — exactly the effect requested.
+--------------------------------------------------------------------------- */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Cap the layer well below full strength so black text stays readable
+     even when the pattern is revealed directly behind it. --spot-o (0→1)
+     is scaled by this ceiling. */
+  --spot-max: 0.1;
+  opacity: calc(var(--spot-o, 0) * var(--spot-max));
+  transition: opacity 0.4s ease;
+
+  /* The revealed pattern (dark ink dots/lines on transparent). */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='%23010003' fill-opacity='1'%3E%3Cpath fill-rule='evenodd' d='M29.42 29.41c.36-.36.58-.85.58-1.4V0h-4v26H0v4h28c.55 0 1.05-.22 1.41-.58h.01zm0 29.18c.36.36.58.86.58 1.4V88h-4V62H0v-4h28c.56 0 1.05.22 1.41.58zm29.16 0c-.36.36-.58.85-.58 1.4V88h4V62h26v-4H60c-.55 0-1.05.22-1.41.58h-.01zM62 26V0h-4v28c0 .55.22 1.05.58 1.41.37.37.86.59 1.41.59H88v-4H62zM18 36c0-1.1.9-2 2-2h10a2 2 0 1 1 0 4H20a2 2 0 0 1-2-2zm0 16c0-1.1.9-2 2-2h10a2 2 0 1 1 0 4H20a2 2 0 0 1-2-2zm16-26a2 2 0 0 1 2-2 2 2 0 0 1 2 2v4a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-4zm16 0a2 2 0 0 1 2-2 2 2 0 0 1 2 2v4a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-4zM34 58a2 2 0 0 1 2-2 2 2 0 0 1 2 2v4a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-4zm16 0a2 2 0 0 1 2-2 2 2 0 0 1 2 2v4a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-4zM34 78a2 2 0 0 1 2-2 2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-6zm16 0a2 2 0 0 1 2-2 2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-6zM34 4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4zm16 0a2 2 0 0 1 2-2 2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4zm-8 82a2 2 0 1 1 4 0v2h-4v-2zm0-68a2 2 0 1 1 4 0v10a2 2 0 1 1-4 0V18zM66 4a2 2 0 1 1 4 0v8a2 2 0 1 1-4 0V4zm0 72a2 2 0 1 1 4 0v8a2 2 0 1 1-4 0v-8zm-48 0a2 2 0 1 1 4 0v8a2 2 0 1 1-4 0v-8zm0-72a2 2 0 1 1 4 0v8a2 2 0 1 1-4 0V4zm24-4h4v2a2 2 0 1 1-4 0V0zm0 60a2 2 0 1 1 4 0v10a2 2 0 1 1-4 0V60zm14-24c0-1.1.9-2 2-2h10a2 2 0 1 1 0 4H58a2 2 0 0 1-2-2zm0 16c0-1.1.9-2 2-2h10a2 2 0 1 1 0 4H58a2 2 0 0 1-2-2zm-28-6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm8 26a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm16 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM36 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm16 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-8-8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 68a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm16-34a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm16-12a2 2 0 1 0 0 4 6 6 0 1 1 0 12 2 2 0 1 0 0 4 10 10 0 1 0 0-20zm-64 0a2 2 0 1 1 0 4 6 6 0 1 0 0 12 2 2 0 1 1 0 4 10 10 0 1 1 0-20zm56-12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 48a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-48 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0-48a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm24 32a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-4a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm36-36a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM10 44c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4h-8a2 2 0 0 1-2-2zm56 0c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4h-8a2 2 0 0 1-2-2zm8 24c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4h-8a2 2 0 0 1-2-2zM3 68c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4H5a2 2 0 0 1-2-2zm0-48c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4H5a2 2 0 0 1-2-2zm71 0c0-1.1.9-2 2-2h8a2 2 0 1 1 0 4h-8a2 2 0 0 1-2-2zm6 66a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 86a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0-68A6 6 0 1 1 8 2a6 6 0 0 1 0 12zm0-4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm36 36a2 2 0 1 0 0-4 2 2 0 0 0 0 4z'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* Slowly drift the texture so the revealed area feels alive. */
+  background-position: 0 0;
+  animation: spotlight-drift 24s linear infinite;
+
+  /* Reveal only inside a soft circle that follows the cursor. */
+  --spot-r: 190px;
+  -webkit-mask-image: radial-gradient(
+    circle var(--spot-r) at var(--spot-x, 50%) var(--spot-y, 50%),
+    #000 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--spot-r) at var(--spot-x, 50%) var(--spot-y, 50%),
+    #000 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    transparent 100%
+  );
+}
+
+/* The pattern tile is 88px; drift one full tile so the loop is seamless. */
+@keyframes spotlight-drift {
+  to {
+    background-position: 88px 88px;
+  }
+}
+
+/* On dark sections the ink pattern would vanish — tint it light instead. */
+.spotlight-dark::before {
+  filter: invert(1);
+}
+
+/* On touch devices there is no cursor to reveal the spotlight, so hide the
+   pattern layer entirely rather than faking a static wash. */
+@media (hover: none) {
+  .spotlight::before {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero wordmark entrance + sheen.
+   `wordmark-anim` gives the X3PH★S logo a soft fade/scale-in on load, then a
+   light sweep glides across it once. The sweep is a moving highlight masked to
+   the logo's own shape via mask-composite, so only the letters shimmer.
+--------------------------------------------------------------------------- */
+.wordmark-anim {
+  animation: wordmark-in 1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes wordmark-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Sheen overlay: a diagonal highlight band clipped to the wordmark silhouette
+   (via the same SVG as an alpha mask) that sweeps left→right, then repeats
+   slowly as an ambient shimmer. */
+.wordmark-sheen {
+  position: relative;
+}
+
+.wordmark-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 58%
+  );
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  /* `screen` lifts the black letters toward grey where the band sits, so the
+     highlight is actually visible on a solid-black logo (overlay would not). */
+  mix-blend-mode: screen;
+
+  /* Clip the sheen to the wordmark shape. */
+  -webkit-mask: url("/images/design/xephas-wordmark.svg") center / contain no-repeat;
+  mask: url("/images/design/xephas-wordmark.svg") center / contain no-repeat;
+
+  animation: wordmark-sheen 6s ease-in-out 1s infinite;
+}
+
+@keyframes wordmark-sheen {
+  0% {
+    background-position: 200% 0;
+  }
+  /* Sweep across, then hold off-screen for the rest of the cycle. */
+  22%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight::before {
+    transition: none;
+    animation: none;
+  }
+  .wordmark-anim {
+    animation: none;
+  }
+  .wordmark-sheen::after {
+    animation: none;
+    display: none;
+  }
+}
