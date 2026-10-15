@@ -1,0 +1,525 @@
+---
+import "../styles/global.css";
+import Head from "../components/Head.astro";
+import FloatingNav from "../components/FloatingNav.astro";
+import Footer from "../components/Footer.astro";
+import ArrowUpRight from "../components/icons/ArrowUpRight.astro";
+import Download from "../components/icons/Download.astro";
+import Mail from "../components/icons/Mail.astro";
+import MessageCircle from "../components/icons/MessageCircle.astro";
+import { qrSvg } from "../scripts/qr";
+import { baseUrl } from "../scripts/constants.js";
+
+// Registration form (Tally).
+const TALLY_URL = "https://tally.so/r/PRjpxb";
+
+// The flyer's QR points at this page, so it keeps working if the Tally link changes.
+const FLYER_URL = "https://xephas.me/code";
+const flyerQr = qrSvg(FLYER_URL, 4, "QR code linking to xephas.me/code");
+
+const contactEmails = ["xephas@aptahq.com", "projects@aptahq.com"];
+const company = "Apta Innovations Limited";
+const contactName = "Cephas Brian";
+const contactPhone = "0758 294 212";
+const contactWhatsApp = "https://wa.me/256758294212";
+const deadline = "30 October 2026";
+const minLoc = "50,000";
+
+// Share card for this page (1200x630); bump ?v= after regenerating so social platforms re-scrape.
+const ogImage = baseUrl + "images/code-og.png?v=2";
+const ogImageAlt = "We're buying source code. Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
+
+const pageTitle = "Source Code Acquisition | " + company;
+const pageDescription =
+  "Apta Innovations Limited is acquiring large, private, git-based codebases for research & development. 50,000+ lines of code. Confidential. Deadline 30 October 2026.";
+
+const priorityLanguages = [
+  "Kotlin",
+  "Next.js",
+  "React",
+  "TypeScript",
+  "Tailwind",
+  "COBOL",
+  "Fortran",
+  "Jira Query Language",
+  "Mainframe Stack",
+  "OCaml",
+  "WebGL",
+  "Verse",
+];
+
+const lookingFor = [
+  { title: `${minLoc}+ lines of code`, body: "Actual source code, excluding dependencies, generated files and build output. Larger codebases are considered first." },
+  { title: "Full-stack monorepos", body: "Mobile app + web + backend API in one repo carries the most weight. Single apps, web platforms and APIs are welcome too." },
+  { title: "Proprietary & executable", body: "Private code that you wrote and that builds and runs. Not a tutorial, template or snippet collection." },
+  { title: "Readable, well-written code", body: "Clear structure, sensible naming, real complexity and completeness." },
+  { title: "Full git history", body: "Hosted on GitHub, GitLab, Bitbucket or any git platform, with all history, changes and commits. Squashed or re-initialised repos don't qualify." },
+  { title: "Pull requests & tests", body: "Pull requests and test coverage, where you have them, make a submission stronger." },
+  { title: "Run instructions", body: "A README or run_instruction.md explaining how to build, configure and run it." },
+];
+
+const dealbreakers = [
+  "Not git-based (SVN, zip-only, no history)",
+  "Open-source, public, forked or template code",
+  "Real user data or personal information (PII)",
+  "Entirely AI-generated projects",
+  "Code you don't fully own: employer or client work",
+  `Under ${minLoc} lines of source code`,
+];
+
+const steps = [
+  { n: "01", title: "Submit", body: `Fill in the short form before ${deadline}: the project, its stack, its git history and your asking price.` },
+  { n: "02", title: "Review", body: "We review every submission privately and shortlist the repositories that fit. We may ask for read access to verify the code." },
+  { n: "03", title: "Agree", body: "Shortlisted owners agree a price and sign a written acquisition agreement covering the code and how it may be used." },
+  { n: "04", title: "Get paid", body: "Payment is made once the agreement is signed and the code is delivered. Nothing is owed up front." },
+];
+
+// Flyer colourways. The swatches above the flyer switch between these; each has its own downloads.
+const flyerThemes = [
+  {
+    key: "black",
+    label: "Black",
+    swatch: "bg-[#0a0a0a]",
+    card: "bg-[#0a0a0a] text-[#f4f2ef]",
+    muted: "text-[#888]",
+    body: "text-[#bbb]",
+    chip: "border-[#f4f2ef]/40",
+    divider: "border-[#f4f2ef]/20",
+    logo: "invert",
+    qr: "",
+  },
+  {
+    key: "white",
+    label: "White",
+    swatch: "bg-white",
+    card: "bg-white text-[#0a0a0a] ring-1 ring-[#0a0a0a]/10",
+    muted: "text-[#777]",
+    body: "text-[#555]",
+    chip: "border-[#0a0a0a]/30",
+    divider: "border-[#0a0a0a]/15",
+    logo: "",
+    qr: "ring-1 ring-[#0a0a0a]/15",
+  },
+];
+
+// Files live in public/downloads/, named code-flyer-<theme>.<ext>.
+const flyerDownloads = [
+  { ext: "png", label: "Download PNG" },
+  { ext: "pdf", label: "Download PDF (A4)" },
+];
+
+const flyerMusts = [
+  `${minLoc}+ lines of code, larger first`,
+  "Mobile, web & API: monorepos preferred",
+  "Private git repo with full commit history",
+  "No PII, no open-source, not fully AI-made",
+  "You own the code and can sell it",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <Head
+    pageTitle={pageTitle}
+    pageDescription={pageDescription}
+    canonicalPath="code/"
+    pageCoverImage={ogImage}
+    pageCoverImageAlt={ogImageAlt}
+    pageCoverImageWidth="1200"
+    pageCoverImageHeight="630"
+  />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <div class="no-print"><FloatingNav /></div>
+
+    <!-- HERO -->
+    <section class="spotlight no-print border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        {company} · Official Notice
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+        data-reveal
+      >
+        We're acquiring software source code.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        {company} invites developers and software teams to submit source code
+        from active or discontinued projects for research &amp; development.
+        We're looking for large, private, git-based codebases of {minLoc}+
+        lines, with full-stack monorepos considered first. You name your price.
+      </p>
+      <p class="mt-4 text-[13px] font-semibold tracking-[0.12em] uppercase">
+        Submission deadline: {deadline}
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href={TALLY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+        >
+          Submit your repo
+          <ArrowUpRight class="h-3.5 w-3.5" />
+        </a>
+        <a href="#flyer" class="link-underline inline-block text-[13px] font-semibold">
+          View / download the flyers
+        </a>
+      </div>
+    </section>
+
+    <!-- FLYER -->
+    <section id="flyer" class="flyer-wrap bg-[#f7f6f4] px-6 py-14 sm:px-10">
+      <div class="no-print mx-auto mb-6 flex max-w-160 items-center justify-between gap-4">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Flyer</h2>
+        <div class="flex items-center gap-5">
+          <div class="flex items-center gap-2" role="group" aria-label="Flyer colour">
+            {
+              flyerThemes.map((theme, i) => (
+                <button
+                  type="button"
+                  data-flyer-swatch={theme.key}
+                  aria-pressed={i === 0 ? "true" : "false"}
+                  aria-label={`Show the ${theme.label.toLowerCase()} flyer`}
+                  class={`flyer-swatch h-7 w-7 rounded-full border border-[#0a0a0a]/25 ${theme.swatch}`}
+                />
+              ))
+            }
+          </div>
+          <button
+            type="button"
+            onclick="window.print()"
+            class="link-underline inline-block text-[13px] font-semibold"
+          >
+            Print
+          </button>
+        </div>
+      </div>
+
+      {
+        flyerThemes.map((theme, i) => (
+          <div data-flyer={theme.key} class:list={["flyer-slot", { hidden: i !== 0 }]}>
+            <article
+              class={`flyer mx-auto max-w-160 p-8 sm:p-12 ${theme.card}`}
+              aria-label={`Code acquisition flyer, ${theme.label.toLowerCase()}`}
+            >
+              <div class="flex items-center justify-between gap-4">
+                <div class={`text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>{company}</div>
+                <img
+                  src="/images/design/xephas-star-logo-black.svg"
+                  alt="X3PH★S"
+                  class={`h-8 w-auto sm:h-10 ${theme.logo}`}
+                />
+              </div>
+              <h3 class="font-xeroda mt-5 text-[34px] leading-[1.04] font-semibold tracking-[-0.02em] text-balance sm:text-[48px]">
+                We're buying source code.
+              </h3>
+              <p class={`mt-5 max-w-md text-[14px] leading-[1.65] ${theme.body}`}>
+                Large, private software projects with full git history, for
+                research &amp; development. Confidential. Selective. You name your price.
+              </p>
+
+              <div class={`mt-8 text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>Languages in demand</div>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {priorityLanguages.map((lang) => (
+                  <li class={`rounded-full border px-3 py-1 text-[12px] ${theme.chip}`}>{lang}</li>
+                ))}
+              </ul>
+              <p class={`mt-3 text-[12px] ${theme.muted}`}>Other languages welcome too.</p>
+
+              <div class={`mt-8 text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>Must-haves</div>
+              <ul class="mt-3 space-y-2 text-[14px]">
+                {flyerMusts.map((item) => (
+                  <li class="flex gap-3">
+                    <span class={theme.muted}>—</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div class={`mt-10 flex items-end justify-between gap-6 border-t pt-6 ${theme.divider}`}>
+                <div>
+                  <div class={`text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>Scan or visit</div>
+                  <div class="font-xeroda mt-1 text-[24px] font-semibold tracking-[-0.01em]">xephas.me/code</div>
+                  <div class="mt-2 text-[12px] font-semibold tracking-[0.12em] uppercase">Deadline: {deadline}</div>
+                  <div class={`mt-4 text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>More info</div>
+                  <div class="mt-1 text-[13px] leading-[1.6] font-semibold">
+                    <div>{contactName}</div>
+                    <div class="flex items-center gap-2">
+                      <MessageCircle class="h-3.5 w-3.5 shrink-0" />
+                      <span class="sr-only">WhatsApp</span>{contactPhone}
+                    </div>
+                    {contactEmails.map((email) => (
+                      <div class="flex items-center gap-2">
+                        <Mail class="h-3.5 w-3.5 shrink-0" />
+                        {email}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div
+                  class={`h-28 w-28 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-32 ${theme.qr}`}
+                  set:html={flyerQr}
+                />
+              </div>
+            </article>
+
+            <div class="no-print mx-auto mt-5 flex max-w-160 flex-wrap items-center gap-3">
+              {flyerDownloads.map((d) => (
+                <a
+                  href={`/downloads/code-flyer-${theme.key}.${d.ext}`}
+                  download={`apta-code-flyer-${theme.key}.${d.ext}`}
+                  class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+                >
+                  <Download class="h-3.5 w-3.5" />
+                  {d.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <div class="no-print">
+      <!-- LOOKING FOR -->
+      <section class="px-6 pt-14 pb-14 sm:px-10">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+          What we're looking for
+        </h2>
+        <div class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3" data-reveal>
+          {
+            lookingFor.map((item) => (
+              <div class="border-t border-[#e5e3df] py-5">
+                <div class="text-[15px] font-semibold">{item.title}</div>
+                <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{item.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- LANGUAGES -->
+      <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+          Languages
+        </h2>
+        <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+          We're open to most languages and stacks, but especially interested in:
+        </p>
+        <ul class="mt-6 flex max-w-3xl flex-wrap gap-2" data-reveal>
+          {
+            priorityLanguages.map((lang) => (
+              <li class="rounded-full border border-[#0a0a0a] px-4 py-1.5 text-[13px] font-medium">{lang}</li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- DEALBREAKERS -->
+      <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+          What we can't accept
+        </h2>
+        <ul class="mt-8 grid max-w-3xl grid-cols-1 gap-x-10 sm:grid-cols-2" data-reveal>
+          {
+            dealbreakers.map((item) => (
+              <li class="flex gap-3 border-t border-[#e5e3df] py-4 text-[15px]">
+                <span class="text-[#999]">✕</span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+          How it works
+        </h2>
+        <ol class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+          {
+            steps.map((s) => (
+              <li class="border-t border-[#e5e3df] py-5">
+                <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{s.n}</div>
+                <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
+                <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <!-- CONFIDENTIALITY -->
+      <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">
+          Confidential &amp; selective
+        </h2>
+        <div class="mt-8 grid max-w-4xl grid-cols-1 gap-x-10 sm:grid-cols-3" data-reveal>
+          <div class="border-t border-[#e5e3df] py-5">
+            <div class="text-[15px] font-semibold">Private between us</div>
+            <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">
+              Submissions, repository details and price discussions stay
+              between {company} and you. Nothing is published.
+            </p>
+          </div>
+          <div class="border-t border-[#e5e3df] py-5">
+            <div class="text-[15px] font-semibold">We choose the repos</div>
+            <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">
+              We review every submission and shortlist the repositories that
+              fit. Submitting doesn't guarantee selection or purchase.
+            </p>
+          </div>
+          <div class="border-t border-[#e5e3df] py-5">
+            <div class="text-[15px] font-semibold">You keep your idea</div>
+            <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">
+              You keep your idea and your product. What we acquire is the
+              code, under a written agreement that lets us use and license it
+              onward for research &amp; development.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="spotlight spotlight-dark bg-[#0a0a0a] text-[#f4f2ef]">
+        <div
+          class="flex flex-col gap-6 px-6 py-14 sm:flex-row sm:items-end sm:justify-between sm:px-10"
+          data-reveal
+        >
+          <div>
+            <div class="text-[11px] tracking-[0.18em] text-[#777] uppercase">Deadline · {deadline}</div>
+            <h2
+              class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]"
+            >
+              Tell us about your project and name your price.
+            </h2>
+            <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
+              Questions? WhatsApp {contactName} on{" "}
+              <a href={contactWhatsApp} target="_blank" rel="noopener noreferrer" class="link-underline inline-block font-semibold text-[#f4f2ef]">{contactPhone}</a>{" "}
+              or email{" "}
+              {
+                contactEmails.map((email, i) => (
+                  <>
+                    {i > 0 && " or "}
+                    <a href={`mailto:${email}`} class="link-underline inline-block font-semibold text-[#f4f2ef]">{email}</a>
+                  </>
+                ))
+              }
+            </p>
+          </div>
+          <a
+            href={TALLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-anim inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[#f4f2ef] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase sm:self-auto"
+          >
+            Submit your repo
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+
+    <style>
+      .flyer-swatch[aria-pressed="true"] {
+        outline: 2px solid #0a0a0a;
+        outline-offset: 3px;
+      }
+      @media print {
+        @page {
+          margin: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .flyer-wrap {
+          background: #fff !important;
+          padding: 0 !important;
+        }
+        .flyer {
+          max-width: none !important;
+          min-height: 100vh;
+          box-shadow: none !important;
+          display: flex;
+          flex-direction: column;
+          padding: 64px !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        /* Pin the scan / contact block to the foot of the page. */
+        .flyer > :last-child {
+          margin-top: auto;
+        }
+      }
+    </style>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBqLGG656obraE1lKkTIOrJH6EQzLrDZyM",
+        authDomain: "xephasme.firebaseapp.com",
+        projectId: "xephasme",
+        storageBucket: "xephasme.appspot.com",
+        messagingSenderId: "319248268150",
+        appId: "1:319248268150:web:6dccd45af1f8d396eed857",
+        measurementId: "G-R5G40ZN9CM",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+
+    <!-- Flyer colour switcher -->
+    <script>
+      const swatches = document.querySelectorAll<HTMLButtonElement>("[data-flyer-swatch]");
+      swatches.forEach((swatch) => {
+        swatch.addEventListener("click", () => {
+          const key = swatch.dataset.flyerSwatch;
+          swatches.forEach((s) => s.setAttribute("aria-pressed", String(s === swatch)));
+          document.querySelectorAll<HTMLElement>("[data-flyer]").forEach((slot) => {
+            slot.classList.toggle("hidden", slot.dataset.flyer !== key);
+          });
+        });
+      });
+    </script>
+
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../scripts/spotlight";
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>
