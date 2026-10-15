@@ -1,14 +1,14 @@
 ---
-import "../styles/global.css";
-import Head from "../components/Head.astro";
-import FloatingNav from "../components/FloatingNav.astro";
-import Footer from "../components/Footer.astro";
-import ArrowUpRight from "../components/icons/ArrowUpRight.astro";
-import Download from "../components/icons/Download.astro";
-import Mail from "../components/icons/Mail.astro";
-import MessageCircle from "../components/icons/MessageCircle.astro";
-import { qrSvg } from "../scripts/qr";
-import { baseUrl } from "../scripts/constants.js";
+import "../../styles/global.css";
+import Head from "../../components/Head.astro";
+import FloatingNav from "../../components/FloatingNav.astro";
+import Footer from "../../components/Footer.astro";
+import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
+import Download from "../../components/icons/Download.astro";
+import Mail from "../../components/icons/Mail.astro";
+import MessageCircle from "../../components/icons/MessageCircle.astro";
+import { qrSvg } from "../../scripts/qr";
+import { baseUrl } from "../../scripts/constants.js";
 
 // Registration form (Tally).
 const TALLY_URL = "https://tally.so/r/PRjpxb";
@@ -71,7 +71,7 @@ const steps = [
   { n: "01", title: "Submit", body: `Fill in the short form before ${deadline}: the project, its stack, its git history and your asking price.` },
   { n: "02", title: "Review", body: "We review every submission privately and shortlist the repositories that fit. We may ask for read access to verify the code." },
   { n: "03", title: "Agree", body: "Shortlisted owners agree a price and sign a written acquisition agreement covering the code and how it may be used." },
-  { n: "04", title: "Get paid", body: "Payment is made once the agreement is signed and the code is delivered. Nothing is owed up front." },
+  { n: "04", title: "Get paid", body: "You clean the repo with our free scripts, then we build the archive together on a call and payment is released there. Nothing is owed up front." },
 ];
 
 // Flyer colourways. The swatches above the flyer switch between these; each has its own downloads.
@@ -348,6 +348,10 @@ const flyerMusts = [
             ))
           }
         </ol>
+        <a href="/code/prepare/" class="link-underline mt-6 inline-flex items-center gap-1 text-[13px] font-semibold">
+          How to prepare your repo for sale: scripts and steps
+          <ArrowUpRight class="h-3.5 w-3.5" />
+        </a>
       </section>
 
       <!-- CONFIDENTIALITY -->
@@ -491,7 +495,7 @@ const flyerMusts = [
 
     <!-- Hover spotlight pattern -->
     <script>
-      import "../scripts/spotlight";
+      import "../../scripts/spotlight";
     </script>
 
     <!-- Scroll reveal -->

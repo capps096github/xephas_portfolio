@@ -23,6 +23,8 @@ interface Props {
   pageCoverImageHeight?: string;
   /** Path relative to baseUrl for this page's canonical URL, e.g. "" for home, "community/" for /community */
   canonicalPath?: string;
+  /** Robots directive, e.g. "noindex, nofollow" for internal pages */
+  robots?: string;
 }
 
 // Access passed-in component props, like `<X title="Hello, World" />`
@@ -32,6 +34,7 @@ const {
   pageCoverImage,
   pageDescription,
   canonicalPath = "",
+  robots = "index, follow",
   pageCoverImageAlt = coverImageAlt,
   pageCoverImageWidth = coverImageWidth,
   pageCoverImageHeight = coverImageHeight,
@@ -57,7 +60,7 @@ const canonicalUrl = baseUrl + canonicalPath;
   <meta name="keywords" content={keywords} />
   <meta name="author" content={developer.author} />
   <meta name="copyright" content={developer.copyright} />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content={robots} />
   <meta name="rating" content="general" />
   <meta name="theme-color" content="#0a0a0a" />
 

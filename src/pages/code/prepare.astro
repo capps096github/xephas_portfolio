@@ -1,0 +1,491 @@
+---
+import "../../styles/global.css";
+import Head from "../../components/Head.astro";
+import FloatingNav from "../../components/FloatingNav.astro";
+import Footer from "../../components/Footer.astro";
+import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
+import Download from "../../components/icons/Download.astro";
+import { baseUrl } from "../../scripts/constants.js";
+
+const company = "Apta Innovations Limited";
+const contactName = "Cephas Brian";
+const contactPhone = "0758 294 212";
+const contactWhatsApp = "https://wa.me/256758294212";
+const contactEmails = ["xephas@aptahq.com", "projects@aptahq.com"];
+const branch = "cleaned_version";
+
+const ogImage = baseUrl + "images/code-og.png?v=2";
+const ogImageAlt = "Preparing your repository for sale. Apta Innovations Limited, xephas.me/code/prepare.";
+const pageTitle = "Preparing Your Repo | " + company + " through Cephas";
+const pageDescription =
+  "How shortlisted sellers clean a repository and its git history before sale: free scripts, a run_instruction.md template, and how the handover call and payment work.";
+
+// Files live in public/code/.
+const downloads = [
+  {
+    file: "check-repo.sh",
+    title: "check-repo.sh",
+    body: "Read-only audit of your repo and its full history: AI tooling files, secrets, personal data, build output, home-folder paths, run instructions and line count. Its report goes in the form.",
+  },
+  {
+    file: "clean-history.sh",
+    title: "clean-history.sh",
+    body: `Rewrites history on a copy, never on your repo, then prints the command that pushes it to a new ${branch} branch. Removes AI tooling, machine files and home paths by default.`,
+  },
+  {
+    file: "build-archive.sh",
+    title: "build-archive.sh",
+    body: `What we run on the handover call. It copies ${branch} with Read access only, exports pull requests, re-checks, packs and verifies the archive.`,
+  },
+  {
+    file: "run_instruction.template.md",
+    title: "run_instruction.md template",
+    body: "Fill it in and save it as run_instruction.md at the root of your repo: prerequisites, credentials, build/run/test commands, quick start, troubleshooting.",
+  },
+  {
+    file: "secrets.example.txt",
+    title: "secrets.example.txt",
+    body: "Example rules for replacing secret strings everywhere in your history while keeping the files that held them.",
+  },
+];
+
+const handover = [
+  { n: "01", title: "Shortlisted", body: "We contact you once your project is shortlisted and a price is agreed." },
+  { n: "02", title: "You clean", body: `You follow the steps below and push the result to a new branch, ${branch}. Your other branches stay as they are.` },
+  { n: "03", title: "You submit the check", body: "You paste the check-repo.sh report for your cleaned branch into the form and invite us with Read access." },
+  { n: "04", title: "Handover call", body: "On a call, we run build-archive.sh while you watch. It packs and verifies the archive and prints a receipt." },
+  { n: "05", title: "Payment", body: "Once the archive passes, payment is released on the call. You get the receipt with the archive's SHA-256 fingerprint." },
+];
+
+const steps = [
+  {
+    title: "Install the tools",
+    body: "You need git, Python 3, git-filter-repo and cloc. On Windows, use Git Bash or WSL.",
+    code: `# macOS
+brew install git-filter-repo cloc
+
+# Linux
+sudo apt install git-filter-repo cloc     # or: pip install git-filter-repo
+
+# Then download the scripts into one folder
+mkdir sale-tools && cd sale-tools
+curl -O https://xephas.me/code/check-repo.sh
+curl -O https://xephas.me/code/clean-history.sh
+curl -O https://xephas.me/code/secrets.example.txt`,
+  },
+  {
+    title: "Check the branch you're selling",
+    body: "Usually main. This copy is only for checking; it doesn't touch your repo. The report shows every file and string that needs to go, with counts.",
+    code: `git clone --bare --single-branch --branch main https://github.com/you/app.git app.git
+bash check-repo.sh app.git | tee before.txt`,
+  },
+  {
+    title: "Add run_instruction.md",
+    body: "Download the template, fill it in for your project and commit it at the root of main before you clean. A buyer must be able to build and run the project from this file alone.",
+    link: { href: "/code/run_instruction.template.md", label: "run_instruction.md template" },
+  },
+  {
+    title: "Rotate secrets, then list them",
+    body: "Cancel and reissue every API key, token and password the report found, so the old values are dead. Then copy secrets.example.txt to secrets.txt and add one rule per secret or piece of personal data, real value ==> placeholder.",
+    code: `cp secrets.example.txt secrets.txt
+# edit secrets.txt, one rule per line:
+#   sk_live_51Hxxxx==>YOUR_STRIPE_SECRET_KEY
+#   jane.doe@gmail.com==>user@example.com`,
+  },
+  {
+    title: "Dry run",
+    body: "List the files and folders to remove from every commit: the ones the report flagged. AI tooling, .DS_Store, machine files and home paths are removed automatically. A dry run shows what would go and changes nothing.",
+    code: `DRY_RUN=1 SECRETS_FILE=secrets.txt bash clean-history.sh \\
+  https://github.com/you/app.git  .env  android/app/build/  '*.jks'  seed-data/`,
+  },
+  {
+    title: "Clean",
+    body: `Run it again without DRY_RUN. It works on a copy named app-clean.git, keeps only the branch you're selling, rewrites it, verifies it and runs check-repo.sh on the result. Repeat until the check passes.`,
+    code: `SECRETS_FILE=secrets.txt bash clean-history.sh \\
+  https://github.com/you/app.git  .env  android/app/build/  '*.jks'  seed-data/
+
+# selling a branch other than the default one?
+SOURCE_BRANCH=develop SECRETS_FILE=secrets.txt bash clean-history.sh ...`,
+  },
+  {
+    title: `Push it to a new branch: ${branch}`,
+    body: `This adds one branch holding the cleaned history. Nothing is force-pushed, your other branches and pull requests are untouched, and ${branch} is the only branch we copy. Never merge it into your other branches: that would bring the removed files back.`,
+    code: `git -C app-clean.git push https://github.com/you/app.git main:refs/heads/${branch}`,
+  },
+  {
+    title: "Check what you pushed",
+    body: "Check a fresh copy of the new branch. When it reads RESULT: ready, paste the full report into the form. Explain any warnings that are fine, such as your own support email.",
+    code: `git clone --bare --single-branch --branch ${branch} https://github.com/you/app.git check.git
+bash check-repo.sh check.git | tee report.txt`,
+  },
+  {
+    title: "Invite us with Read access",
+    body: "On GitHub: Settings > Collaborators > Add people, with the username we send you, role Read. On GitLab or Bitbucket, the Reporter or Read role. Then message us to book the handover call. Delete secrets.txt: it holds your real secrets.",
+  },
+];
+
+const remove = [
+  "AI tooling: CLAUDE.md, AGENTS.md, .cursor/, .claude/, .github/copilot-instructions.md, .cursorrules, .aider*, llm-guides/",
+  "Secrets: .env files, keystores, .pem/.p12/.p8 keys, service-account JSON, API keys, signing passwords",
+  "Personal data: real names, emails, phone numbers, test logins, database dumps, user uploads",
+  "Build output: node_modules/, build/, dist/, .dart_tool/, .next/, Pods/, .firebase/, .apk, .ipa, .zip",
+  "Machine files: local.properties, Generated.xcconfig, ephemeral/, .DS_Store, /Users/<name>/ paths",
+  "Folders that belong to other projects, and symlinks pointing outside the repo",
+];
+
+const keep = [
+  "The full commit history: never squash, never re-initialise",
+  ".github/workflows/: CI is evidence of real practice",
+  "Tests, docs, README and your .env.example files",
+  "Firebase client config (google-services.json, firebase_options.dart): public identifiers, not secrets",
+  "Your own work or support email, and sample data from vendor docs",
+  "Your pull requests: they stay on the repo and we export them on the call",
+];
+
+const runInstruction = [
+  { title: "Prerequisites", body: "Every tool with the exact version you build with: Node 20, Flutter 3.24, Xcode 16." },
+  { title: "Credentials", body: "Every placeholder you added, the file it lives in, and where a new owner gets their own value." },
+  { title: "Build, run, test", body: "Exact commands for each part (app, web, API), run from the repo root." },
+  { title: "Quick start", body: "The shortest path from a fresh clone to something running, in order." },
+  { title: "Troubleshooting", body: "The errors a new developer will hit first, and the fix for each." },
+];
+
+const faqs = [
+  {
+    q: `Why a separate ${branch} branch?`,
+    a: "Cleaning rewrites history, so every commit gets a new ID. Pushing that to a new branch means nothing you have is overwritten: your main branch, your teammates' clones and your pull requests all keep working. We copy only the new branch.",
+  },
+  {
+    q: "The commit count went down. Is that a problem?",
+    a: "No. git-filter-repo drops commits whose only change was a removed file, for example a commit that only added CLAUDE.md. Tell us the before and after numbers in the form.",
+  },
+  {
+    q: "Do I lose my pull requests?",
+    a: "No. Pull requests live on GitHub, not in git, so they stay on your repo. On the call we export them, with reviews and comments, into the archive.",
+  },
+  {
+    q: "Can I keep working on my project?",
+    a: `Yes, on your other branches. Don't push to ${branch} after you submit the report: we deliver that branch exactly as you checked it.`,
+  },
+  {
+    q: "When can I remove your access?",
+    a: "Any time after payment. Once the archive is built and verified on the call, we no longer need the repo.",
+  },
+  {
+    q: "The check flags something that's fine.",
+    a: "Warnings are for you to review, not automatic failures. Explain them in the form, for example: \"0758... is our public support line\".",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <Head
+    pageTitle={pageTitle}
+    pageDescription={pageDescription}
+    canonicalPath="code/prepare/"
+    pageCoverImage={ogImage}
+    pageCoverImageAlt={ogImageAlt}
+    pageCoverImageWidth="1200"
+    pageCoverImageHeight="630"
+  />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
+
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        <a href="/code/" class="link-underline inline-block">{company} · Source Code Acquisition</a>
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+        data-reveal
+      >
+        Preparing your repo for sale.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Once your project is shortlisted, you clean the repository and its git
+        history before we pay, using the free scripts on this page. Then we
+        build the archive together on a call, and payment is released on that
+        call once the archive passes.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href="#steps"
+          class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+        >
+          Start the clean-up
+        </a>
+        <a href="#downloads" class="link-underline inline-block text-[13px] font-semibold">Download the scripts</a>
+      </div>
+    </section>
+
+    <!-- HANDOVER -->
+    <section class="px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">How the handover works</h2>
+      <ol class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-5" data-reveal>
+        {
+          handover.map((s) => (
+            <li class="border-t border-[#e5e3df] py-5">
+              <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{s.n}</div>
+              <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- REMOVE / KEEP -->
+    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">What goes, what stays</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        The sale includes the full git history, so anything that was
+        <em>ever</em> committed ships with it, even if a later commit deleted
+        it. Deleting a file or adding it to .gitignore doesn't remove it from
+        history; only rewriting history does.
+      </p>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2" data-reveal>
+        <div class="min-w-0">
+          <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">Remove from every commit</div>
+          <ul class="mt-3">
+            {
+              remove.map((item) => (
+                <li class="flex gap-3 border-t border-[#e5e3df] py-3 text-[14px] leading-[1.6] break-words">
+                  <span class="text-[#999]">✕</span>
+                  <span class="min-w-0">{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">Keep</div>
+          <ul class="mt-3">
+            {
+              keep.map((item) => (
+                <li class="flex gap-3 border-t border-[#e5e3df] py-3 text-[14px] leading-[1.6] break-words">
+                  <span class="text-[#999]">✓</span>
+                  <span class="min-w-0">{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOADS -->
+    <section id="downloads" class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">The scripts</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Free, plain bash, and readable before you run them. None of them pushes
+        to your repo: clean-history.sh prints the push command for you to run
+        yourself. They run on macOS and Linux, and on Windows through Git Bash
+        or WSL.
+      </p>
+      <div class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3" data-reveal>
+        {
+          downloads.map((d) => (
+            <div class="flex min-w-0 flex-col border-t border-[#e5e3df] py-5">
+              <div class="font-mono text-[14px] font-semibold break-all">{d.title}</div>
+              <p class="mt-2 flex-1 text-[14px] leading-[1.65] text-[#555]">{d.body}</p>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <a
+                  href={`/code/${d.file}`}
+                  download={d.file}
+                  class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+                >
+                  <Download class="h-3.5 w-3.5" />
+                  Download
+                </a>
+                <a
+                  href={`/code/${d.file}`}
+                  target="_blank"
+                  rel="noopener"
+                  class="link-underline inline-flex items-center gap-1 text-xs font-semibold"
+                >
+                  View
+                  <ArrowUpRight class="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- STEPS -->
+    <section id="steps" class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Step by step</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Replace <code class="font-mono text-[13px]">https://github.com/you/app.git</code>
+        with your repository's URL. Keep a backup of your repo before you start.
+      </p>
+      <ol class="mt-8 max-w-3xl">
+        {
+          steps.map((s, i) => (
+            <li class="min-w-0 border-t border-[#e5e3df] py-6">
+              <div class="flex gap-4">
+                <div class="w-8 shrink-0 text-[11px] tracking-[0.18em] text-[#999] uppercase">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-[16px] font-semibold">{s.title}</div>
+                  <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+                  {s.link && (
+                    <a
+                      href={s.link.href}
+                      download
+                      class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+                    >
+                      <Download class="h-3.5 w-3.5" />
+                      {s.link.label}
+                    </a>
+                  )}
+                  {s.code && (
+                    <div class="relative mt-4">
+                      <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{s.code}</code></pre>
+                      <button
+                        type="button"
+                        data-copy
+                        class="absolute top-2.5 right-2.5 rounded-full border border-[#f4f2ef]/25 px-2.5 py-1 text-[11px] font-semibold text-[#f4f2ef] transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- RUN INSTRUCTIONS -->
+    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">run_instruction.md</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        A required file at the root of the repo. Write it for a developer who
+        has never seen your project and has none of your accounts, keys or
+        machine setup. It must cover:
+      </p>
+      <div class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-5" data-reveal>
+        {
+          runInstruction.map((r) => (
+            <div class="border-t border-[#e5e3df] py-5">
+              <div class="text-[15px] font-semibold">{r.title}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+      <a
+        href="/code/run_instruction.template.md"
+        download
+        class="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+      >
+        <Download class="h-3.5 w-3.5" />
+        Download the template
+      </a>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Questions</h2>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 md:grid-cols-2" data-reveal>
+        {
+          faqs.map((f) => (
+            <div class="border-t border-[#e5e3df] py-5">
+              <div class="text-[15px] font-semibold">{f.q}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{f.a}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="spotlight spotlight-dark bg-[#0a0a0a] text-[#f4f2ef]">
+      <div class="flex flex-col gap-6 px-6 py-14 sm:flex-row sm:items-end sm:justify-between sm:px-10" data-reveal>
+        <div>
+          <div class="text-[11px] tracking-[0.18em] text-[#777] uppercase">Stuck?</div>
+          <h2 class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]">
+            Send us your check-repo.sh report and we'll tell you what to fix.
+          </h2>
+          <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
+            WhatsApp {contactName} on{" "}
+            <a href={contactWhatsApp} target="_blank" rel="noopener noreferrer" class="link-underline inline-block font-semibold text-[#f4f2ef]">{contactPhone}</a>{" "}
+            or email{" "}
+            {
+              contactEmails.map((email, i) => (
+                <>
+                  {i > 0 && " or "}
+                  <a href={`mailto:${email}`} class="link-underline inline-block font-semibold text-[#f4f2ef]">{email}</a>
+                </>
+              ))
+            }
+          </p>
+        </div>
+        <a
+          href="/code/"
+          class="btn-anim inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[#f4f2ef] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase sm:self-auto"
+        >
+          Back to the offer
+        </a>
+      </div>
+    </section>
+
+    <Footer />
+
+    <!-- Copy buttons -->
+    <script>
+      document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const code = btn.parentElement?.querySelector("code")?.textContent ?? "";
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = "Copied";
+          } catch {
+            btn.textContent = "Select & copy";
+          }
+          setTimeout(() => (btn.textContent = "Copy"), 1600);
+        });
+      });
+    </script>
+
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../../scripts/spotlight";
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>
