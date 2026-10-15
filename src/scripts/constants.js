@@ -126,3 +126,5 @@ export const developer = {
 
 // name of my CV, it keeps changing though
 export const cvFileName= "MUGISA BRIAN (CEPHAS) - CV as of 11th June 2024.pdf";
+// GitHub account sellers invite as a Read collaborator on their repo (/code pages).
+export const githubHandle = "xephas-official";

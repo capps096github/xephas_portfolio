@@ -15,13 +15,13 @@
 #
 # EXAMPLES
 #   See what would be removed, change nothing:
-#     DRY_RUN=1 bash clean-history.sh https://github.com/you/app.git .env build/
+#     DRY_RUN=1 bash clean-history.sh https://github.com/<github-username>/<repo>.git .env build/
 #
 #   Remove files and folders from every commit:
-#     bash clean-history.sh https://github.com/you/app.git .env android/app/build/ '*.jks'
+#     bash clean-history.sh https://github.com/<github-username>/<repo>.git .env android/app/build/ '*.jks'
 #
 #   Also replace secret strings everywhere in history (the file keeps existing):
-#     SECRETS_FILE=secrets.txt bash clean-history.sh https://github.com/you/app.git
+#     SECRETS_FILE=secrets.txt bash clean-history.sh https://github.com/<github-username>/<repo>.git
 #   secrets.txt holds one rule per line:   the-real-value==>YOUR_API_KEY
 #   Example: https://xephas.me/code/secrets.example.txt
 #

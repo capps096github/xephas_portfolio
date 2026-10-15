@@ -5,7 +5,8 @@ import FloatingNav from "../../components/FloatingNav.astro";
 import Footer from "../../components/Footer.astro";
 import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
 import Download from "../../components/icons/Download.astro";
-import { baseUrl } from "../../scripts/constants.js";
+import CopyHandle from "../../components/CopyHandle.astro";
+import { baseUrl, githubHandle } from "../../scripts/constants.js";
 
 const company = "Apta Innovations Limited";
 const contactName = "Cephas Brian";
@@ -13,6 +14,8 @@ const contactPhone = "0758 294 212";
 const contactWhatsApp = "https://wa.me/256758294212";
 const contactEmails = ["xephas@aptahq.com", "projects@aptahq.com"];
 const branch = "cleaned_version";
+// Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />.
+const withHandle = (text: string) => text.split(new RegExp(`(?<!/)(${githubHandle})`));
 
 const ogImage = baseUrl + "images/code-og.png?v=2";
 const ogImageAlt = "Preparing your repository for sale. Apta Innovations Limited, xephas.me/code/prepare.";
@@ -52,10 +55,14 @@ const downloads = [
 const handover = [
   { n: "01", title: "Shortlisted", body: "We contact you once your project is shortlisted and a price is agreed." },
   { n: "02", title: "You clean", body: `You follow the steps below and push the result to a new branch, ${branch}. Your other branches stay as they are.` },
-  { n: "03", title: "You submit the check", body: "You paste the check-repo.sh report for your cleaned branch into the form and invite us with Read access." },
+  { n: "03", title: "You submit the check", body: `You paste the check-repo.sh report for your cleaned branch into the form and invite ${githubHandle} on GitHub with Read access.` },
   { n: "04", title: "Handover call", body: "On a call, we run build-archive.sh while you watch. It packs and verifies the archive and prints a receipt." },
   { n: "05", title: "Payment", body: "Once the archive passes, payment is released on the call. You get the receipt with the archive's SHA-256 fingerprint." },
 ];
+
+// Commands below carry these tokens; the username/repo fields above the steps fill them in.
+const TOKEN_RE = /(__USER__|__REPO__)/;
+const tokenFor = { __USER__: { key: "user", placeholder: "{github-username}" }, __REPO__: { key: "repo", placeholder: "{repo-name}" } } as const;
 
 const steps = [
   {
@@ -76,8 +83,8 @@ curl -O https://xephas.me/code/secrets.example.txt`,
   {
     title: "Check the branch you're selling",
     body: "Usually main. This copy is only for checking; it doesn't touch your repo. The report shows every file and string that needs to go, with counts.",
-    code: `git clone --bare --single-branch --branch main https://github.com/you/app.git app.git
-bash check-repo.sh app.git | tee before.txt`,
+    code: `git clone --bare --single-branch --branch main https://github.com/__USER__/__REPO__.git __REPO__.git
+bash check-repo.sh __REPO__.git | tee before.txt`,
   },
   {
     title: "Add run_instruction.md",
@@ -96,13 +103,13 @@ bash check-repo.sh app.git | tee before.txt`,
     title: "Dry run",
     body: "List the files and folders to remove from every commit: the ones the report flagged. AI tooling, .DS_Store, machine files and home paths are removed automatically. A dry run shows what would go and changes nothing.",
     code: `DRY_RUN=1 SECRETS_FILE=secrets.txt bash clean-history.sh \\
-  https://github.com/you/app.git  .env  android/app/build/  '*.jks'  seed-data/`,
+  https://github.com/__USER__/__REPO__.git  .env  android/app/build/  '*.jks'  seed-data/`,
   },
   {
     title: "Clean",
-    body: `Run it again without DRY_RUN. It works on a copy named app-clean.git, keeps only the branch you're selling, rewrites it, verifies it and runs check-repo.sh on the result. Repeat until the check passes.`,
+    body: `Run it again without DRY_RUN. It works on a copy named after your repo (your-repo-clean.git), keeps only the branch you're selling, rewrites it, verifies it and runs check-repo.sh on the result. Repeat until the check passes.`,
     code: `SECRETS_FILE=secrets.txt bash clean-history.sh \\
-  https://github.com/you/app.git  .env  android/app/build/  '*.jks'  seed-data/
+  https://github.com/__USER__/__REPO__.git  .env  android/app/build/  '*.jks'  seed-data/
 
 # selling a branch other than the default one?
 SOURCE_BRANCH=develop SECRETS_FILE=secrets.txt bash clean-history.sh ...`,
@@ -110,17 +117,22 @@ SOURCE_BRANCH=develop SECRETS_FILE=secrets.txt bash clean-history.sh ...`,
   {
     title: `Push it to a new branch: ${branch}`,
     body: `This adds one branch holding the cleaned history. Nothing is force-pushed, your other branches and pull requests are untouched, and ${branch} is the only branch we copy. Never merge it into your other branches: that would bring the removed files back.`,
-    code: `git -C app-clean.git push https://github.com/you/app.git main:refs/heads/${branch}`,
+    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git main:refs/heads/${branch}`,
   },
   {
     title: "Check what you pushed",
     body: "Check a fresh copy of the new branch. When it reads RESULT: ready, paste the full report into the form. Explain any warnings that are fine, such as your own support email.",
-    code: `git clone --bare --single-branch --branch ${branch} https://github.com/you/app.git check.git
+    code: `git clone --bare --single-branch --branch ${branch} https://github.com/__USER__/__REPO__.git check.git
 bash check-repo.sh check.git | tee report.txt`,
   },
   {
     title: "Invite us with Read access",
-    body: "On GitHub: Settings > Collaborators > Add people, with the username we send you, role Read. On GitLab or Bitbucket, the Reporter or Read role. Then message us to book the handover call. Delete secrets.txt: it holds your real secrets.",
+    body: `On GitHub: Settings > Collaborators > Add people, add ${githubHandle} (github.com/${githubHandle}) with the Read role. On GitLab or Bitbucket, message us for the account to invite, with the Reporter or Read role. Then message us to book the handover call. Delete secrets.txt: it holds your real secrets.`,
+    code: `# Invite this GitHub user with the Read role
+${githubHandle}
+
+# Your repo's collaborator settings
+https://github.com/__USER__/__REPO__/settings/access`,
   },
 ];
 
@@ -229,7 +241,7 @@ const faqs = [
             <li class="border-t border-[#e5e3df] py-5">
               <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{s.n}</div>
               <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
-              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
             </li>
           ))
         }
@@ -319,8 +331,33 @@ const faqs = [
     <section id="steps" class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
       <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Step by step</h2>
       <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
-        Replace <code class="font-mono text-[13px]">https://github.com/you/app.git</code>
-        with your repository's URL. Keep a backup of your repo before you start.
+        Enter your GitHub username and repository name and every command
+        below fills them in. Keep a backup of your repo before you start.
+      </p>
+      <div class="mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+        {
+          [
+            { key: "user", label: "GitHub username", placeholder: "github-username" },
+            { key: "repo", label: "Repository name", placeholder: "repo-name" },
+          ].map((field) => (
+            <label class="block">
+              <span class="text-[11px] tracking-[0.18em] text-[#888] uppercase">{field.label}</span>
+              <input
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder={field.placeholder}
+                data-repo-field={field.key}
+                class="mt-2 w-full min-w-0 rounded-xl border border-[#0a0a0a]/15 bg-white px-4 py-3 font-mono text-[14px] placeholder:text-[#0a0a0a]/30 focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none"
+              />
+            </label>
+          ))
+        }
+      </div>
+      <p class="mt-3 max-w-3xl text-[13px] leading-[1.6] text-[#666]">
+        You can also paste the full repo URL into either field. On GitLab or
+        Bitbucket, swap github.com for your host after copying.
       </p>
       <ol class="mt-8 max-w-3xl">
         {
@@ -332,7 +369,7 @@ const faqs = [
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="text-[16px] font-semibold">{s.title}</div>
-                  <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+                  <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
                   {s.link && (
                     <a
                       href={s.link.href}
@@ -345,7 +382,7 @@ const faqs = [
                   )}
                   {s.code && (
                     <div class="relative mt-4">
-                      <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{s.code}</code></pre>
+                      <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{s.code.split(TOKEN_RE).map((part) => part in tokenFor ? <span class="repo-token" data-token={tokenFor[part as keyof typeof tokenFor].key} data-empty>{tokenFor[part as keyof typeof tokenFor].placeholder}</span> : part)}</code></pre>
                       <button
                         type="button"
                         data-copy
@@ -438,6 +475,59 @@ const faqs = [
     </section>
 
     <Footer />
+
+    <style>
+      .repo-token {
+        border-radius: 4px;
+        background: rgba(244, 242, 239, 0.14);
+        padding: 0 2px;
+      }
+      .repo-token[data-empty] {
+        color: #f5c46b;
+      }
+    </style>
+
+    <!-- Repo fields: fill the username / repo tokens in every command -->
+    <script>
+      const PLACEHOLDERS: Record<string, string> = { user: "{github-username}", repo: "{repo-name}" };
+      const STORE = "code-prepare-repo";
+      const fields = document.querySelectorAll<HTMLInputElement>("[data-repo-field]");
+      const field = (key: string) => [...fields].find((f) => f.dataset.repoField === key)!;
+
+      // Keep only what's valid in a GitHub owner / repo name; drop a trailing .git.
+      const clean = (v: string) => v.trim().replace(/\.git$/, "").replace(/[^A-Za-z0-9._-]/g, "");
+
+      function apply() {
+        const values: Record<string, string> = {};
+        fields.forEach((f) => (values[f.dataset.repoField!] = clean(f.value)));
+        document.querySelectorAll<HTMLElement>("[data-token]").forEach((t) => {
+          const v = values[t.dataset.token!];
+          t.textContent = v || PLACEHOLDERS[t.dataset.token!];
+          t.toggleAttribute("data-empty", !v);
+        });
+        try {
+          localStorage.setItem(STORE, JSON.stringify(values));
+        } catch {}
+      }
+
+      fields.forEach((f) =>
+        f.addEventListener("input", () => {
+          // A pasted URL (https://github.com/owner/repo.git or git@github.com:owner/repo) fills both fields.
+          const url = f.value.match(/[/:]([A-Za-z0-9-]+)\/([A-Za-z0-9._-]+?)(?:\.git)?\/?$/);
+          if (url && /[/:]/.test(f.value)) {
+            field("user").value = url[1];
+            field("repo").value = url[2];
+          }
+          apply();
+        }),
+      );
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE) ?? "{}");
+        fields.forEach((f) => (f.value = saved[f.dataset.repoField!] ?? ""));
+      } catch {}
+      apply();
+    </script>
 
     <!-- Copy buttons -->
     <script>

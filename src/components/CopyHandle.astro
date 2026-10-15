@@ -1,0 +1,35 @@
+---
+// Bold inline handle that copies itself on click, e.g. the GitHub account sellers invite.
+import { githubHandle } from "../scripts/constants.js";
+
+interface Props {
+  text?: string;
+}
+const { text = githubHandle } = Astro.props;
+---
+
+<button
+  type="button"
+  data-copy-handle={text}
+  title="Click to copy"
+  class="copy-handle inline cursor-pointer rounded-md bg-[#0a0a0a]/[0.06] px-1.5 py-0.5 font-mono font-bold text-[#0a0a0a] transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+>{text}</button>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-handle]").forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", async () => {
+        const text = btn.dataset.copyHandle!;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "Copied";
+        } catch {
+          return;
+        }
+        setTimeout(() => (btn.textContent = text), 1400);
+      });
+    });
+  });
+</script>

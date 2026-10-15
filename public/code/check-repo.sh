@@ -272,15 +272,16 @@ elif command -v cloc >/dev/null 2>&1; then
   LOC_TOOL=cloc
 elif command -v scc >/dev/null 2>&1; then
   mkdir -p "$TMP/tree" && g archive HEAD | tar -x -C "$TMP/tree" -f -
-  LOC=$(scc --format csv "$TMP/tree" 2>/dev/null | awk -F, 'NR>1 {s+=$5} END {print s}')
+  # scc CSV columns: Language,Lines,Code,Comments,Blanks,... so code is column 3.
+  LOC=$(scc --format csv "$TMP/tree" 2>/dev/null | awk -F, 'NR>1 {s+=$3} END {print s}')
   LOC_TOOL=scc
 else
   LOC=""
 fi
 if [ -z "$LOC" ]; then
-  warn "line count skipped: install cloc (brew install cloc / choco install cloc / apt install cloc)"
-elif [ "$LOC" -lt 50000 ]; then
-  fail "$LOC lines of code ($LOC_TOOL, $HEAD_REF). The minimum is 50,000"
+  warn "line count skipped: install cloc (brew install cloc / choco install cloc / apt install cloc / npm install -g cloc) or scc"
+elif [ "$LOC" -lt 30000 ]; then
+  fail "$LOC lines of code ($LOC_TOOL, $HEAD_REF). The minimum is 30,000"
 else
   pass "$LOC lines of code ($LOC_TOOL, $HEAD_REF)"
 fi
