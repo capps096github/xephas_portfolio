@@ -9,6 +9,7 @@ import Mail from "../../components/icons/Mail.astro";
 import MessageCircle from "../../components/icons/MessageCircle.astro";
 import { qrSvg } from "../../scripts/qr";
 import { baseUrl } from "../../scripts/constants.js";
+import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, calculateBasePrice } from "../../scripts/code_rate";
 
 // Registration form (Tally).
 const TALLY_URL = "https://tally.so/r/PRjpxb";
@@ -23,15 +24,24 @@ const contactName = "Cephas Brian";
 const contactPhone = "0758 294 212";
 const contactWhatsApp = "https://wa.me/256758294212";
 const deadline = "30 October 2026";
-const minLoc = "50,000";
+const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
+const fmt = (n: number) => n.toLocaleString("en-US");
+const startingPrice = fmt(calculateBasePrice(ACQUISITION_PRICING.minimumLOC).basePrice);
+const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
+
+// Sample estimates for the hero, straight from the live rate card.
+const priceExamples = [30_000, 100_000, 250_000, 500_000].map((loc) => ({
+  loc: fmt(loc),
+  price: fmt(calculateBasePrice(loc).basePrice),
+}));
 
 // Share card for this page (1200x630); bump ?v= after regenerating so social platforms re-scrape.
-const ogImage = baseUrl + "images/code-og.png?v=2";
-const ogImageAlt = "We're buying source code. Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
+const ogImage = baseUrl + "images/code-og.png?v=3";
+const ogImageAlt = "We're buying source code. 30,000+ lines of code, prices from UGX 450,000. Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
 
 const pageTitle = "Source Code Acquisition | " + company + " through Cephas";
 const pageDescription =
-  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 50,000+ lines of code. Confidential. Deadline 30 October 2026.";
+  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 30,000+ lines of code, prices from UGX 450,000: estimate yours with the pricing calculator. Confidential. Deadline 30 October 2026.";
 
 const priorityLanguages = [
   "Kotlin",
@@ -68,9 +78,9 @@ const dealbreakers = [
 ];
 
 const steps = [
-  { n: "01", title: "Submit", body: `Fill in the short form before ${deadline}: the project, its stack, its git history and your asking price.` },
+  { n: "01", title: "Price & submit", body: `Check your estimate on the pricing calculator, then fill in the short form before ${deadline}: the project, its stack, its git history and your asking price.` },
   { n: "02", title: "Review", body: "We review every submission privately and shortlist the repositories that fit. We may ask for read access to verify the code." },
-  { n: "03", title: "Agree", body: "Shortlisted owners agree a price and sign a written acquisition agreement covering the code and how it may be used." },
+  { n: "03", title: "Agree", body: "Shortlisted owners agree a price, starting from the calculator estimate and negotiable by project, and sign a written acquisition agreement covering the code and how it may be used." },
   { n: "04", title: "Get paid", body: "You clean the repo with our free scripts, then we build the archive together on a call and payment is released there. Nothing is owed up front." },
 ];
 
@@ -146,7 +156,8 @@ const flyerMusts = [
         {company} invites developers and software teams to submit source code
         from active or discontinued projects for research &amp; development.
         We're looking for large, private, git-based codebases of {minLoc}+
-        lines, with full-stack monorepos considered first. You name your price.
+        lines, with full-stack monorepos considered first. Prices start at
+        UGX&nbsp;{startingPrice}: check what yours is worth below.
       </p>
       <p class="mt-4 text-[13px] font-semibold tracking-[0.12em] uppercase">
         Submission deadline: {deadline}
@@ -161,10 +172,48 @@ const flyerMusts = [
           Submit your repo
           <ArrowUpRight class="h-3.5 w-3.5" />
         </a>
+        <a href="/code/calc/" class="btn-anim inline-flex items-center gap-2 rounded-full border border-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] uppercase transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]">
+          Price your repo
+        </a>
+        <a href="/code/prepare/" class="btn-anim inline-flex items-center gap-2 rounded-full border border-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] uppercase transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]">
+          How to prepare it
+        </a>
         <a href="#flyer" class="link-underline inline-block text-[13px] font-semibold">
           View / download the flyers
         </a>
       </div>
+
+      <!-- PRICING, UPFRONT -->
+      <a
+        href="/code/calc/"
+        class="group mt-12 block max-w-4xl rounded-3xl bg-[#0a0a0a] p-6 text-[#f4f2ef] sm:p-8"
+        aria-label="Open the pricing calculator"
+      >
+        <div class="flex flex-wrap items-baseline justify-between gap-3">
+          <div class="text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">Pricing calculator</div>
+          <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-[0.14em] uppercase">
+            Price your repo
+            <ArrowUpRight class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </div>
+        <p class="font-xeroda mt-4 text-[26px] leading-[1.15] font-semibold tracking-[-0.02em] sm:text-[34px]">
+          Enter your lines of code. See your price.
+        </p>
+        <dl class="mt-6 tabular-nums grid grid-cols-2 gap-x-6 gap-y-4 border-t border-[#f4f2ef]/15 pt-5 sm:grid-cols-4">
+          {
+            priceExamples.map((ex) => (
+              <div>
+                <dt class="text-[12px] text-[#f4f2ef]/55">{ex.loc} lines</dt>
+                <dd class="mt-1 text-[17px] font-semibold">UGX {ex.price}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="mt-5 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
+          Estimates from our published rate card. The final price is negotiable
+          depending on your project, with a quality bonus of up to {maxBonus}%.
+        </p>
+      </a>
     </section>
 
     <!-- FLYER -->
@@ -215,7 +264,7 @@ const flyerMusts = [
               </h3>
               <p class={`mt-5 max-w-md text-[14px] leading-[1.65] ${theme.body}`}>
                 Large, private software projects with full git history, for
-                research &amp; development. Confidential. Selective. You name your price.
+                research &amp; development. Confidential. Selective. Prices from UGX&nbsp;{startingPrice}.
               </p>
 
               <div class={`mt-8 text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>Languages in demand</div>
@@ -348,10 +397,16 @@ const flyerMusts = [
             ))
           }
         </ol>
-        <a href="/code/prepare/" class="link-underline mt-6 inline-flex items-center gap-1 text-[13px] font-semibold">
-          How to prepare your repo for sale: scripts and steps
-          <ArrowUpRight class="h-3.5 w-3.5" />
-        </a>
+        <div class="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+          <a href="/code/calc/" class="link-underline inline-flex items-center gap-1 text-[13px] font-semibold">
+            Estimate your price: the pricing calculator
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+          <a href="/code/prepare/" class="link-underline inline-flex items-center gap-1 text-[13px] font-semibold">
+            How to prepare your repo for sale: scripts and steps
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+        </div>
       </section>
 
       <!-- CONFIDENTIALITY -->
@@ -396,7 +451,7 @@ const flyerMusts = [
             <h2
               class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]"
             >
-              Tell us about your project and name your price.
+              Check your price, then tell us about your project.
             </h2>
             <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
               Questions? WhatsApp {contactName} on{" "}

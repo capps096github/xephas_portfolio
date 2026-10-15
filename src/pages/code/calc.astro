@@ -5,12 +5,16 @@ import FloatingNav from "../../components/FloatingNav.astro";
 import Footer from "../../components/Footer.astro";
 import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
 import CopyHandle from "../../components/CopyHandle.astro";
-import { githubHandle } from "../../scripts/constants.js";
+import { baseUrl, githubHandle } from "../../scripts/constants.js";
 import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, QUALITY_LEVELS } from "../../scripts/code_rate";
 
 const company = "Apta Innovations Limited";
 const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
 const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
+
+// Share card (1200x630); bump ?v= after regenerating so social platforms re-scrape.
+const ogImage = baseUrl + "images/code-calc-og.png?v=1";
+const ogImageAlt = "What's your code worth? Pricing calculator, Apta Innovations Limited, xephas.me/code/calc.";
 
 const presets = [30_000, 50_000, 100_000, 250_000, 500_000, 1_000_000];
 
@@ -60,6 +64,10 @@ const fieldClass =
     pageTitle={"Source Code Price Calculator | " + company}
     pageDescription={`Enter your repository's lines of code and see its estimated value. ${company} acquires codebases from ${minLoc} lines, and you keep all your rights.`}
     canonicalPath="code/calc/"
+    pageCoverImage={ogImage}
+    pageCoverImageAlt={ogImageAlt}
+    pageCoverImageWidth="1200"
+    pageCoverImageHeight="630"
   />
   <body class="bg-white text-[#0a0a0a] antialiased">
     <FloatingNav />
@@ -156,8 +164,10 @@ const fieldClass =
             <span data-calc-price>–</span>
           </div>
           <p class="mt-6 border-t border-[#f4f2ef]/15 pt-4 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
-            Qualifying repositories may receive a quality bonus of up to {maxBonus}%
-            after technical review.
+            <strong class="font-semibold text-[#f4f2ef]">The final price is negotiable</strong>{" "}
+            depending on your project: its stack, completeness, code quality and
+            history. Well-built repositories can earn a quality bonus of up to{" "}
+            {maxBonus}% after technical review.
           </p>
         </div>
 
