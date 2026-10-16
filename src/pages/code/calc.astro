@@ -5,6 +5,8 @@ import FloatingNav from "../../components/FloatingNav.astro";
 import Footer from "../../components/Footer.astro";
 import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
 import CopyHandle from "../../components/CopyHandle.astro";
+import SubmitCta from "../../components/SubmitCta.astro";
+import { TALLY_URL, deadline } from "../../scripts/code_offer";
 import { baseUrl, githubHandle } from "../../scripts/constants.js";
 import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, QUALITY_LEVELS } from "../../scripts/code_rate";
 
@@ -175,6 +177,22 @@ const fieldClass =
           This is an estimate, not an offer. Final offers are subject to
           verification, code quality assessment and approval by {company}.
         </p>
+
+        <!-- Next step, right where the price is: submit the repo -->
+        <div data-calc-submit class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <a
+            href={TALLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+          >
+            Submit your repo
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+          <span class="text-[12.5px] leading-snug text-[#666]">
+            Happy with the estimate? Submit before {deadline}.
+          </span>
+        </div>
 
         <!-- HOW TO COUNT -->
         <div id="count" class="mt-12 border-t border-[#0a0a0a]/15 pt-10">
@@ -369,6 +387,8 @@ const fieldClass =
         </a>
       </div>
     </section>
+
+    <SubmitCta heading="Know your price? Tell us about your project." secondary={{ href: "/code/prepare/", label: "How to prepare it" }} />
 
     <Footer />
 
@@ -592,6 +612,7 @@ const fieldClass =
           panel.hidden = false;
           // The counting guide is for developers; the internal view doesn't need it.
           document.getElementById("count")!.hidden = true;
+          $("[data-calc-submit]").hidden = true;
           $("[data-count-link]").hidden = true;
           $("[data-calc-label]").textContent = "Submitted lines of code";
           document.querySelector("[data-calc-eyebrow]")!.textContent = "Internal evaluation";

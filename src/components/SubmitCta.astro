@@ -1,0 +1,67 @@
+---
+// Closing call to action on the /code pages: submit the repo via the Tally form, or get in touch.
+import ArrowUpRight from "./icons/ArrowUpRight.astro";
+import {
+  TALLY_URL,
+  contactEmails,
+  contactName,
+  contactPhone,
+  contactWhatsApp,
+  deadline,
+} from "../scripts/code_offer";
+
+interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Optional second, outlined button, e.g. back to /code. */
+  secondary?: { href: string; label: string };
+}
+const { heading, eyebrow = `Deadline · ${deadline}`, secondary } = Astro.props;
+---
+
+<section class="spotlight spotlight-dark bg-[#0a0a0a] text-[#f4f2ef]">
+  <div class="flex flex-col gap-6 px-6 py-14 sm:flex-row sm:items-end sm:justify-between sm:px-10" data-reveal>
+    <div class="min-w-0 flex-1">
+      <div class="text-[11px] tracking-[0.18em] text-[#777] uppercase">{eyebrow}</div>
+      <h2
+        class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]"
+      >
+        {heading}
+      </h2>
+      <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
+        Questions? WhatsApp {contactName} on{" "}
+        <a href={contactWhatsApp} target="_blank" rel="noopener noreferrer" class="link-underline inline-block font-semibold text-[#f4f2ef]">{contactPhone}</a>{" "}
+        or email{" "}
+        {
+          contactEmails.map((email, i) => (
+            <>
+              {i > 0 && " or "}
+              <a href={`mailto:${email}`} class="link-underline inline-block font-semibold text-[#f4f2ef]">{email}</a>
+            </>
+          ))
+        }
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap gap-3 self-start sm:self-auto">
+      {
+        secondary && (
+          <a
+            href={secondary.href}
+            class="btn-anim inline-flex items-center gap-2 rounded-full border border-[#f4f2ef]/40 px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]"
+          >
+            {secondary.label}
+          </a>
+        )
+      }
+      <a
+        href={TALLY_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#f4f2ef] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase"
+      >
+        Submit your repo
+        <ArrowUpRight class="h-3.5 w-3.5" />
+      </a>
+    </div>
+  </div>
+</section>

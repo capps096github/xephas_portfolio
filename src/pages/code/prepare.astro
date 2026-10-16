@@ -6,13 +6,10 @@ import Footer from "../../components/Footer.astro";
 import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
 import Download from "../../components/icons/Download.astro";
 import CopyHandle from "../../components/CopyHandle.astro";
+import SubmitCta from "../../components/SubmitCta.astro";
 import { baseUrl, githubHandle } from "../../scripts/constants.js";
 
-const company = "Apta Innovations Limited";
-const contactName = "Cephas Brian";
-const contactPhone = "0758 294 212";
-const contactWhatsApp = "https://wa.me/256758294212";
-const contactEmails = ["xephas@aptahq.com", "projects@aptahq.com"];
+import { company } from "../../scripts/code_offer";
 const branch = "cleaned_version";
 // Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />.
 const withHandle = (text: string) => text.split(new RegExp(`(?<!/)(${githubHandle})`));
@@ -444,35 +441,11 @@ const faqs = [
     </section>
 
     <!-- CTA -->
-    <section class="spotlight spotlight-dark bg-[#0a0a0a] text-[#f4f2ef]">
-      <div class="flex flex-col gap-6 px-6 py-14 sm:flex-row sm:items-end sm:justify-between sm:px-10" data-reveal>
-        <div>
-          <div class="text-[11px] tracking-[0.18em] text-[#777] uppercase">Stuck?</div>
-          <h2 class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]">
-            Send us your check-repo.sh report and we'll tell you what to fix.
-          </h2>
-          <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
-            WhatsApp {contactName} on{" "}
-            <a href={contactWhatsApp} target="_blank" rel="noopener noreferrer" class="link-underline inline-block font-semibold text-[#f4f2ef]">{contactPhone}</a>{" "}
-            or email{" "}
-            {
-              contactEmails.map((email, i) => (
-                <>
-                  {i > 0 && " or "}
-                  <a href={`mailto:${email}`} class="link-underline inline-block font-semibold text-[#f4f2ef]">{email}</a>
-                </>
-              ))
-            }
-          </p>
-        </div>
-        <a
-          href="/code/"
-          class="btn-anim inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[#f4f2ef] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase sm:self-auto"
-        >
-          Back to the offer
-        </a>
-      </div>
-    </section>
+    <SubmitCta
+      eyebrow="Ready, or stuck?"
+      heading="Submit your repo, or send us your check-repo.sh report and we'll tell you what to fix."
+      secondary={{ href: "/code/calc/", label: "Price your repo" }}
+    />
 
     <Footer />
 

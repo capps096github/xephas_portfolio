@@ -4,6 +4,7 @@ import Head from "../../components/Head.astro";
 import FloatingNav from "../../components/FloatingNav.astro";
 import Footer from "../../components/Footer.astro";
 import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
+import SubmitCta from "../../components/SubmitCta.astro";
 import Download from "../../components/icons/Download.astro";
 import Mail from "../../components/icons/Mail.astro";
 import MessageCircle from "../../components/icons/MessageCircle.astro";
@@ -11,19 +12,12 @@ import { qrSvg } from "../../scripts/qr";
 import { baseUrl } from "../../scripts/constants.js";
 import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, calculateBasePrice } from "../../scripts/code_rate";
 
-// Registration form (Tally).
-const TALLY_URL = "https://tally.so/r/PRjpxb";
+import { TALLY_URL, company, contactEmails, contactName, contactPhone, contactWhatsApp, deadline } from "../../scripts/code_offer";
 
 // The flyer's QR points at this page, so it keeps working if the Tally link changes.
 const FLYER_URL = "https://xephas.me/code";
 const flyerQr = qrSvg(FLYER_URL, 4, "QR code linking to xephas.me/code");
 
-const contactEmails = ["xephas@aptahq.com", "projects@aptahq.com"];
-const company = "Apta Innovations Limited";
-const contactName = "Cephas Brian";
-const contactPhone = "0758 294 212";
-const contactWhatsApp = "https://wa.me/256758294212";
-const deadline = "30 October 2026";
 const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
 const fmt = (n: number) => n.toLocaleString("en-US");
 const startingPrice = fmt(calculateBasePrice(ACQUISITION_PRICING.minimumLOC).basePrice);
@@ -441,43 +435,7 @@ const flyerMusts = [
       </section>
 
       <!-- CTA -->
-      <section class="spotlight spotlight-dark bg-[#0a0a0a] text-[#f4f2ef]">
-        <div
-          class="flex flex-col gap-6 px-6 py-14 sm:flex-row sm:items-end sm:justify-between sm:px-10"
-          data-reveal
-        >
-          <div>
-            <div class="text-[11px] tracking-[0.18em] text-[#777] uppercase">Deadline · {deadline}</div>
-            <h2
-              class="font-xeroda mt-4 max-w-2xl text-[26px] leading-[1.12] font-medium tracking-[-0.015em] text-balance sm:text-[32px]"
-            >
-              Check your price, then tell us about your project.
-            </h2>
-            <p class="mt-8 text-[14px] leading-[1.7] text-[#999]">
-              Questions? WhatsApp {contactName} on{" "}
-              <a href={contactWhatsApp} target="_blank" rel="noopener noreferrer" class="link-underline inline-block font-semibold text-[#f4f2ef]">{contactPhone}</a>{" "}
-              or email{" "}
-              {
-                contactEmails.map((email, i) => (
-                  <>
-                    {i > 0 && " or "}
-                    <a href={`mailto:${email}`} class="link-underline inline-block font-semibold text-[#f4f2ef]">{email}</a>
-                  </>
-                ))
-              }
-            </p>
-          </div>
-          <a
-            href={TALLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn-anim inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[#f4f2ef] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#0a0a0a] uppercase sm:self-auto"
-          >
-            Submit your repo
-            <ArrowUpRight class="h-3.5 w-3.5" />
-          </a>
-        </div>
-      </section>
+      <SubmitCta heading="Check your price, then tell us about your project." />
 
       <Footer />
     </div>
