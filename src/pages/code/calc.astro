@@ -1,0 +1,787 @@
+---
+import "../../styles/global.css";
+import Head from "../../components/Head.astro";
+import FloatingNav from "../../components/FloatingNav.astro";
+import Footer from "../../components/Footer.astro";
+import ArrowUpRight from "../../components/icons/ArrowUpRight.astro";
+import CopyHandle from "../../components/CopyHandle.astro";
+import SubmitCta from "../../components/SubmitCta.astro";
+import { TALLY_URL, deadline } from "../../scripts/code_offer";
+import { baseUrl, githubHandle } from "../../scripts/constants.js";
+import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, QUALITY_LEVELS } from "../../scripts/code_rate";
+
+const company = "Apta Innovations Limited";
+const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
+const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
+
+// Share card (1200x630); bump ?v= after regenerating so social platforms re-scrape.
+const ogImage = baseUrl + "images/code-calc-og.png?v=1";
+const ogImageAlt = "What's your code worth? Pricing calculator, Apta Innovations Limited, xephas.me/code/calc.";
+
+const presets = [30_000, 50_000, 100_000, 250_000, 500_000, 1_000_000];
+
+const terms = [
+  {
+    title: "You keep all your rights",
+    body: "Ownership and copyright stay with you. Nothing about your code changes hands.",
+  },
+  {
+    title: "Just invite us to the repo",
+    body: `All you do is add ${githubHandle} as a collaborator on your GitHub repository, with Read access.`,
+  },
+  {
+    title: "Verified line count",
+    body: "The offer is based on the verified lines of code, excluding dependencies, generated files, duplicated code and build output.",
+  },
+];
+
+// How to count lines of code. Same counting rule as public/code/check-repo.sh (cloc, code column).
+const clocInstalls = [
+  { os: "macOS", cmd: "brew install cloc" },
+  { os: "Windows", cmd: "choco install cloc" },
+  { os: "Linux", cmd: "sudo apt install cloc" },
+  { os: "Any OS with Node.js", cmd: "npm install -g cloc" },
+];
+const clocRun = "cloc --vcs=git .";
+// Illustrative cloc output; the highlighted figure is the one to enter.
+const clocSample = [
+  ["Language", "files", "blank", "comment", "code"],
+  ["TypeScript", "412", "6,210", "2,904", "48,377"],
+  ["Kotlin", "198", "3,102", "1,240", "21,560"],
+  ["JSON", "37", "0", "0", "4,118"],
+  ["SUM", "647", "9,312", "4,144", "74,055"],
+];
+
+// Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />.
+const withHandle = (text: string) => text.split(new RegExp(`(?<!/)(${githubHandle})`));
+
+const labelClass = "text-[11px] font-semibold tracking-[0.18em] text-[#666] uppercase";
+const fieldClass =
+  "w-full min-w-0 rounded-2xl border border-[#0a0a0a]/10 bg-white px-5 py-4 text-[17px] font-semibold placeholder:font-medium placeholder:text-[#0a0a0a]/30 focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none";
+---
+
+<!doctype html>
+<html lang="en">
+  <Head
+    pageTitle={"Source Code Price Calculator | " + company}
+    pageDescription={`Enter your repository's lines of code and see its estimated value. ${company} acquires codebases from ${minLoc} lines, and you keep all your rights.`}
+    canonicalPath="code/calc/"
+    pageCoverImage={ogImage}
+    pageCoverImageAlt={ogImageAlt}
+    pageCoverImageWidth="1200"
+    pageCoverImageHeight="630"
+  />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
+
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        {company} · <span data-calc-eyebrow>Source Code Acquisition</span>
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+      >
+        What's your code worth?
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Enter your lines of code and the value calculates itself. Repositories
+        start at {minLoc} lines. You keep all your rights: all you do is invite
+        us to your GitHub repo.
+      </p>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="bg-[#f7f6f4] px-6 py-14 sm:px-10">
+      <div class="mx-auto max-w-160" data-calc>
+        <label for="loc-input" class={labelClass} data-calc-label>Lines of code</label>
+
+        <div class="relative mt-3">
+          <input
+            id="loc-input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="50,000"
+            maxlength="13"
+            aria-describedby="loc-hint"
+            data-calc-input
+            class="tnum w-full min-w-0 rounded-2xl border border-[#0a0a0a]/10 bg-white py-5 pr-20 pl-5 text-[26px] font-bold tracking-[-0.02em] placeholder:font-semibold placeholder:text-[#0a0a0a]/30 focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none sm:text-[30px]"
+          />
+          <!-- Mirrors the typed text so the demo caret can sit exactly after it. -->
+          <span
+            aria-hidden="true"
+            data-calc-measure
+            class="tnum invisible absolute top-0 left-0 text-[26px] font-bold tracking-[-0.02em] whitespace-pre sm:text-[30px]"
+          ></span>
+          <span
+            aria-hidden="true"
+            data-calc-caret
+            class="calc-caret pointer-events-none absolute top-1/2 hidden -translate-y-1/2 text-[28px] font-bold text-[#0a0a0a]/45 sm:text-[32px]"
+          >|</span>
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute top-1/2 right-5 -translate-y-1/2 text-[13px] font-semibold tracking-[0.14em] text-[#0a0a0a]/45 uppercase"
+          >
+            Lines
+          </span>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Common repository sizes">
+          {
+            presets.map((preset) => (
+              <button
+                type="button"
+                data-calc-preset={preset}
+                aria-pressed="false"
+                class="calc-toggle tnum cursor-pointer rounded-full border border-[#0a0a0a]/15 bg-white px-3.5 py-2 text-[13px] font-semibold text-[#0a0a0a]/70 transition-colors hover:text-[#0a0a0a]"
+              >
+                {preset.toLocaleString("en-US")}
+              </button>
+            ))
+          }
+        </div>
+
+        <p id="loc-hint" data-calc-hint class="mt-3 text-[12.5px] leading-snug text-[#666]">
+          Showing a few example repositories. Type your own to take over.
+        </p>
+        <p class="mt-1 text-[12.5px] leading-snug text-[#666]">
+          Lines of code as counted by cloc: the SUM row, code column.{" "}
+          <a href="#count" data-count-link class="link-underline font-semibold text-[#0a0a0a]">How to count</a>
+        </p>
+
+        <!-- PUBLIC RESULT: base price only -->
+        <div class="mt-8 rounded-3xl bg-[#0a0a0a] p-6 text-[#f4f2ef] sm:p-8">
+          <div class="text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">
+            Estimated acquisition value
+          </div>
+          <p data-calc-note class="mt-1.5 text-[13px] leading-snug text-[#f4f2ef]/70">
+            Enter your lines of code.
+          </p>
+          <div
+            aria-live="polite"
+            class="tnum font-xeroda mt-6 text-[38px] leading-none font-semibold tracking-[-0.03em] sm:text-[56px]"
+          >
+            <span data-calc-currency class="text-[0.4em] tracking-normal text-[#f4f2ef]/55">UGX</span>
+            <span data-calc-price>–</span>
+          </div>
+          <p class="mt-6 border-t border-[#f4f2ef]/15 pt-4 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
+            <strong class="font-semibold text-[#f4f2ef]">The final price is negotiable</strong>{" "}
+            depending on your project: its stack, completeness, code quality and
+            history. Well-built repositories can earn a quality bonus of up to{" "}
+            {maxBonus}% after technical review.
+          </p>
+        </div>
+
+        <p class="mt-4 text-[12.5px] leading-relaxed text-[#666]">
+          This is an estimate, not an offer. Final offers are subject to
+          verification, code quality assessment and approval by {company}.
+        </p>
+
+        <!-- Next step, right where the price is: submit the repo -->
+        <div data-calc-submit class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <a
+            href={TALLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+          >
+            Submit your repo
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+          <span class="text-[12.5px] leading-snug text-[#666]">
+            Happy with the estimate? Submit before {deadline}.
+          </span>
+        </div>
+
+        <!-- HOW TO COUNT -->
+        <div id="count" class="mt-12 border-t border-[#0a0a0a]/15 pt-10">
+          <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">How to count your lines</h2>
+          <p class="mt-3 text-[14px] leading-[1.65] text-[#555]">
+            Count your own code only, excluding dependencies and build output.
+            The free tool{" "}<a href="https://github.com/AlDanial/cloc" target="_blank" rel="noopener noreferrer" class="link-underline font-semibold text-[#0a0a0a]">cloc</a> does this for you.
+          </p>
+
+          <div class={`mt-6 ${labelClass}`}>1. Install</div>
+          <ul class="mt-3 grid gap-2 sm:grid-cols-2">
+            {
+              clocInstalls.map((install) => (
+                <li class="rounded-2xl border border-[#0a0a0a]/10 bg-white p-3.5">
+                  <div class="text-[12px] text-[#888]">{install.os}</div>
+                  <div class="mt-1 flex items-center justify-between gap-3">
+                    <code class="font-mono text-[13px]">{install.cmd}</code>
+                    <button type="button" data-copy={install.cmd} class="cursor-pointer text-[11px] font-semibold tracking-[0.12em] text-[#888] uppercase hover:text-[#0a0a0a]">Copy</button>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class={`mt-6 ${labelClass}`}>2. Run it from the root of your repo</div>
+          <div class="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-[#0a0a0a] px-5 py-4 text-[#f4f2ef]">
+            <code class="font-mono text-[15px]">{clocRun}</code>
+            <button type="button" data-copy={clocRun} class="cursor-pointer text-[11px] font-semibold tracking-[0.12em] text-[#f4f2ef]/60 uppercase hover:text-[#f4f2ef]">Copy</button>
+          </div>
+          <p class="mt-3 text-[13px] leading-[1.65] text-[#555]">
+            <code class="font-mono text-[12.5px]">--vcs=git</code> counts only files tracked by git, so{" "}
+            <code class="font-mono text-[12.5px]">node_modules</code>, build folders and anything in{" "}
+            <code class="font-mono text-[12.5px]">.gitignore</code> are skipped.
+          </p>
+
+          <div class={`mt-6 ${labelClass}`}>3. Use the SUM row, code column</div>
+          <div class="mt-3 overflow-x-auto rounded-2xl border border-[#0a0a0a]/10 bg-white p-4">
+            <table class="tnum w-full min-w-[420px] font-mono text-[12.5px]">
+              <caption class="sr-only">Example cloc output</caption>
+              {
+                clocSample.map((row, r) => (
+                  <tr class={r === 0 ? "text-[#888]" : r === clocSample.length - 1 ? "border-t border-[#0a0a0a]/15 font-bold" : ""}>
+                    {row.map((cell, c) => (
+                      <td class:list={[
+                        "px-2 py-1",
+                        c === 0 ? "text-left" : "text-right",
+                        { "rounded-md bg-[#0a0a0a] text-[#f4f2ef]": r === clocSample.length - 1 && c === row.length - 1 },
+                      ]}>{cell}</td>
+                    ))}
+                  </tr>
+                ))
+              }
+            </table>
+          </div>
+          <p class="mt-3 text-[13px] leading-[1.65] text-[#555]">
+            In this example you would enter <strong class="tnum text-[#0a0a0a]">74,055</strong>. Prefer{" "}
+            <a href="https://github.com/boyter/scc" target="_blank" rel="noopener noreferrer" class="link-underline font-semibold text-[#0a0a0a]">scc</a>?
+            Run <code class="font-mono text-[12.5px]">scc .</code> in the repo root and use the Total row, Code column.
+          </p>
+          <p class="mt-3 text-[13px] leading-[1.65] text-[#555]">
+            Or run our{" "}<a href="/code/check-repo.sh" class="link-underline font-semibold text-[#0a0a0a]">check-repo.sh</a>, which
+            counts your lines with cloc (or scc) and checks the repo is ready to share.{" "}
+            <a href="/code/prepare/" class="link-underline font-semibold text-[#0a0a0a]">How to use it</a>.
+          </p>
+        </div>
+
+        <!-- INTERNAL EVALUATION: only with ?advanced -->
+        <div data-advanced hidden class="mt-12 border-t border-[#0a0a0a] pt-10">
+          <div class="flex items-baseline justify-between gap-4">
+            <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Internal evaluation</h2>
+            <span class="tnum text-[11px] tracking-[0.14em] text-[#888] uppercase">
+              Rate card {ACQUISITION_PRICING.version}
+            </span>
+          </div>
+
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="adv-repo" class={labelClass}>Repository</label>
+              <input id="adv-repo" type="text" autocomplete="off" placeholder="owner/repo" data-adv-repo class={`mt-3 ${fieldClass}`} />
+            </div>
+            <div>
+              <label for="adv-verified" class={labelClass}>Verified lines of code</label>
+              <input
+                id="adv-verified"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="13"
+                placeholder="Same as submitted"
+                data-adv-verified
+                class={`tnum mt-3 ${fieldClass}`}
+              />
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <div class={labelClass}>Quality</div>
+            <div class="mt-3 grid gap-2 sm:grid-cols-2" role="group" aria-label="Quality classification">
+              {
+                QUALITY_LEVELS.map((level, i) => (
+                  <button
+                    type="button"
+                    data-adv-quality={level.key}
+                    aria-pressed={i === 0 ? "true" : "false"}
+                    class="calc-toggle cursor-pointer rounded-2xl border border-[#0a0a0a]/15 bg-white p-4 text-left transition-colors"
+                  >
+                    <span class="flex items-baseline justify-between gap-3">
+                      <span class="text-[15px] font-semibold">{level.label}</span>
+                      <span class="tnum text-[13px] font-semibold opacity-60">
+                        +{Math.round(ACQUISITION_PRICING.qualityBonuses[level.key] * 100)}%
+                      </span>
+                    </span>
+                    <span class="mt-1 block text-[12.5px] leading-snug opacity-60">{level.description}</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="mt-6 rounded-3xl border border-[#0a0a0a]/10 bg-white p-6 sm:p-8">
+            <div class="flex items-center justify-between gap-4">
+              <div class={labelClass}>Offer breakdown</div>
+              <span data-adv-status class="rounded-full border border-[#0a0a0a]/20 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] uppercase">
+                Estimated value
+              </span>
+            </div>
+
+            <dl data-adv-lines class="tnum mt-5 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-[14px] text-[#555]"></dl>
+            <p data-adv-jump hidden class="mt-3 text-[12.5px] leading-snug text-[#666]"></p>
+
+            <div class="my-5 h-px bg-[#0a0a0a]/10" role="presentation"></div>
+
+            <dl class="tnum grid grid-cols-[1fr_auto] gap-x-4 gap-y-3 text-[15px]">
+              <dt class="font-semibold">Base price</dt>
+              <dd class="text-right font-semibold" data-adv-base>–</dd>
+              <dt class="font-semibold">Quality bonus <span class="font-medium text-[#888]" data-adv-bonus-rate></span></dt>
+              <dd class="text-right font-semibold" data-adv-bonus>–</dd>
+            </dl>
+
+            <div class="mt-5 flex items-baseline justify-between gap-4 rounded-2xl bg-[#0a0a0a] px-5 py-4 text-[#f4f2ef]">
+              <span class="text-[11px] font-semibold tracking-[0.18em] uppercase">Estimated offer</span>
+              <span class="tnum font-xeroda text-[26px] font-semibold tracking-[-0.03em] sm:text-[32px]">
+                <span class="text-[0.5em] tracking-normal text-[#f4f2ef]/55">UGX</span>
+                <span data-adv-offer>–</span>
+              </span>
+            </div>
+
+            <p class="mt-4 text-[12.5px] leading-relaxed text-[#666]">
+              Priced on verified lines when entered, otherwise on the submitted
+              count. Every offer needs Apta's approval and ownership checks
+              before acquisition.
+            </p>
+
+            <div class="mt-5 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                data-adv-copy
+                class="btn-anim inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#0a0a0a] px-6 py-3.5 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+              >
+                Copy quote
+              </button>
+              <button type="button" data-adv-reset class="link-underline cursor-pointer text-[13px] font-semibold">
+                Reset
+              </button>
+              <span data-adv-copied aria-live="polite" class="text-[12.5px] text-[#666]"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TERMS -->
+    <section class="border-t border-[#0a0a0a] px-6 py-14 sm:px-10">
+      <div class="mx-auto grid max-w-5xl gap-8 sm:grid-cols-3">
+        {
+          terms.map((term) => (
+            <div>
+              <h2 class="font-xeroda text-xl font-semibold tracking-[-0.015em]">{term.title}</h2>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(term.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="mx-auto mt-10 max-w-5xl">
+        <a
+          href="/code/"
+          class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+        >
+          How it works
+          <ArrowUpRight class="h-3.5 w-3.5" />
+        </a>
+      </div>
+    </section>
+
+    <SubmitCta heading="Know your price? Tell us about your project." secondary={{ href: "/code/prepare/", label: "How to prepare it" }} />
+
+    <Footer />
+
+    <style>
+      .tnum {
+        font-variant-numeric: tabular-nums;
+      }
+      .calc-toggle[aria-pressed="true"] {
+        background: #0a0a0a;
+        border-color: #0a0a0a;
+        color: #f4f2ef;
+      }
+      .calc-caret {
+        animation: calc-caret 1.06s step-end infinite;
+        transition: left 90ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      /* A real cursor is solid while typing and only blinks once it stops. */
+      .calc-caret.is-typing {
+        animation: none;
+        opacity: 1;
+      }
+      @keyframes calc-caret {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+
+    <script>
+      import {
+        ACQUISITION_PRICING,
+        QUALITY_LEVELS,
+        RATE_JUMPS,
+        calculateAcquisitionOffer,
+        calculateBasePrice,
+        type QualityLevel,
+      } from "../../scripts/code_rate";
+
+      const DEMO_LOC = [35_000, 75_000, 250_000, 500_000];
+      const COUNT_MS = 260;
+      const MAX_DIGITS = 10;
+      const MIN_LOC = ACQUISITION_PRICING.minimumLOC;
+
+      const fmt = (n: number) => n.toLocaleString("en-US");
+      const ugx = (n: number) => "UGX " + fmt(n);
+      const digitsOf = (s: string) => s.replace(/\D/g, "").replace(/^0+(?=\d)/, "").slice(0, MAX_DIGITS);
+      const parse = (s: string) => {
+        const d = digitsOf(s);
+        return d ? Number(d) : null;
+      };
+
+      // Keep commas in place as the user types, without throwing the cursor to the end.
+      function reformat(input: HTMLInputElement) {
+        const pos = input.selectionStart ?? input.value.length;
+        const digitsBefore = digitsOf(input.value.slice(0, pos)).length;
+        const d = digitsOf(input.value);
+        input.value = d ? fmt(Number(d)) : "";
+        let seen = 0;
+        let next = 0;
+        while (next < input.value.length && seen < digitsBefore) {
+          if (/\d/.test(input.value[next])) seen++;
+          next++;
+        }
+        input.setSelectionRange(next, next);
+      }
+
+      // Rolls a figure from what is shown to the new one (easeOutCubic), like the Laces calculator.
+      function roller(el: HTMLElement, reducedMotion: boolean) {
+        let shown = 0;
+        let frame = 0;
+        return {
+          to(target: number) {
+            cancelAnimationFrame(frame);
+            if (reducedMotion || shown === target) {
+              shown = target;
+              el.textContent = fmt(target);
+              return;
+            }
+            const from = shown;
+            const start = performance.now();
+            const tick = () => {
+              const t = Math.min((performance.now() - start) / COUNT_MS, 1);
+              shown = Math.round(from + (target - from) * (1 - Math.pow(1 - t, 3)));
+              el.textContent = fmt(shown);
+              if (t < 1) frame = requestAnimationFrame(tick);
+            };
+            frame = requestAnimationFrame(tick);
+          },
+          clear(text: string) {
+            cancelAnimationFrame(frame);
+            shown = 0;
+            el.textContent = text;
+          },
+        };
+      }
+
+      function init() {
+        const root = document.querySelector<HTMLElement>("[data-calc]");
+        if (!root || root.dataset.ready) return;
+        root.dataset.ready = "1";
+
+        const $ = <T extends HTMLElement = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+        const advanced = new URLSearchParams(location.search).has("advanced");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const input = $<HTMLInputElement>("[data-calc-input]");
+        const measure = $("[data-calc-measure]");
+        const caret = $("[data-calc-caret]");
+        const hint = $("[data-calc-hint]");
+        const note = $("[data-calc-note]");
+        const currency = $("[data-calc-currency]");
+        const price = roller($("[data-calc-price]"), reducedMotion);
+        const presets = root.querySelectorAll<HTMLButtonElement>("[data-calc-preset]");
+
+        // ── Public calculator: base price only ─────────────────────────────
+        function render(isDemo: boolean) {
+          const loc = parse(input.value);
+          // Mid-keystroke demo values ("3", "35") stay neutral rather than flashing "Not eligible".
+          const ineligible = loc !== null && loc < MIN_LOC;
+
+          if (loc === null || (isDemo && ineligible)) {
+            note.textContent = "Enter your lines of code.";
+            currency.hidden = true;
+            price.clear("–");
+          } else if (ineligible) {
+            note.textContent = `Repositories start at ${fmt(MIN_LOC)} lines. This one is ${fmt(MIN_LOC - loc)} short.`;
+            currency.hidden = true;
+            price.clear("Not eligible");
+          } else {
+            note.textContent = `Calculated from ${fmt(loc)} declared lines of code.`;
+            currency.hidden = false;
+            price.to(calculateBasePrice(loc).basePrice);
+          }
+
+          presets.forEach((p) =>
+            p.setAttribute("aria-pressed", String(!isDemo && loc === Number(p.dataset.calcPreset))),
+          );
+
+          if (isDemo) {
+            measure.textContent = input.value;
+            caret.style.left = `calc(1.25rem + ${measure.offsetWidth}px)`;
+          }
+          if (advanced) renderAdvanced();
+        }
+
+        // ── Internal evaluation (?advanced) ────────────────────────────────
+        const panel = $("[data-advanced]");
+        const repo = $<HTMLInputElement>("[data-adv-repo]");
+        const verified = $<HTMLInputElement>("[data-adv-verified]");
+        const qualityButtons = root.querySelectorAll<HTMLButtonElement>("[data-adv-quality]");
+        const status = $("[data-adv-status]");
+        const lines = $("[data-adv-lines]");
+        const jump = $("[data-adv-jump]");
+        const base = roller($("[data-adv-base]"), reducedMotion);
+        const bonus = roller($("[data-adv-bonus]"), reducedMotion);
+        const bonusRate = $("[data-adv-bonus-rate]");
+        const offer = roller($("[data-adv-offer]"), reducedMotion);
+        const copied = $("[data-adv-copied]");
+        let quality: QualityLevel = "standard";
+
+        const pricedLoc = () => parse(verified.value) ?? parse(input.value);
+
+        function renderAdvanced() {
+          const loc = pricedLoc();
+          const isVerified = parse(verified.value) !== null;
+          status.textContent = isVerified ? "Verified value" : "Estimated value";
+          bonusRate.textContent = `(+${Math.round(ACQUISITION_PRICING.qualityBonuses[quality] * 100)}%)`;
+          copied.textContent = "";
+
+          if (loc === null || loc < MIN_LOC) {
+            const text = loc === null ? "–" : "Not eligible";
+            lines.innerHTML = loc === null ? "" : `<dt>Under ${fmt(MIN_LOC)} lines</dt><dd class="text-right">Not eligible</dd>`;
+            base.clear(text);
+            bonus.clear("–");
+            offer.clear(text);
+            jump.hidden = true;
+            return;
+          }
+
+          const result = calculateAcquisitionOffer(loc, quality);
+          lines.innerHTML = result.breakdown
+            .map((l) => `<dt>${fmt(l.lines)} lines × UGX ${l.rate}</dt><dd class="text-right">${fmt(l.amount)}</dd>`)
+            .join("");
+          base.to(result.basePrice);
+          bonus.to(result.bonus);
+          offer.to(result.estimatedOffer);
+
+          // The whole repo jumps to a higher rate at 50,000 and 100,000 lines; flag repos sitting just under one.
+          const next = RATE_JUMPS.find((at) => at > loc && at - loc <= 5_000);
+          jump.hidden = next === undefined;
+          if (next !== undefined) {
+            const gain = calculateBasePrice(next).basePrice - result.basePrice;
+            const rate = calculateBasePrice(next).breakdown[0].rate;
+            jump.textContent = `${fmt(next - loc)} lines short of ${fmt(next)}, where the rate moves to UGX ${rate}/line (+${ugx(gain)} base).`;
+          }
+        }
+
+        function quoteText() {
+          const submitted = parse(input.value);
+          const verifiedLoc = parse(verified.value);
+          const loc = pricedLoc() ?? 0;
+          const level = QUALITY_LEVELS.find((q) => q.key === quality)!;
+          const r = calculateAcquisitionOffer(loc, quality);
+          const rate = Math.round(ACQUISITION_PRICING.qualityBonuses[quality] * 100);
+          const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+          return [
+            "Apta Innovations Limited: source code acquisition estimate",
+            `Repository: ${repo.value.trim() || "–"}`,
+            `Submitted LOC: ${submitted === null ? "–" : fmt(submitted)}`,
+            `Verified LOC: ${verifiedLoc === null ? "Not yet verified" : fmt(verifiedLoc)}`,
+            `Quality: ${level.label} (+${rate}%)`,
+            r.eligible ? `Base price: ${ugx(r.basePrice)}` : `Base price: Not eligible (under ${fmt(MIN_LOC)} LOC)`,
+            `Quality bonus: ${ugx(r.bonus)}`,
+            `Estimated offer: ${ugx(r.estimatedOffer)}`,
+            `Status: ${verifiedLoc === null ? "Estimated value" : "Verified value"}, pending approval`,
+            `Rate card ${ACQUISITION_PRICING.version}, generated ${date}`,
+          ].join("\n");
+        }
+
+        if (advanced) {
+          panel.hidden = false;
+          // The counting guide is for developers; the internal view doesn't need it.
+          document.getElementById("count")!.hidden = true;
+          $("[data-calc-submit]").hidden = true;
+          $("[data-count-link]").hidden = true;
+          $("[data-calc-label]").textContent = "Submitted lines of code";
+          document.querySelector("[data-calc-eyebrow]")!.textContent = "Internal evaluation";
+
+          verified.addEventListener("input", () => {
+            reformat(verified);
+            renderAdvanced();
+          });
+          qualityButtons.forEach((b) =>
+            b.addEventListener("click", () => {
+              quality = b.dataset.advQuality as QualityLevel;
+              qualityButtons.forEach((q) => q.setAttribute("aria-pressed", String(q === b)));
+              renderAdvanced();
+            }),
+          );
+          $("[data-adv-copy]").addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(quoteText());
+              copied.textContent = "Quote copied.";
+            } catch {
+              copied.textContent = "Couldn't copy. Select the figures manually.";
+            }
+          });
+          $("[data-adv-reset]").addEventListener("click", () => {
+            input.value = repo.value = verified.value = "";
+            quality = "standard";
+            qualityButtons.forEach((q, i) => q.setAttribute("aria-pressed", String(i === 0)));
+            render(false);
+          });
+        }
+
+        // Copy buttons on the counting commands.
+        root.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((b) =>
+          b.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(b.dataset.copy!);
+              b.textContent = "Copied";
+            } catch {
+              b.textContent = "Select it";
+            }
+            setTimeout(() => (b.textContent = "Copy"), 1600);
+          }),
+        );
+
+        // ── Demo typing on the public calculator, until the user takes over ─
+        let takenOver = false;
+        let running = false;
+        let timers: ReturnType<typeof setTimeout>[] = [];
+        const at = (ms: number, fn: () => void) => timers.push(setTimeout(fn, ms));
+        const setDemo = (value: string) => {
+          input.value = value;
+          render(true);
+        };
+
+        // Uneven like a person: a smooth wobble, a slow start, a pause at each comma.
+        const keystrokeDelay = (text: string, i: number) => {
+          const wobble = Math.sin(i * 1.7) * 11 + Math.sin(i * 0.61) * 7;
+          const runUp = i < 3 ? (3 - i) * 22 : 0;
+          const comma = text[i] === "," ? 88 : 0;
+          return Math.max(38, 66 + wobble + runUp + comma);
+        };
+
+        function play(n: number) {
+          if (!running) return;
+          const text = fmt(DEMO_LOC[n % DEMO_LOC.length]);
+          let cursor = 0;
+
+          const deleteNext = () => {
+            if (!running) return;
+            cursor -= 1;
+            setDemo(text.slice(0, Math.max(0, cursor)));
+            if (cursor > 0) return at(Math.max(26, 44 - (text.length - cursor) * 3), deleteNext);
+            caret.classList.remove("is-typing");
+            at(420, () => play(n + 1));
+          };
+
+          const typeNext = () => {
+            if (!running) return;
+            cursor += 1;
+            setDemo(text.slice(0, cursor));
+            if (cursor < text.length) return at(keystrokeDelay(text, cursor), typeNext);
+            caret.classList.remove("is-typing");
+            at(2600, () => {
+              caret.classList.add("is-typing");
+              deleteNext();
+            });
+          };
+
+          setDemo("");
+          caret.classList.add("is-typing");
+          at(360, typeNext);
+        }
+
+        const startDemo = () => {
+          if (running || takenOver) return;
+          running = true;
+          caret.classList.remove("hidden");
+          play(0);
+        };
+        const stopDemo = () => {
+          running = false;
+          timers.forEach(clearTimeout);
+          timers = [];
+          caret.classList.remove("is-typing");
+        };
+
+        const takeOverHint = "Type your line count, or pick a common size.";
+        function takeOver() {
+          if (takenOver) return;
+          takenOver = true;
+          stopDemo();
+          observer.disconnect();
+          caret.classList.add("hidden");
+          input.value = "";
+          hint.textContent = takeOverHint;
+          render(false);
+        }
+
+        let onScreen = false;
+        const sync = () => (onScreen && !document.hidden ? startDemo() : stopDemo());
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            onScreen = entry.isIntersecting;
+            sync();
+          },
+          { threshold: 0.4 },
+        );
+
+        if (advanced || reducedMotion) {
+          // No demo: the internal view starts empty, reduced motion starts on a worked example.
+          takenOver = true;
+          if (!advanced) input.value = fmt(DEMO_LOC[1]);
+          hint.textContent = advanced ? "The size the developer submitted." : takeOverHint;
+          render(false);
+        } else {
+          observer.observe(root);
+          document.addEventListener("visibilitychange", sync);
+          document.addEventListener(
+            "astro:before-swap",
+            () => {
+              stopDemo();
+              observer.disconnect();
+              document.removeEventListener("visibilitychange", sync);
+            },
+            { once: true },
+          );
+        }
+
+        input.addEventListener("focus", takeOver);
+        input.addEventListener("pointerdown", takeOver);
+        input.addEventListener("input", () => {
+          takeOver();
+          reformat(input);
+          render(false);
+        });
+        presets.forEach((p) =>
+          p.addEventListener("click", () => {
+            takeOver();
+            input.value = fmt(Number(p.dataset.calcPreset));
+            render(false);
+          }),
+        );
+      }
+
+      document.addEventListener("astro:page-load", init);
+    </script>
+
+    <script>
+      import "../../scripts/spotlight";
+    </script>
+  </body>
+</html>

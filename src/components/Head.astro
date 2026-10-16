@@ -17,13 +17,28 @@ interface Props {
   pageTitle: string;
   pageDescription: string;
   pageCoverImage?: string;
+  /** Override the site-wide OG image alt / size when pageCoverImage is a page-specific image */
+  pageCoverImageAlt?: string;
+  pageCoverImageWidth?: string;
+  pageCoverImageHeight?: string;
   /** Path relative to baseUrl for this page's canonical URL, e.g. "" for home, "community/" for /community */
   canonicalPath?: string;
+  /** Robots directive, e.g. "noindex, nofollow" for internal pages */
+  robots?: string;
 }
 
 // Access passed-in component props, like `<X title="Hello, World" />`
 // These are passed in with default parameters
-const { pageTitle, pageCoverImage, pageDescription, canonicalPath = "" } = Astro.props;
+const {
+  pageTitle,
+  pageCoverImage,
+  pageDescription,
+  canonicalPath = "",
+  robots = "index, follow",
+  pageCoverImageAlt = coverImageAlt,
+  pageCoverImageWidth = coverImageWidth,
+  pageCoverImageHeight = coverImageHeight,
+} = Astro.props;
 
 const canonicalUrl = baseUrl + canonicalPath;
 
@@ -45,7 +60,7 @@ const canonicalUrl = baseUrl + canonicalPath;
   <meta name="keywords" content={keywords} />
   <meta name="author" content={developer.author} />
   <meta name="copyright" content={developer.copyright} />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content={robots} />
   <meta name="rating" content="general" />
   <meta name="theme-color" content="#0a0a0a" />
 
@@ -61,9 +76,9 @@ const canonicalUrl = baseUrl + canonicalPath;
   <meta property="og:image" content={pageCoverImage} />
   <meta property="og:image:secure_url" content={pageCoverImage} />
   <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content={coverImageWidth} />
-  <meta property="og:image:height" content={coverImageHeight} />
-  <meta property="og:image:alt" content={coverImageAlt} />
+  <meta property="og:image:width" content={pageCoverImageWidth} />
+  <meta property="og:image:height" content={pageCoverImageHeight} />
+  <meta property="og:image:alt" content={pageCoverImageAlt} />
   <meta property="og:locale" content="en_US" />
 
   <!-- Twitter Open Graph -->
@@ -73,7 +88,7 @@ const canonicalUrl = baseUrl + canonicalPath;
   <meta name="twitter:creator" content={developer.handle} />
   <meta name="twitter:description" content={pageDescription} />
   <meta name="twitter:image" content={pageCoverImage} />
-  <meta name="twitter:image:alt" content={coverImageAlt} />
+  <meta name="twitter:image:alt" content={pageCoverImageAlt} />
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes" />

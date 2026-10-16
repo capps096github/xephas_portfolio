@@ -56,13 +56,24 @@ export const personalProjects: LandingProject[] = [
     link: { label: "calcut.app", href: "https://calcut.app" },
   },
   {
+    name: "Laces",
+    code: "P–02 · SINCE 2026",
+    description:
+      "Race registration and event management software for running events in Uganda. Organizers create a race page from a template, sell entries with mobile money, check runners in and issue race kits on the day, then get paid — all from one link. Free to start, with a flat fee per paid order and nothing monthly.",
+    image: "/images/projects/laces.png",
+    imageAlt: "Laces — the easy way to organize and manage your running events",
+    imageLeft: true,
+    caption: "Live · used by race organizers · Web, Android & iOS",
+    link: { label: "laces.run", href: "https://laces.run" },
+  },
+  {
     name: "Linkyoo",
-    code: "P–02 · SINCE 2024",
+    code: "P–03 · SINCE 2024",
     description:
       "One link + QR code for everything you sell. Businesses build a page in minutes to showcase products and menus, receive orders and get paid — then share a single link-in-bio or QR across WhatsApp, Instagram, TikTok and more, turning social media into a real sales channel.",
     image: "/images/projects/linkyoo.png",
     imageAlt: "Linkyoo app — shareable business profile and menu",
-    imageLeft: true,
+    imageLeft: false,
     caption: "Live · used by businesses & creators · Android, iOS & Web",
     link: { label: "linkyoo.me", href: "https://linkyoo.me" },
   },
