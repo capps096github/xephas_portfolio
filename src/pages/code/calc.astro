@@ -748,7 +748,8 @@ const fieldClass =
           hint.textContent = advanced ? "The size the developer submitted." : takeOverHint;
           render(false);
         } else {
-          observer.observe(root);
+          // Watch the field itself: the block below it (how to count) is taller than the screen.
+          observer.observe(input);
           document.addEventListener("visibilitychange", sync);
           document.addEventListener(
             "astro:before-swap",
