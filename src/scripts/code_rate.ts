@@ -2,20 +2,20 @@
 // One config drives both the public base-price calculator and the internal (?advanced) one.
 
 export const ACQUISITION_PRICING = {
-  version: "v3 (2026-10-15)",
+  version: "v5 (2026-10-18)",
   currency: "UGX",
   minimumLOC: 30_000,
   // Whole-repo rates: crossing a threshold reprices EVERY line (a deliberate jump at 50,000 and 100,000).
   flatTiers: [
-    { upperLimit: 49_999, rate: 15 },
-    { upperLimit: 99_999, rate: 16 },
+    { upperLimit: 49_999, rate: 10 },
+    { upperLimit: 99_999, rate: 11 },
   ],
-  // From 100,000 the first 100,000 lines take UGX 17...
-  progressiveBase: { lines: 100_000, rate: 17 },
+  // From 100,000 the first 100,000 lines take UGX 12...
+  progressiveBase: { lines: 100_000, rate: 12 },
   // ...and only the extra lines take the lower rates.
   progressiveRates: [
-    { from: 100_001, to: 250_000, rate: 15 },
-    { from: 250_001, to: Infinity, rate: 12 },
+    { from: 100_001, to: 250_000, rate: 10 },
+    { from: 250_001, to: Infinity, rate: 5 },
   ],
   qualityBonuses: {
     standard: 0,

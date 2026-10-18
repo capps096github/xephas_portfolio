@@ -30,12 +30,12 @@ const priceExamples = [30_000, 100_000, 250_000, 500_000].map((loc) => ({
 }));
 
 // Share card for this page (1200x630); bump ?v= after regenerating so social platforms re-scrape.
-const ogImage = baseUrl + "images/code-og.png?v=3";
-const ogImageAlt = "We're buying source code. 30,000+ lines of code, prices from UGX 450,000. Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
+const ogImage = baseUrl + "images/code-og.png?v=4";
+const ogImageAlt = "We're buying source code. 30,000+ lines of code, prices from UGX " + startingPrice + ". Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
 
 const pageTitle = "Source Code Acquisition | " + company + " through Cephas";
 const pageDescription =
-  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 30,000+ lines of code, prices from UGX 450,000: estimate yours with the pricing calculator. Confidential. Deadline 30 October 2026.";
+  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 30,000+ lines of code, prices from UGX " + startingPrice + ": estimate yours with the pricing calculator. Confidential. Deadline 30 October 2026.";
 
 const priorityLanguages = [
   "Kotlin",
@@ -197,14 +197,15 @@ const flyerMusts = [
           {
             priceExamples.map((ex) => (
               <div>
-                <dt class="text-[12px] text-[#f4f2ef]/55">{ex.loc} lines</dt>
+                <dt class="text-[12px] text-[#f4f2ef]/55">About {ex.loc} lines</dt>
                 <dd class="mt-1 text-[17px] font-semibold">UGX {ex.price}</dd>
               </div>
             ))
           }
         </dl>
         <p class="mt-5 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
-          Estimates from our published rate card. The final price is negotiable
+          Approximate sizes, priced from our published rate card. Your price
+          varies with your exact line count, and the final price is negotiable
           depending on your project, with a quality bonus of up to {maxBonus}%.
         </p>
       </a>
