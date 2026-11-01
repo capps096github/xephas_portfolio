@@ -1,6 +1,8 @@
 
-export const baseUrl = "https://xephasme.web.app/";
-// export const baseUrl = "https://xephas.me/";
+// Canonical origin: the custom domain, not the Firebase default host.
+// (xephasme.web.app still serves the same site; every canonical, og:url and
+// JSON-LD url names xephas.me so search engines consolidate on it.)
+export const baseUrl = "https://xephas.me/";
 export const siteManifest = baseUrl + "manifest.json";
 
 // OG / social share cover image (actual file is 1920x1080)
@@ -48,6 +50,10 @@ export const personSchema = {
   },
   nationality: "Ugandan",
   sameAs: [
+    // Wikidata item (created 2026-11-01) and the Laces founder page, so the
+    // portfolio, laces.run/about and Wikidata resolve to the same person.
+    "https://www.wikidata.org/wiki/Q141960259",
+    "https://laces.run/about",
     "https://github.com/capps096github",
     "https://www.linkedin.com/in/xephasofficial/",
     "https://twitter.com/xephas_official",

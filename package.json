@@ -8,7 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "firebase deploy --only hosting:xephasme",
+    "deploy": "astro build && firebase deploy --only hosting:xephasme",
     "astro": "astro"
   },
   "dependencies": {
