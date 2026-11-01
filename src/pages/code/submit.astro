@@ -1,0 +1,543 @@
+---
+import "../../styles/global.css";
+import Head from "../../components/Head.astro";
+import FloatingNav from "../../components/FloatingNav.astro";
+import Footer from "../../components/Footer.astro";
+import Download from "../../components/icons/Download.astro";
+import { company } from "../../scripts/code_offer";
+
+// Internal page: how we turn a seller's cleaned repo into a GitHub Migration API
+// archive or a GitLab project export. Not linked from the other pages, and kept
+// out of search results.
+const pageTitle = "Submission Archive | " + company;
+const pageDescription = "Turn a seller's cleaned_version branch into a GitHub Migration API archive or a GitLab project export with one command.";
+
+const quick = `# 1. Once, per machine: tokens for your accounts (see "Create the token" below)
+#    GitHub: CLASSIC token, scopes repo + user
+#    GitLab: LEGACY token, scopes api + write_repository
+mkdir -p ~/.config/code-submit
+printf '%s\\n' 'ghp_your_github_token' 'gitlab=glpat-your_gitlab_token' > ~/.config/code-submit/token
+chmod 600 ~/.config/code-submit/token
+
+# 2. Once: get the scripts
+mkdir -p ~/code-submit && cd ~/code-submit
+curl -O https://xephas.me/code/submit.sh
+curl -O https://xephas.me/code/check-repo.sh
+
+# 3. Per seller, after accepting their Read invite. The link picks the platform.
+bash submit.sh https://github.com/seller/their-app.git
+bash submit.sh https://gitlab.com/seller/their-app.git`;
+
+const options = [
+  { name: "2nd argument", def: "seller's repo name", body: "Name of the new private repo on your account, and of the archive." },
+  { name: "SOURCE_BRANCH", def: "cleaned_version", body: "The seller's branch to deliver. It becomes main in the archive." },
+  { name: "PLATFORM", def: "from the link", body: "github or gitlab. A link on gitlab.com, or any host with gitlab in its name, uses GitLab; everything else GitHub." },
+  { name: "DEST_OWNER", def: "the token's account", body: "Account, organisation (GitHub) or group (GitLab) that owns the new repo." },
+  { name: "ORG=1", def: "off", body: "DEST_OWNER is an organisation or group. On GitHub the token needs repo + admin:org, and you need the Owner or Migrator role." },
+  { name: "GITLAB_HOST", def: "from the link", body: "Self-hosted GitLab, e.g. gitlab.example.com. Defaults to the link's host, or gitlab.com." },
+  { name: "OUT_DIR", def: "./submissions", body: "Where the archive, receipt, check report and pull/merge-request JSON go." },
+  { name: "TOKEN_FILE", def: "~/.config/code-submit/token", body: "Token file. One token per line: bare, owner=ghp_xxx for several GitHub accounts, gitlab=glpat-xxx for GitLab." },
+  { name: "GH_MIGRATION_TOKEN", def: "unset", body: "GitHub token for one run, instead of the file." },
+  { name: "GITLAB_TOKEN", def: "unset", body: "GitLab token for one run, instead of the file." },
+  { name: "FORCE=1", def: "off", body: "Continue even when check-repo.sh fails. Only for warnings you've reviewed with the seller." },
+];
+
+const examples = `# Custom repo name, saved into a folder per offer
+OUT_DIR=~/Offers/TheirApp bash submit.sh https://github.com/seller/their-app.git their-app
+
+# Into an organisation you own
+ORG=1 DEST_OWNER=my-org bash submit.sh https://github.com/seller/their-app.git
+
+# Seller delivered another branch name
+SOURCE_BRANCH=release bash submit.sh https://github.com/seller/their-app.git
+
+# Seller on GitLab: produces a GitLab project export
+bash submit.sh https://gitlab.com/seller/their-app.git
+
+# Into a GitLab group you own
+ORG=1 DEST_OWNER=my-group bash submit.sh https://gitlab.com/seller/their-app.git
+
+# Seller on Bitbucket (or anywhere else): delivered as a GitHub archive
+bash submit.sh https://bitbucket.org/seller/their-app.git`;
+
+const flow = [
+  { title: "Copy", body: "Clones only the seller's cleaned_version branch. Read access is enough." },
+  { title: "Check", body: "Runs check-repo.sh. Stops on failure and saves the report for the seller." },
+  { title: "Pull requests", body: "Exports the seller's pull requests (GitHub) or merge requests (GitLab) and their comments to JSON beside the archive." },
+  { title: "New repo", body: "Creates a private repo on your account and pushes the branch as main. Both APIs only export repos you own." },
+  { title: "Export", body: "GitHub: Migration API. GitLab: project export. Starts it, polls until it's ready, downloads the .tar.gz." },
+  { title: "Verify", body: "Unpacks the archive, checks commits, branch, run_instruction.md, AI files and size, then writes a receipt with the SHA-256." },
+];
+
+// Token walkthroughs, from the upload instructions. Account names cropped out.
+const tokenGuides = [
+  {
+    id: "token-github",
+    title: "GitHub: classic token",
+    steps: [
+      { title: "Open Settings", body: "Sign in to GitHub, click your profile photo in the top right, then Settings.", img: "gh-1-settings.jpg", w: 538, h: 1078 },
+      { title: "Developer settings", body: "Scroll to the very bottom of the left sidebar and click Developer settings.", img: "gh-2-developer-settings.jpg", w: 592, h: 1158 },
+      { title: "Tokens (classic)", body: "Click Personal access tokens, then Tokens (classic). Click Generate new token, then Generate new token (classic).", img: "gh-3-tokens-classic.jpg", w: 1400, h: 528 },
+      { title: "Name, expiry, scopes", body: "Give it a name such as Migration API Token, set an expiry, and tick repo and user.", img: "gh-4-scopes-user.jpg", w: 1208, h: 1400 },
+      { title: "Organisation repos", body: "For an organisation, tick repo and admin:org instead. You must be an Owner of the organisation, or have the Migrator role.", img: "gh-5-scopes-org.jpg", w: 1400, h: 1149 },
+      { title: "Copy it now", body: "Copy the token straight away; GitHub won't show it again. Put it in ~/.config/code-submit/token.", img: "gh-6-copy-token.jpg", w: 1400, h: 546 },
+    ],
+  },
+  {
+    id: "token-gitlab",
+    title: "GitLab: legacy token",
+    steps: [
+      { title: "Open Preferences", body: "Click your avatar in the top right, then Preferences.", img: "gl-1-preferences.jpg", w: 484, h: 528 },
+      { title: "Personal access tokens", body: "In the left sidebar, open Access, then Personal access tokens, and click Generate token.", img: "gl-2-access-tokens.jpg", w: 1400, h: 644 },
+      { title: "Legacy token", body: "Choose Legacy token. Fine-grained tokens are still in beta.", img: "gl-3-legacy-token.jpg", w: 1400, h: 244 },
+      { title: "Name, expiry, scopes", body: "Name it, set an expiry date, tick write_repository and api, then click Generate token.", img: "gl-4-scopes.jpg", w: 1400, h: 882 },
+      { title: "Copy it now", body: "Copy the token; GitLab won't show it again. Add it to the token file as a line gitlab=glpat-...", img: "gl-5-copy-token.jpg", w: 1400, h: 304 },
+    ],
+  },
+];
+
+const manual = [
+  {
+    title: "GitHub, repo on your account",
+    code: `TOKEN=ghp_your_token
+REPO=your-username/repo-name
+
+# Start the export; note the "id" in the response
+curl -L -X POST -H "Accept: application/vnd.github+json" \\
+  -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \\
+  https://api.github.com/user/migrations \\
+  -d "{\\"lock_repositories\\":false,\\"repositories\\":[\\"$REPO\\"]}"
+
+# Repeat until "state" is "exported"
+curl -L -H "Accept: application/vnd.github+json" \\
+  -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \\
+  https://api.github.com/user/migrations/MIGRATION_ID
+
+# Download
+curl -L -H "Accept: application/vnd.github+json" \\
+  -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \\
+  https://api.github.com/user/migrations/MIGRATION_ID/archive -o repo-name.tar.gz`,
+  },
+  {
+    title: "GitHub, organisation repo",
+    code: `TOKEN=ghp_your_token      # scopes: repo, admin:org; Owner or Migrator role
+ORG=org-name
+
+curl -L -X POST -H "Accept: application/vnd.github+json" \\
+  -H "Authorization: Bearer $TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \\
+  https://api.github.com/orgs/$ORG/migrations \\
+  -d '{"lock_repositories":false,"repositories":["repo-name"]}'
+
+curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $TOKEN" \\
+  https://api.github.com/orgs/$ORG/migrations/MIGRATION_ID
+
+curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $TOKEN" \\
+  https://api.github.com/orgs/$ORG/migrations/MIGRATION_ID/archive -o repo-name.tar.gz`,
+  },
+  {
+    title: "GitLab project export",
+    code: `TOKEN=glpat-your_token    # legacy token, scopes: api, write_repository
+PROJECT=username%2Frepo-name   # username/repo-name, with / written as %2F
+
+# 1. Start (expect "202 Accepted")
+curl --request POST --header "PRIVATE-TOKEN: $TOKEN" \\
+  "https://gitlab.com/api/v4/projects/$PROJECT/export"
+
+# 2. Repeat until "export_status" is "finished" (queued / started: wait, run again)
+curl --request GET --header "PRIVATE-TOKEN: $TOKEN" \\
+  "https://gitlab.com/api/v4/projects/$PROJECT/export"
+
+# The finished response looks like this. Take the "id" (or the api_url):
+# {"id":12345678,"name":"repo-name","path_with_namespace":"username/repo-name",
+#  "export_status":"finished",
+#  "_links":{"api_url":"https://gitlab.com/api/v4/projects/12345678/export/download", ...}}
+
+# 3. Download
+curl --request GET --header "PRIVATE-TOKEN: $TOKEN" -o repo-name.tar.gz \\
+  "https://gitlab.com/api/v4/projects/PROJECT_ID/export/download"`,
+  },
+];
+
+const trouble = [
+  { q: "422 Validation Failed on repositories", a: "The token's account doesn't own the repo. That's why submit.sh pushes into a new repo on your account first. Running it manually? Use a token created while signed in as the owner." },
+  { q: "no branch cleaned_version, or no read access", a: "The seller hasn't pushed it yet, or you haven't accepted their invite at github.com/notifications." },
+  { q: "fine-grained token", a: "The Migration API needs a classic token (ghp_...). Fine-grained tokens (github_pat_...) are rejected." },
+  { q: "already exists", a: "A repo with that name is already on your account, from an earlier run. Pass a new name as the second argument." },
+  { q: "check-repo.sh failed", a: "Send the seller the saved report and the link to /code/prepare/. Use FORCE=1 only for warnings you've agreed are fine." },
+  { q: "Stuck in exporting", a: "Large repos can take a while. The script waits 30 minutes, then prints the commands to check and download later." },
+  { q: "GitLab: export did not start (HTTP 403 or 404)", a: "The token needs the api scope, and must be a legacy token on the account that owns the project. submit.sh creates that project for you." },
+  { q: "GitLab: export_status stays none", a: "The start request didn't register. Run the POST again and expect 202 Accepted. GitLab.com limits exports to a few per minute per user." },
+  { q: "GitLab: no project.bundle in the archive", a: "The project had no repository when it was exported. Check that the push in step 4 landed, then export again." },
+];
+
+const pre =
+  "overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]";
+const copyBtn =
+  "absolute top-2.5 right-2.5 rounded-full border border-[#f4f2ef]/25 bg-[#0a0a0a] px-2.5 py-1 text-[11px] font-semibold text-[#f4f2ef] transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]";
+---
+
+<!doctype html>
+<html lang="en">
+  <Head pageTitle={pageTitle} pageDescription={pageDescription} canonicalPath="code/submit/" robots="noindex, nofollow" />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
+
+    <!-- HERO -->
+    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">{company} · Internal</div>
+      <h1 class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]">
+        Build the submission archive.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Once a seller has cleaned their repo and invited you with Read access,
+        one command turns their cleaned_version branch into a .tar.gz archive:
+        a GitHub Migration API archive for a GitHub repo, a GitLab project
+        export for a GitLab one. The seller does nothing else.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        {
+          ["submit.sh", "check-repo.sh"].map((f) => (
+            <a
+              href={`/code/${f}`}
+              download={f}
+              class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-4 py-2 font-mono text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+            >
+              <Download class="h-3.5 w-3.5" />
+              {f}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- GENERATE -->
+    <section id="generate" class="px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Paste the seller's link</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Get a script made for this seller. It downloads submit.sh and
+        check-repo.sh, then builds the archive. You only need your token in
+        place (Quick start, step 1).
+      </p>
+      <form data-gen class="mt-6 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[1fr_200px]" novalidate>
+        <label class="block min-w-0 sm:col-span-2">
+          <span class="text-[12px] font-semibold tracking-[0.08em] text-[#888] uppercase">Seller's repo link</span>
+          <input
+            data-gen-url
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://github.com/seller/their-app"
+            class="mt-1.5 w-full rounded-xl border border-[#0a0a0a]/20 bg-white px-4 py-3 font-mono text-[13px] outline-none focus:border-[#0a0a0a]"
+          />
+        </label>
+        <label class="block min-w-0">
+          <span class="text-[12px] font-semibold tracking-[0.08em] text-[#888] uppercase">New repo name (optional)</span>
+          <input
+            data-gen-name
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="same as the seller's"
+            class="mt-1.5 w-full rounded-xl border border-[#0a0a0a]/20 bg-white px-4 py-3 font-mono text-[13px] outline-none focus:border-[#0a0a0a]"
+          />
+        </label>
+        <label class="block min-w-0">
+          <span class="text-[12px] font-semibold tracking-[0.08em] text-[#888] uppercase">Branch</span>
+          <input
+            data-gen-branch
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            value="cleaned_version"
+            class="mt-1.5 w-full rounded-xl border border-[#0a0a0a]/20 bg-white px-4 py-3 font-mono text-[13px] outline-none focus:border-[#0a0a0a]"
+          />
+        </label>
+      </form>
+      <p data-gen-msg class="mt-4 max-w-3xl text-[14px] leading-[1.65] text-[#888]">Paste a link to see the script.</p>
+      <div data-gen-out hidden class="mt-4 max-w-3xl">
+        <div class="relative">
+          <pre class={pre}><code data-gen-code></code></pre>
+          <button type="button" data-copy class={copyBtn}>Copy</button>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            data-gen-download
+            class="inline-flex items-center gap-1.5 rounded-full bg-[#0a0a0a] px-5 py-2.5 font-mono text-xs font-semibold text-[#f4f2ef] transition-opacity hover:opacity-85"
+          >
+            <Download class="h-3.5 w-3.5" />
+            <span data-gen-file>submit.sh</span>
+          </button>
+          <span class="text-[13px] text-[#555]">Then run <code data-gen-run class="font-mono text-[12.5px]"></code></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK START -->
+    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Quick start</h2>
+      <div class="relative mt-6 max-w-3xl">
+        <pre class={pre}><code>{quick}</code></pre>
+        <button type="button" data-copy class={copyBtn}>Copy</button>
+      </div>
+    </section>
+
+    <!-- TOKENS -->
+    <section id="tokens" class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Create the token</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Once per account. GitHub sellers need a GitHub token, GitLab sellers a
+        GitLab one.
+      </p>
+      <div class="mt-5 flex flex-wrap gap-2">
+        {
+          tokenGuides.map((g) => (
+            <a
+              href={`#${g.id}`}
+              class="rounded-full border border-[#0a0a0a]/15 bg-white px-4 py-2 text-[13px] font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+            >
+              {g.title}
+            </a>
+          ))
+        }
+      </div>
+      {
+        tokenGuides.map((g) => (
+          <div id={g.id} class="mt-12 max-w-5xl scroll-mt-24">
+            <h3 class="text-xl font-semibold tracking-[-0.01em]">{g.title}</h3>
+            <ol class="mt-4">
+              {g.steps.map((s, i) => (
+                <li class="grid grid-cols-1 gap-4 border-t border-[#e5e3df] py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] md:gap-10">
+                  <div class="min-w-0">
+                    <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
+                    <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
+                    <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+                  </div>
+                  <a
+                    href={`/code/img/${s.img}`}
+                    target="_blank"
+                    rel="noopener"
+                    class="block min-w-0 overflow-hidden rounded-xl border border-[#e5e3df] bg-white"
+                  >
+                    <img
+                      src={`/code/img/${s.img}`}
+                      width={s.w}
+                      height={s.h}
+                      loading="lazy"
+                      decoding="async"
+                      alt={`${g.title.split(":")[0]}: ${s.title}`}
+                      class="mx-auto h-auto max-h-[480px] w-auto max-w-full"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- FLOW -->
+    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">What it does</h2>
+      <ol class="mt-8 grid grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          flow.map((s, i) => (
+            <li class="border-t border-[#e5e3df] py-5">
+              <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
+              <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="mt-4 max-w-3xl text-[14px] leading-[1.65] text-[#555]">
+        Output in OUT_DIR: <code class="font-mono text-[13px]">&lt;name&gt;.tar.gz</code>, a receipt,
+        the check-repo.sh report and <code class="font-mono text-[13px]">&lt;name&gt;-pull_requests.json</code>.
+        The new private repo stays on your account; keep it until the submission is accepted.
+      </p>
+    </section>
+
+    <!-- OPTIONS -->
+    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Options</h2>
+      <div class="mt-6 max-w-4xl">
+        {
+          options.map((o) => (
+            <div class="grid grid-cols-1 gap-1 border-t border-[#e5e3df] py-4 sm:grid-cols-[220px_1fr] sm:gap-6">
+              <div class="min-w-0">
+                <div class="font-mono text-[13px] font-semibold break-all">{o.name}</div>
+                <div class="mt-0.5 text-[12px] text-[#888]">default: {o.def}</div>
+              </div>
+              <p class="text-[14px] leading-[1.65] text-[#555]">{o.body}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="relative mt-8 max-w-3xl">
+        <pre class={pre}><code>{examples}</code></pre>
+        <button type="button" data-copy class={copyBtn}>Copy</button>
+      </div>
+    </section>
+
+    <!-- MANUAL -->
+    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Manual commands</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        The same export by hand, for a repo the token's account already owns.
+        Replace MIGRATION_ID or PROJECT_ID with the id from the first response.
+      </p>
+      <div class="mt-8 max-w-3xl space-y-8">
+        {
+          manual.map((m) => (
+            <div class="min-w-0">
+              <div class="text-[15px] font-semibold">{m.title}</div>
+              <div class="relative mt-3">
+                <pre class={pre}><code>{m.code}</code></pre>
+                <button type="button" data-copy class={copyBtn}>Copy</button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- TROUBLESHOOTING -->
+    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Troubleshooting</h2>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 md:grid-cols-2">
+        {
+          trouble.map((t) => (
+            <div class="border-t border-[#e5e3df] py-5">
+              <div class="font-mono text-[13px] font-semibold">{t.q}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{t.a}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <Footer />
+
+    <!-- Copy buttons -->
+    <script>
+      document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const code = btn.parentElement?.querySelector("code")?.textContent ?? "";
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = "Copied";
+          } catch {
+            btn.textContent = "Select & copy";
+          }
+          setTimeout(() => (btn.textContent = "Copy"), 1600);
+        });
+      });
+    </script>
+
+    <!-- Per-seller script generator -->
+    <script>
+      const urlIn = document.querySelector<HTMLInputElement>("[data-gen-url]");
+      const nameIn = document.querySelector<HTMLInputElement>("[data-gen-name]");
+      const branchIn = document.querySelector<HTMLInputElement>("[data-gen-branch]");
+      const msg = document.querySelector<HTMLElement>("[data-gen-msg]");
+      const out = document.querySelector<HTMLElement>("[data-gen-out]");
+      const codeEl = document.querySelector<HTMLElement>("[data-gen-code]");
+      const fileEl = document.querySelector<HTMLElement>("[data-gen-file]");
+      const runEl = document.querySelector<HTMLElement>("[data-gen-run]");
+      const dl = document.querySelector<HTMLButtonElement>("[data-gen-download]");
+
+      // Only characters that are safe inside single quotes in the generated script.
+      const SAFE_URL = /^(https:\/\/[A-Za-z0-9.-]+(:[0-9]+)?\/|git@[A-Za-z0-9.-]+:)[A-Za-z0-9._~\/-]+$/;
+      const SAFE_NAME = /^[A-Za-z0-9._-]+$/;
+      const SAFE_BRANCH = /^[A-Za-z0-9._\/-]+$/;
+      let script = "";
+      let file = "submit.sh";
+
+      // Accept a link copied from the browser: drop /tree/..., /-/..., query and trailing slash.
+      function clean(raw: string) {
+        return raw
+          .trim()
+          .replace(/[?#].*$/, "")
+          .replace(/\/-\/.*$/, "")
+          .replace(/\/(tree|blob|pulls?|issues|commits?|branches)(\/.*)?$/, "")
+          .replace(/\/+$/, "");
+      }
+
+      function render() {
+        if (!urlIn || !nameIn || !branchIn || !msg || !out || !codeEl || !fileEl || !runEl) return;
+        const url = clean(urlIn.value);
+        const name = nameIn.value.trim();
+        const branch = branchIn.value.trim() || "cleaned_version";
+        const fail = (t: string) => {
+          msg.textContent = t;
+          msg.style.color = url ? "#b42318" : "#888";
+          out.hidden = true;
+          script = "";
+        };
+        if (!url) return fail("Paste a link to see the script.");
+        if (!SAFE_URL.test(url)) return fail("That doesn't look like a repo link. Use https://host/owner/repo or git@host:owner/repo.git");
+        if (name && !SAFE_NAME.test(name)) return fail("Repo names can use letters, numbers, dots, dashes and underscores.");
+        if (!SAFE_BRANCH.test(branch)) return fail("Branch names can use letters, numbers, dots, dashes, underscores and slashes.");
+
+        const host = url.replace(/^https:\/\//, "").replace(/^git@/, "").replace(/[:/].*$/, "").toLowerCase();
+        const gitlab = host.includes("gitlab");
+        const repo = url.replace(/\.git$/, "").split(/[/:]/).pop() || "repo";
+        const base = name || repo;
+        file = `submit-${base}.sh`;
+        const kind = gitlab ? "GitLab project export" : "GitHub Migration API archive";
+        const tokenLine = gitlab
+          ? "# Needs a GitLab legacy token (api + write_repository) in ~/.config/code-submit/token\n#   as a line  gitlab=glpat-...  or exported as GITLAB_TOKEN."
+          : "# Needs a GitHub classic token (repo + user) in ~/.config/code-submit/token\n#   or exported as GH_MIGRATION_TOKEN.";
+
+        script = [
+          "#!/usr/bin/env bash",
+          `# ${file}: builds the ${kind} for one seller.`,
+          "# Generated at https://xephas.me/code/submit/",
+          "#",
+          `# Seller repo : ${url}`,
+          `# Branch      : ${branch}`,
+          `# Archive     : ./submissions/${base}.tar.gz`,
+          tokenLine,
+          "#",
+          `# Run: bash ${file}`,
+          "set -euo pipefail",
+          "",
+          'DIR="$(mktemp -d "${TMPDIR:-/tmp}/submit.XXXXXX")"',
+          "trap 'rm -rf \"$DIR\"' EXIT",
+          'curl -fsSL https://xephas.me/code/submit.sh -o "$DIR/submit.sh"',
+          'curl -fsSL https://xephas.me/code/check-repo.sh -o "$DIR/check-repo.sh"',
+          "",
+          `SOURCE_BRANCH='${branch}' bash "$DIR/submit.sh" '${url}'${name ? ` '${name}'` : ""}`,
+          "",
+        ].join("\n");
+
+        codeEl.textContent = script;
+        fileEl.textContent = file;
+        runEl.textContent = `bash ${file}`;
+        msg.textContent = `${gitlab ? "GitLab" : "GitHub"} link: this makes a ${kind}.`;
+        msg.style.color = "#555";
+        out.hidden = false;
+      }
+
+      [urlIn, nameIn, branchIn].forEach((el) => el?.addEventListener("input", render));
+      dl?.addEventListener("click", () => {
+        if (!script) return;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([script], { type: "text/x-shellscript" }));
+        a.download = file;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      });
+      render();
+    </script>
+
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../../scripts/spotlight";
+    </script>
+  </body>
+</html>

@@ -15,7 +15,7 @@ const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
 const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
 
 // Share card (1200x630); bump ?v= after regenerating so social platforms re-scrape.
-const ogImage = baseUrl + "images/code-calc-og.png?v=1";
+const ogImage = baseUrl + "images/code-calc-og.png?v=2";
 const ogImageAlt = "What's your code worth? Pricing calculator, Apta Innovations Limited, xephas.me/code/calc.";
 
 const presets = [30_000, 50_000, 100_000, 250_000, 500_000, 1_000_000];
@@ -127,7 +127,7 @@ const fieldClass =
           </span>
         </div>
 
-        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Common repository sizes">
+        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Approximate repository sizes">
           {
             presets.map((preset) => (
               <button
@@ -166,6 +166,7 @@ const fieldClass =
             <span data-calc-price>–</span>
           </div>
           <p class="mt-6 border-t border-[#f4f2ef]/15 pt-4 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
+            Your price varies with your exact line count.{" "}
             <strong class="font-semibold text-[#f4f2ef]">The final price is negotiable</strong>{" "}
             depending on your project: its stack, completeness, code quality and
             history. Well-built repositories can earn a quality bonus of up to{" "}
@@ -719,7 +720,7 @@ const fieldClass =
           caret.classList.remove("is-typing");
         };
 
-        const takeOverHint = "Type your line count, or pick a common size.";
+        const takeOverHint = "Type your exact line count, or pick an approximate size.";
         function takeOver() {
           if (takenOver) return;
           takenOver = true;
@@ -748,7 +749,8 @@ const fieldClass =
           hint.textContent = advanced ? "The size the developer submitted." : takeOverHint;
           render(false);
         } else {
-          observer.observe(root);
+          // Watch the field itself: the block below it (how to count) is taller than the screen.
+          observer.observe(input);
           document.addEventListener("visibilitychange", sync);
           document.addEventListener(
             "astro:before-swap",

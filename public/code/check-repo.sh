@@ -249,9 +249,14 @@ if grep -qx 'run_instruction.md' "$TMP/tip"; then
     pass "run_instruction.md present ($RI_LINES lines)"
   fi
 else
-  fail "run_instruction.md missing from the root. Template: https://xephas.me/code/run_instruction.template.md"
+  fail "run_instruction.md missing from the root. Template and AI prompt: https://xephas.me/code/prepare/#ai-docs"
 fi
 grep -iE '^(readme|readme\.md)$' "$TMP/tip" >/dev/null && pass "README present" || warn "no README at the root"
+if grep -iqx 'features.md' "$TMP/tip"; then
+  pass "FEATURES.md present ($(grep -c '^- ' <(g show "HEAD:$(grep -ix 'features.md' "$TMP/tip")") | tr -d ' ') features listed)"
+else
+  warn "no FEATURES.md at the root. AI prompt: https://xephas.me/code/prepare/#ai-docs"
+fi
 echo
 
 # --- 9. History and size --------------------------------------------------------------

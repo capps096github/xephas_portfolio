@@ -9,8 +9,24 @@ import CopyHandle from "../../components/CopyHandle.astro";
 import SubmitCta from "../../components/SubmitCta.astro";
 import { baseUrl, githubHandle } from "../../scripts/constants.js";
 
+import { readFileSync } from "node:fs";
 import { company } from "../../scripts/code_offer";
 const branch = "cleaned_version";
+
+// AI prompts for the two docs. Read from public/code/prompts/ at build time so the
+// page and the downloadable files never drift apart.
+const prompts = [
+  {
+    file: "prompts/run_instruction.prompt.md",
+    title: "run_instruction.md",
+    body: "Reads your manifests, config, scripts and CI, then writes install, credential, build/run/test, quick start and troubleshooting sections with real versions and commands.",
+  },
+  {
+    file: "prompts/features.prompt.md",
+    title: "FEATURES.md",
+    body: "Goes through every module, route, endpoint and model, then lists every implemented feature, grouped by area, one concrete bullet each.",
+  },
+].map((p) => ({ ...p, text: readFileSync(`public/code/${p.file}`, "utf8").trim() }));
 // Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />.
 const withHandle = (text: string) => text.split(new RegExp(`(?<!/)(${githubHandle})`));
 
@@ -46,6 +62,16 @@ const downloads = [
     file: "secrets.example.txt",
     title: "secrets.example.txt",
     body: "Example rules for replacing secret strings everywhere in your history while keeping the files that held them.",
+  },
+  {
+    file: "prompts/run_instruction.prompt.md",
+    title: "run_instruction prompt",
+    body: "Paste into Claude Code, Cursor, Copilot or any AI coding assistant opened in your repo. It writes run_instruction.md from your actual code.",
+  },
+  {
+    file: "prompts/features.prompt.md",
+    title: "FEATURES.md prompt",
+    body: "Same, for FEATURES.md: a complete inventory of every implemented feature, grouped by area.",
   },
 ];
 
@@ -84,9 +110,9 @@ curl -O https://xephas.me/code/secrets.example.txt`,
 bash check-repo.sh __REPO__.git | tee before.txt`,
   },
   {
-    title: "Add run_instruction.md",
-    body: "Download the template, fill it in for your project and commit it at the root of main before you clean. A buyer must be able to build and run the project from this file alone.",
-    link: { href: "/code/run_instruction.template.md", label: "run_instruction.md template" },
+    title: "Add run_instruction.md and FEATURES.md",
+    body: "Write both at the root of main, by hand from the template or with the AI prompts further down this page. Review them, then commit them before you clean so they are part of the cleaned history. A buyer must be able to build and run the project from run_instruction.md alone.",
+    link: { href: "#ai-docs", label: "AI prompts for both files" },
   },
   {
     title: "Rotate secrets, then list them",
@@ -130,6 +156,74 @@ ${githubHandle}
 
 # Your repo's collaborator settings
 https://github.com/__USER__/__REPO__/settings/access`,
+  },
+];
+
+// The checklist sellers tick off before inviting us. Codes use String.raw so regex backslashes survive.
+const checklist: { title: string; body: string; items?: string[]; code?: string; codeNote?: string; link?: { href: string; label: string } }[] = [
+  {
+    title: "Remove AI tooling files from the repo and its history",
+    body: "Remove only the file, never the whole .github/ folder: it also holds your CI workflows, which we want.",
+    items: ["CLAUDE.md, AGENTS.md, GEMINI.md", ".github/copilot-instructions.md, .cursorrules, .clinerules", ".cursor/, .claude/, .aider*, .windsurf*, llm-guides/, .remember/"],
+    codeNote: "Check: this must print nothing.",
+    code: String.raw`git rev-list --objects --all | awk '{print $2}' | grep -iE '(^|/)(CLAUDE\.md|AGENTS\.md|copilot-instructions\.md|\.cursorrules|\.clinerules)|(^|/)\.(cursor|claude|aider|windsurf|remember)/|llm-guides/'`,
+  },
+  {
+    title: "Remove secrets and credentials from the repo and its history",
+    body: "Rotate (cancel and reissue) every key that was ever committed, so the old copy in history is dead. Firebase client config (AIza... in google-services.json or firebase_options.dart) is a public identifier and may stay. To replace a secret string but keep the file, list it in secrets.txt for clean-history.sh.",
+    items: [".env files and service-account JSON", "Keystores and certificates: .jks, .keystore, .p12, .p8, .pem, private-key blocks", "API keys (sk-..., AKIA...), tokens, signing and keystore passwords"],
+  },
+  {
+    title: "Remove real user data (PII) from the repo and its history",
+    body: "Replace it with obvious placeholders such as user@example.com. Personal data can't be rotated like a key, so it must be rewritten out of history. Sample data from third-party docs, like a number in a Stripe README, is fine.",
+    items: ["Real names, emails, phone numbers, addresses, ID numbers", "Test logins with real passwords", "Database dumps and exports, uploaded user files"],
+  },
+  {
+    title: "Remove build output, dependencies and large binaries from history",
+    body: "Dependencies and generated files bloat the history and aren't your code.",
+    items: ["node_modules/, build/, dist/, .dart_tool/, .next/, .astro/, .firebase/", "ios/Pods/, android/app/.cxx/, target/, __pycache__/, .venv/, .DS_Store", "Committed .zip, .tgz, .apk or .ipa files"],
+    codeNote: "Find the biggest files ever committed:",
+    code: String.raw`git rev-list --objects --all | git cat-file --batch-check='%(objectsize) %(rest)' | sort -rn | head -20`,
+  },
+  {
+    title: "Remove machine-specific files and your home-folder paths",
+    body: "These only work on your machine and break for anyone else.",
+    items: ["local.properties, Generated.xcconfig, flutter_export_environment.sh, ephemeral/ folders", "Symlinks that point outside the repo", "Absolute paths like /Users/yourname/ or /home/yourname/"],
+    codeNote: "Check: this must print 0.",
+    code: String.raw`git log -p --all | grep -cE '/Users/|/home/'`,
+  },
+  {
+    title: "Remove folders that belong to other projects",
+    body: "If the repo was ever a monorepo or shared with another product, remove the other projects' folders from history. Ship only the project you're selling. Also remove stray nested .git folders that aren't the real repo.",
+  },
+  {
+    title: "Add run_instruction.md and FEATURES.md at the repo root",
+    body: "Write them before you rewrite history, so they sit in the final history. The AI prompts on this page write both from your actual code.",
+    items: ["Prerequisites with versions (e.g. Flutter 3.24, Node 20)", "Credential setup: every placeholder, and where a new owner gets their own value", "Build, run and test commands for each part (app, web, API)", "A quick start, from a fresh clone to a running app", "Troubleshooting for the errors a new developer is likely to hit", "FEATURES.md: every implemented feature, grouped by area"],
+    link: { href: "#ai-docs", label: "AI prompts for both files" },
+  },
+  {
+    title: "Keep the full commit history, unsquashed",
+    body: "Rewrite with clean-history.sh (git-filter-repo). Don't squash, and don't copy the files into a new repo with one \"initial commit\". The commit count may drop slightly where a commit contained only removed files. That's expected; tell us how many.",
+  },
+  {
+    title: `Push the cleaned code to a new branch: ${branch}`,
+    body: `Push it to the same repo as a new branch. Don't force-push over main and don't move it to a new repo. ${branch} is the only branch we copy; your pull requests stay on the repo and we export them on the call. Never merge ${branch} into your other branches: that brings the removed files back.`,
+    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git main:refs/heads/${branch}`,
+  },
+  {
+    title: `Don't change ${branch} after you submit`,
+    body: "We deliver the branch exactly as you checked it. Keep working on your other branches if you like.",
+  },
+  {
+    title: "Do a final check on a fresh clone",
+    body: "Check a fresh copy of only the branch you pushed. Paste the full report into the form. It must end with RESULT: ready; explain any warnings that are fine, such as your own support email.",
+    code: `git clone --bare --single-branch --branch ${branch} https://github.com/__USER__/__REPO__.git check.git
+bash check-repo.sh check.git | tee report.txt`,
+  },
+  {
+    title: "Invite us with Read access",
+    body: `GitHub: Settings > Collaborators > Add people, add ${githubHandle}, role Read. Then message us on WhatsApp to book the handover call.`,
   },
 ];
 
@@ -181,6 +275,10 @@ const faqs = [
     a: "Any time after payment. Once the archive is built and verified on the call, we no longer need the repo.",
   },
   {
+    q: "Can I use AI to write run_instruction.md and FEATURES.md?",
+    a: "Yes. Use the prompts on this page, then check every line against your code. AI-written docs are fine. What we can't accept is a codebase that was entirely AI-generated.",
+  },
+  {
     q: "The check flags something that's fine.",
     a: "Warnings are for you to review, not automatic failures. Explain them in the form, for example: \"0758... is our public support line\".",
   },
@@ -225,6 +323,7 @@ const faqs = [
         >
           Start the clean-up
         </a>
+        <a href="#checklist" class="link-underline inline-block text-[13px] font-semibold">See the checklist</a>
         <a href="#downloads" class="link-underline inline-block text-[13px] font-semibold">Download the scripts</a>
       </div>
     </section>
@@ -243,6 +342,76 @@ const faqs = [
           ))
         }
       </ol>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section id="checklist" class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <div class="flex max-w-3xl flex-wrap items-end justify-between gap-4">
+        <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Before we pay: the checklist</h2>
+        <div class="text-[13px] font-semibold" aria-live="polite"><span data-check-count>0</span> of {checklist.length} done</div>
+      </div>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Work through every item on your repository: the current files{" "}
+        <em>and</em> the git history. Anything ever committed ships with the
+        sale, and deleting a file today doesn't remove it from older commits.
+        check-repo.sh finds every problem below, and clean-history.sh fixes
+        them on a copy. Your ticks are saved in this browser.
+      </p>
+      <div class="mt-4 h-1 max-w-3xl overflow-hidden rounded-full bg-[#e5e3df]">
+        <div data-check-bar class="h-full w-0 bg-[#0a0a0a] transition-[width] duration-300"></div>
+      </div>
+      <ol class="mt-6 max-w-3xl">
+        {
+          checklist.map((c, i) => (
+            <li class="min-w-0 border-t border-[#e5e3df] py-5">
+              <label class="flex cursor-pointer gap-4">
+                <input type="checkbox" data-check={i} class="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#0a0a0a]" />
+                <span class="min-w-0">
+                  <span class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="check-title mt-1 block text-[16px] font-semibold">{c.title}</span>
+                </span>
+              </label>
+              <div class="mt-2 pl-9">
+                {c.items && (
+                  <ul class="mb-2 space-y-1 text-[14px] leading-[1.6]">
+                    {c.items.map((it) => (
+                      <li class="flex gap-2">
+                        <span class="text-[#999]">—</span>
+                        <span class="min-w-0 break-words">{it}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p class="text-[14px] leading-[1.65] text-[#555]">{withHandle(c.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
+                {c.link && (
+                  <a href={c.link.href} class="link-underline mt-2 inline-block text-[13px] font-semibold">{c.link.label}</a>
+                )}
+                {c.code && (
+                  <div class="mt-3">
+                    {c.codeNote && <p class="mb-2 text-[13px] font-semibold">{c.codeNote}</p>}
+                    <div class="relative">
+                      <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{c.code.split(TOKEN_RE).map((part) => part in tokenFor ? <span class="repo-token" data-token={tokenFor[part as keyof typeof tokenFor].key} data-empty>{tokenFor[part as keyof typeof tokenFor].placeholder}</span> : part)}</code></pre>
+                      <button
+                        type="button"
+                        data-copy
+                        class="absolute top-2.5 right-2.5 rounded-full border border-[#f4f2ef]/25 bg-[#0a0a0a] px-2.5 py-1 text-[11px] font-semibold text-[#f4f2ef] transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="mt-4 max-w-3xl border-t border-[#0a0a0a] pt-5 text-[14px] leading-[1.65]">
+        <span class="font-semibold">When every box is ticked:</span> you confirm in
+        the form that every item is done on the repo and its full history. We
+        then build the archive together on a call, and payment is released once
+        it passes the checks.
+      </p>
     </section>
 
     <!-- REMOVE / KEEP -->
@@ -370,7 +539,7 @@ const faqs = [
                   {s.link && (
                     <a
                       href={s.link.href}
-                      download
+                      download={!s.link.href.startsWith("#")}
                       class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
                     >
                       <Download class="h-3.5 w-3.5" />
@@ -425,8 +594,56 @@ const faqs = [
       </a>
     </section>
 
+    <!-- AI DOCS -->
+    <section id="ai-docs" class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Write the docs with AI</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Open your repo in an AI coding assistant (Claude Code, Cursor, GitHub
+        Copilot or similar) and paste each prompt. It reads your actual code
+        and writes the file, using only versions, commands and features that
+        exist in the repo. Docs written with AI are fine; the code itself must
+        be yours.
+      </p>
+      <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
+        <li>— Read every line before you commit it, and fix anything that's wrong.</li>
+        <li>— Make sure the tool didn't add its own files (CLAUDE.md, AGENTS.md, .cursor/). clean-history.sh removes them anyway.</li>
+        <li>— Commit both files on main before you run clean-history.sh.</li>
+      </ul>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-2">
+        {
+          prompts.map((p) => (
+            <div class="min-w-0 border-t border-[#e5e3df] pt-5">
+              <div class="font-mono text-[14px] font-semibold">{p.title}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{p.body}</p>
+              <div class="mt-4">
+                <div class="mb-3 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    data-copy-prompt
+                    data-label={`Copy the ${p.title} prompt`}
+                    class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.12em] text-[#f4f2ef] uppercase"
+                  >
+                    Copy the {p.title} prompt
+                  </button>
+                  <a
+                    href={`/code/${p.file}`}
+                    download
+                    class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+                  >
+                    <Download class="h-3.5 w-3.5" />
+                    Download
+                  </a>
+                </div>
+                <pre class="max-h-80 overflow-auto rounded-xl bg-[#0a0a0a] p-4 font-mono text-[12px] leading-[1.6] whitespace-pre-wrap text-[#f4f2ef]"><code>{p.text}</code></pre>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
     <!-- FAQ -->
-    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
       <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Questions</h2>
       <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 md:grid-cols-2" data-reveal>
         {
@@ -457,6 +674,10 @@ const faqs = [
       }
       .repo-token[data-empty] {
         color: #f5c46b;
+      }
+      li:has(> label > input[data-check]:checked) .check-title {
+        text-decoration: line-through;
+        color: #888;
       }
     </style>
 
@@ -502,6 +723,28 @@ const faqs = [
       apply();
     </script>
 
+    <!-- Checklist: progress count, saved per browser -->
+    <script>
+      const KEY = "code-prepare-checklist";
+      const boxes = document.querySelectorAll<HTMLInputElement>("[data-check]");
+      const count = document.querySelector<HTMLElement>("[data-check-count]");
+      const bar = document.querySelector<HTMLElement>("[data-check-bar]");
+      function update() {
+        const done = [...boxes].filter((b) => b.checked).map((b) => b.dataset.check);
+        if (count) count.textContent = String(done.length);
+        if (bar) bar.style.width = `${(done.length / boxes.length) * 100}%`;
+        try {
+          localStorage.setItem(KEY, JSON.stringify(done));
+        } catch {}
+      }
+      try {
+        const saved: string[] = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+        boxes.forEach((b) => (b.checked = saved.includes(b.dataset.check!)));
+      } catch {}
+      boxes.forEach((b) => b.addEventListener("change", update));
+      update();
+    </script>
+
     <!-- Copy buttons -->
     <script>
       document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
@@ -514,6 +757,19 @@ const faqs = [
             btn.textContent = "Select & copy";
           }
           setTimeout(() => (btn.textContent = "Copy"), 1600);
+        });
+      });
+      // Prompt buttons sit above their block; copy the whole prompt in one click.
+      document.querySelectorAll<HTMLButtonElement>("[data-copy-prompt]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const code = btn.closest("div")?.parentElement?.querySelector("pre code")?.textContent ?? "";
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = "Copied. Paste it into your AI assistant";
+          } catch {
+            btn.textContent = "Select the text below and copy";
+          }
+          setTimeout(() => (btn.textContent = btn.dataset.label ?? "Copy prompt"), 2400);
         });
       });
     </script>
