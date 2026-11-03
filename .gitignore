@@ -26,3 +26,6 @@ pnpm-debug.log*
 
 # .idea folder
 .idea/
+
+# private code-acquisition notes (applicant names, prices) — repo is public
+docs/acquisitions/

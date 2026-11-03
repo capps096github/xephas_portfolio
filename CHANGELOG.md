@@ -2,6 +2,24 @@
 
 Changes to the xephas.me portfolio site, newest first.
 
+## Unreleased
+
+### 2026-11-03
+
+#### Changed
+
+- The shortlist table in `docs/acquisitions/Code_Acquisition_Shortlist_2026-11-02.md` (gitignored) now has a Commits column and a Pull requests column, plus subtotal and total rows for both. The figures are what each person typed into the Tally form, copied from the CSV export. They were NOT checked against the repos.
+
+### 2026-11-02
+
+#### Added
+
+- Internal code-acquisition notes in `docs/acquisitions/`. `Code_Acquisition_Shortlist_2026-11-02.md` ranks the 13 Tally submissions by hand-written-code value, gives each a payout estimate and a follow-up message, and has totals. `Code_Acquisition_Payout_Estimates_2026-11-02.md` has the detailed per-project analysis. Every price comes from `calculateAcquisitionOffer()` in `src/scripts/code_rate.ts` (rate card v5), run with Node. The hand-written line counts are estimates from the submitted cloc output and were NOT checked against the repos.
+
+#### Changed
+
+- `.gitignore` now ignores `docs/acquisitions/`. The GitHub repo is public and these notes name applicants and their asking prices. Verified with `git check-ignore`.
+
 ## 2026-11-01
 
 ### Changed
