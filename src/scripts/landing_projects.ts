@@ -127,8 +127,28 @@ export const clientProjects: LandingProject[] = [
     ],
   },
   {
-    name: "WalletSense AI",
+    name: "Mineral Craft Solutions",
     code: "C–03",
+    description:
+      "Full digital setup for a Kampala-based geology and mining consultancy operating across East Africa — from a branded website and professional presence to workplace email, social media setup and ongoing IT support.",
+    image: "/images/projects/mcs.png",
+    imageAlt: "Mineral Craft Solutions — Geology & Mining Consultancy, East Africa",
+    imageLeft: true,
+    meta: [
+      { label: "Client", value: "Mineral Craft Solutions Ltd, Kampala" },
+      { label: "Duration", value: "2024 – Ongoing" },
+      { label: "Type", value: "Web, branding & IT" },
+      {
+        label: "Scope",
+        value:
+          "Website design & build · social media setup · branding · workplace emails · continuous IT support",
+      },
+    ],
+    link: { label: "mineralcraftsolutions.com", href: "https://mineralcraftsolutions.com" },
+  },
+  {
+    name: "WalletSense AI",
+    code: "C–04",
     description:
       "An AI-powered fintech app that learns user spending patterns to suggest the most effective ways to save — helping people achieve more from their finances. First working version live on Apple's TestFlight.",
     image: "/images/projects/walletsense.png",

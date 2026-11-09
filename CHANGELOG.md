@@ -6,6 +6,10 @@ Changes to the xephas.me portfolio site, newest first.
 
 ### 2026-11-03
 
+#### Added
+
+- A "Decision: buying these six" section above the summary table in `docs/acquisitions/Code_Acquisition_Payout_Estimates_2026-11-02.md` (gitignored). It records the decision to buy Malaika Doctors Backend, Afrasia Bank Admin Portal, SalaPay, app.regulate-api.com, Senats Booking Manager and EdgeKeeper, with each one's estimated payout, ask and lowest price, and what still has to be cleared. Later the same day Matigo Examinations Board System was added, making it "buying these seven": total estimate ≤ UGX 7,075,969 against asks of 19,749,046 (lowest 14,465,000), with Matigo's "849" ask read as 849,046. Figures copied from the existing table and added up by hand. Nothing was re-run through the calculator.
+
 #### Changed
 
 - The shortlist table in `docs/acquisitions/Code_Acquisition_Shortlist_2026-11-02.md` (gitignored) now has a Commits column and a Pull requests column, plus subtotal and total rows for both. The figures are what each person typed into the Tally form, copied from the CSV export. They were NOT checked against the repos.
