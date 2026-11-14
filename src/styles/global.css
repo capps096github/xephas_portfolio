@@ -267,3 +267,10 @@
     display: none;
   }
 }
+
+/* Anchor links (e.g. "Go to the manual steps") glide instead of jumping. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

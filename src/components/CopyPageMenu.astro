@@ -1,0 +1,119 @@
+---
+// "Copy page" split control: the main button copies the page's Markdown twin;
+// the chevron opens Copy / View as Markdown / Open in ChatGPT, Claude, Perplexity.
+// Plain links underneath, so with JavaScript off every row still opens the .md.
+import { baseUrl } from "../scripts/constants.js";
+
+interface Props {
+  /** Path of the Markdown twin, e.g. `/code/prepare.md`. */
+  md: string;
+}
+const { md } = Astro.props;
+const abs = baseUrl.replace(/\/$/, "") + md;
+const ask = encodeURIComponent(`Read ${abs} and answer questions about it. I want to use it to prepare my repository for sale.`);
+const ai = [
+  { label: "Open in ChatGPT", href: `https://chatgpt.com/?q=${ask}` },
+  { label: "Open in Claude", href: `https://claude.ai/new?q=${ask}` },
+  { label: "Open in Perplexity", href: `https://www.perplexity.ai/search?q=${ask}` },
+];
+const row =
+  "flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-[13px] font-semibold text-[#0a0a0a] transition-colors hover:bg-[#f4f2ef]";
+---
+
+<div data-copy-page class="relative inline-flex text-left">
+  <span data-copy-live aria-live="polite" class="sr-only"></span>
+  <div class="inline-flex items-center rounded-full border border-[#0a0a0a]">
+    <a
+      href={md}
+      data-copy-main
+      class="inline-flex min-h-11 min-w-32 items-center justify-center rounded-l-full py-2 pr-3 pl-5 text-xs font-semibold tracking-[0.14em] whitespace-nowrap uppercase transition-colors hover:bg-[#f4f2ef]"
+      ><span data-copy-title>Copy page</span></a
+    >
+    <details class="copy-page static">
+      <summary
+        aria-label="More ways to use this page with AI"
+        class="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-r-full border-l border-[#0a0a0a] transition-colors marker:hidden hover:bg-[#f4f2ef] [&::-webkit-details-marker]:hidden"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="size-4"><path d="m6 9 6 6 6-6"></path></svg>
+      </summary>
+      <div
+        class="absolute top-full left-0 z-[35] sm:right-0 sm:left-auto mt-2 rounded-2xl border border-[#0a0a0a] bg-white p-2"
+        style="width:min(18rem, calc(100vw - 3rem))"
+      >
+        <a href={md} data-copy-row class={row}>
+          <span><span data-copy-title class="block">Copy page</span><span class="block text-[12px] font-normal text-[#555]">Copy as Markdown for any AI</span></span>
+        </a>
+        <a href={md} target="_blank" rel="noopener" class={row}>
+          <span><span class="block">View as Markdown</span><span class="block text-[12px] font-normal text-[#555]">Open the plain-text version</span></span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        {ai.map((l) => (
+          <a href={l.href} target="_blank" rel="noopener" class={row}>
+            <span><span class="block">{l.label}</span><span class="block text-[12px] font-normal text-[#555]">Ask questions about this page</span></span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </details>
+  </div>
+</div>
+
+<script>
+  const FEEDBACK_MS = 2000;
+
+  // Safari only honours a clipboard write made inside the click. With
+  // ClipboardItem the write is called synchronously with a PROMISE for the
+  // text; otherwise fetch first, then writeText.
+  const fetchText = (href: string) =>
+    fetch(href).then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.text();
+    });
+  async function copyMarkdown(href: string) {
+    const Item = (globalThis as { ClipboardItem?: typeof ClipboardItem }).ClipboardItem;
+    if (Item) {
+      const blob = fetchText(href).then((t) => new Blob([t], { type: "text/plain" }));
+      await navigator.clipboard.write([new Item({ "text/plain": blob })]);
+      return;
+    }
+    await navigator.clipboard.writeText(await fetchText(href));
+  }
+
+  const timers = new WeakMap<HTMLElement, number>();
+  document.addEventListener("click", (e) => {
+    const target = e.target as Element;
+    // Close the panel on an outside click.
+    document.querySelectorAll<HTMLDetailsElement>("details.copy-page[open]").forEach((d) => {
+      if (!d.contains(target)) d.open = false;
+    });
+    const link = target.closest<HTMLAnchorElement>("a[data-copy-main], a[data-copy-row]");
+    if (!link || !navigator.clipboard) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (link.getAttribute("aria-busy") === "true") return;
+    const title = link.querySelector<HTMLElement>("[data-copy-title]");
+    const live = link.closest("[data-copy-page]")?.querySelector<HTMLElement>("[data-copy-live]");
+    if (title && title.dataset.original === undefined) title.dataset.original = title.textContent ?? "";
+    const show = (msg: string) => {
+      link.removeAttribute("aria-busy");
+      if (live) live.textContent = msg;
+      if (!title) return;
+      title.textContent = msg;
+      window.clearTimeout(timers.get(title));
+      timers.set(title, window.setTimeout(() => {
+        title.textContent = title.dataset.original ?? "";
+        if (live) live.textContent = "";
+      }, FEEDBACK_MS));
+    };
+    if (title) window.clearTimeout(timers.get(title));
+    link.setAttribute("aria-busy", "true");
+    copyMarkdown(link.getAttribute("href") ?? "").then(
+      () => show("Copied"),
+      () => show("Copy failed"),
+    );
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    document.querySelectorAll<HTMLDetailsElement>("details.copy-page[open]").forEach((d) => (d.open = false));
+  });
+</script>

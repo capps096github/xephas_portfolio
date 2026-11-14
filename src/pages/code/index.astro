@@ -10,7 +10,7 @@ import Mail from "../../components/icons/Mail.astro";
 import MessageCircle from "../../components/icons/MessageCircle.astro";
 import { qrSvg } from "../../scripts/qr";
 import { baseUrl } from "../../scripts/constants.js";
-import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, calculateBasePrice } from "../../scripts/code_rate";
+import { ACQUISITION_PRICING, MAX_HISTORY_CREDIT, MAX_QUALITY_BONUS, estimateValue } from "../../scripts/code_rate";
 
 import { TALLY_URL, company, contactEmails, contactName, contactPhone, contactWhatsApp, deadline } from "../../scripts/code_offer";
 
@@ -20,22 +20,24 @@ const flyerQr = qrSvg(FLYER_URL, 4, "QR code linking to xephas.me/code");
 
 const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
 const fmt = (n: number) => n.toLocaleString("en-US");
-const startingPrice = fmt(calculateBasePrice(ACQUISITION_PRICING.minimumLOC).basePrice);
+// Likely value at the minimum size with no history credit (the low end of its range is lower; final price negotiable).
+const startingPrice = fmt(estimateValue({ loc: ACQUISITION_PRICING.minimumLOC }).likely);
 const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
+const maxHistory = Math.round(MAX_HISTORY_CREDIT * 100);
 
-// Sample estimates for the hero, straight from the live rate card.
+// Sample estimates for the hero, straight from the live rate card (likely value, no history credit).
 const priceExamples = [30_000, 100_000, 250_000, 500_000].map((loc) => ({
   loc: fmt(loc),
-  price: fmt(calculateBasePrice(loc).basePrice),
+  price: fmt(estimateValue({ loc }).likely),
 }));
 
 // Share card for this page (1200x630); bump ?v= after regenerating so social platforms re-scrape.
-const ogImage = baseUrl + "images/code-og.png?v=4";
-const ogImageAlt = "We're buying source code. 30,000+ lines of code, prices from UGX " + startingPrice + ". Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
+const ogImage = baseUrl + "images/code-og.png?v=5";
+const ogImageAlt = "We're buying source code. Private software projects with full git history. 30,000+ lines of code. Estimates from about UGX " + startingPrice + ". Apta Innovations Limited, xephas.me/code. Deadline 30 October 2026.";
 
 const pageTitle = "Source Code Acquisition | " + company + " through Cephas";
 const pageDescription =
-  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 30,000+ lines of code, prices from UGX " + startingPrice + ": estimate yours with the pricing calculator. Confidential. Deadline 30 October 2026.";
+  "Apta Innovations Limited, through Cephas Brian, is acquiring large, private, git-based codebases for research & development. 30,000+ lines of code, estimates from about UGX " + startingPrice + ": estimate yours with the pricing calculator. Confidential. Deadline 30 October 2026.";
 
 const priorityLanguages = [
   "Kotlin",
@@ -75,7 +77,7 @@ const steps = [
   { n: "01", title: "Price & submit", body: `Check your estimate on the pricing calculator, then fill in the short form before ${deadline}: the project, its stack, its git history and your asking price.` },
   { n: "02", title: "Review", body: "We review every submission privately and shortlist the repositories that fit. We may ask for read access to verify the code." },
   { n: "03", title: "Agree", body: "Shortlisted owners agree a price, starting from the calculator estimate and negotiable by project, and sign a written acquisition agreement covering the code and how it may be used." },
-  { n: "04", title: "Get paid", body: "You clean the repo with our free scripts, then we build the archive together on a call and payment is released there. Nothing is owed up front." },
+  { n: "04", title: "Get paid", body: "You clean the repo with our free scripts, then you export the archive yourself and payment is released on a call once we have verified it. Nothing is owed up front." },
 ];
 
 // Flyer colourways. The swatches above the flyer switch between these; each has its own downloads.
@@ -150,8 +152,8 @@ const flyerMusts = [
         {company} invites developers and software teams to submit source code
         from active or discontinued projects for research &amp; development.
         We're looking for large, private, git-based codebases of {minLoc}+
-        lines, with full-stack monorepos considered first. Prices start at
-        UGX&nbsp;{startingPrice}: check what yours is worth below.
+        lines, with full-stack monorepos considered first. Estimates start
+        from about UGX&nbsp;{startingPrice}: check what yours is worth below.
       </p>
       <p class="mt-4 text-[13px] font-semibold tracking-[0.12em] uppercase">
         Submission deadline: {deadline}
@@ -191,7 +193,7 @@ const flyerMusts = [
           </span>
         </div>
         <p class="font-xeroda mt-4 text-[26px] leading-[1.15] font-semibold tracking-[-0.02em] sm:text-[34px]">
-          Enter your lines of code. See your price.
+          Enter your lines of code and history. See your range.
         </p>
         <dl class="mt-6 tabular-nums grid grid-cols-2 gap-x-6 gap-y-4 border-t border-[#f4f2ef]/15 pt-5 sm:grid-cols-4">
           {
@@ -204,9 +206,12 @@ const flyerMusts = [
           }
         </dl>
         <p class="mt-5 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
-          Approximate sizes, priced from our published rate card. Your price
-          varies with your exact line count, and the final price is negotiable
-          depending on your project, with a quality bonus of up to {maxBonus}%.
+          Likely values for approximate sizes, from our published rate card.
+          The calculator gives a range from your exact line count, with a
+          credit of up to {maxHistory}% for history depth and review record
+          (commits, pull requests and branches).
+          The final price is negotiable depending on your project, with a
+          quality bonus of up to {maxBonus}%.
         </p>
       </a>
     </section>
@@ -259,7 +264,7 @@ const flyerMusts = [
               </h3>
               <p class={`mt-5 max-w-md text-[14px] leading-[1.65] ${theme.body}`}>
                 Large, private software projects with full git history, for
-                research &amp; development. Confidential. Selective. Prices from UGX&nbsp;{startingPrice}.
+                research &amp; development. Confidential. Selective. Estimates from about UGX&nbsp;{startingPrice}.
               </p>
 
               <div class={`mt-8 text-[11px] tracking-[0.18em] uppercase ${theme.muted}`}>Languages in demand</div>
@@ -399,6 +404,10 @@ const flyerMusts = [
           </a>
           <a href="/code/prepare/" class="link-underline inline-flex items-center gap-1 text-[13px] font-semibold">
             How to prepare your repo for sale: scripts and steps
+            <ArrowUpRight class="h-3.5 w-3.5" />
+          </a>
+          <a href="/code/export/" class="link-underline inline-flex items-center gap-1 text-[13px] font-semibold">
+            How to export the archive: history and pull requests
             <ArrowUpRight class="h-3.5 w-3.5" />
           </a>
         </div>

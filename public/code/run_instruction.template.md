@@ -5,7 +5,8 @@ Template from Apta Innovations Limited: https://xephas.me/code/prepare/
 Save this as run_instruction.md at the ROOT of your repository and fill in
 every section. Write it for a developer who has never seen the project and has
 none of your accounts, keys or machine setup. Delete these comments when done.
-Commit it BEFORE you run clean-history.sh, so it is part of the cleaned history.
+Commit it on EVERY branch BEFORE you run clean-history.sh: every branch ships,
+so each branch tip needs it, and it must be part of the cleaned history.
 -->
 
 ## 1. What this is

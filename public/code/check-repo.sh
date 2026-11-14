@@ -5,11 +5,14 @@
 # Apta Innovations Limited. Full guide: https://xephas.me/code/prepare/
 #
 # WHAT IT DOES
-#   Checks your repository, its current files AND its full git history, for
-#   everything that must not ship with a sale: AI tooling files, secrets,
-#   personal data, build output, machine-specific files and home-folder paths.
-#   It also reports the facts we ask for: commits, branches, authors, lines of
-#   code, and whether run_instruction.md exists.
+#   Checks EVERY branch and tag of your repository, their current files AND
+#   their full git history, for everything that must not ship with a sale: AI
+#   tooling files, secrets, personal data, build output, machine-specific files
+#   and home-folder paths. The export ships every branch and tag, so one dirty
+#   branch fails the check. It prints a line per branch and tag, checks that
+#   run_instruction.md is on every branch, reports GitHub's refs/pull/* on their
+#   own, and reports the facts we ask for: commits, branches, authors, lines of
+#   code.
 #
 # IT IS READ-ONLY
 #   It never changes your files, your history or your remote. It only reads.
@@ -17,16 +20,16 @@
 # USAGE
 #   bash check-repo.sh <path-to-repo>
 #
-#   Before cleaning, check the branch you are selling:
-#     git clone --bare --single-branch --branch main <your-repo-url> myrepo.git
+#   Check a fresh full copy of the remote (every branch, tag and pull ref):
+#     git clone --mirror <your-repo-url> myrepo.git
 #     bash check-repo.sh myrepo.git
 #
-#   After cleaning, check the cleaned_version branch you pushed:
-#     git clone --bare --single-branch --branch cleaned_version <your-repo-url> check.git
+#   After cleaning and force-pushing, check a NEW fresh copy the same way:
+#     git clone --mirror <your-repo-url> check.git
 #     bash check-repo.sh check.git
 #
 #   Save the report to paste into the form:
-#     bash check-repo.sh myrepo.git | tee check-report.txt
+#     bash check-repo.sh check.git | tee check-report.txt
 #
 # NEEDS
 #   git, plus cloc (https://github.com/AlDanial/cloc) or scc for the line count.
@@ -39,7 +42,7 @@
 set -uo pipefail
 
 if [ $# -lt 1 ]; then
-  sed -n '2,34p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,37p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 fi
 
@@ -71,10 +74,11 @@ show() {
 }
 
 # --- Gather -------------------------------------------------------------------
-# Every path that ever existed, in any commit on any branch or tag.
-g rev-list --objects --all 2>/dev/null | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$TMP/paths"
+# Every path that ever existed, in any commit on any branch or tag. GitHub's
+# refs/pull/* are left out here and reported on their own in [10].
+g rev-list --objects --branches --tags 2>/dev/null | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$TMP/paths"
 # Every line ever added, in any commit. Text files only.
-g log --all -p --no-color --no-ext-diff --format='commit %h' 2>/dev/null |
+g log --branches --tags -p --no-color --no-ext-diff --format='commit %h' 2>/dev/null |
   grep -E '^\+' | grep -vE '^\+\+\+ ' >"$TMP/added"
 HEAD_REF=$(g symbolic-ref --short HEAD 2>/dev/null || echo HEAD)
 g ls-tree -r --name-only HEAD 2>/dev/null >"$TMP/tip" || : >"$TMP/tip"
@@ -87,18 +91,56 @@ echo " Remote       : $(g remote get-url origin 2>/dev/null || echo 'none')"
 echo " Default      : $HEAD_REF"
 echo " Branches     : $(g for-each-ref --format='%(refname:short)' refs/heads | tr '\n' ' ')"
 echo " Tags         : $(g tag | wc -l | tr -d ' ')"
-echo " Commits      : $(g rev-list --count --all) (all branches)"
-echo " First commit : $(g log --all --reverse --format=%ad --date=short | head -1)"
-echo " Last commit  : $(g log --all -1 --format=%ad --date=short)"
-echo " Authors      : $(g log --all --format='%aN <%aE>' | sort -u | wc -l | tr -d ' ')"
+echo " Commits      : $(g rev-list --count --branches --tags) (all branches and tags)"
+echo " First commit : $(g log --branches --tags --reverse --format=%ad --date=short | head -1)"
+echo " Last commit  : $(g log --branches --tags -1 --format=%ad --date=short)"
+echo " Authors      : $(g log --branches --tags --format='%aN <%aE>' | sort -u | wc -l | tr -d ' ')"
 echo " .git size    : $(du -sh "$GIT_DIR" 2>/dev/null | cut -f1)"
 echo " Files at tip : $(wc -l <"$TMP/tip" | tr -d ' ')"
 echo " Generated    : $(date '+%Y-%m-%d %H:%M %Z')"
 echo
 
+# --- 0. Every branch and tag --------------------------------------------------
+AI_RE='(^|/)(CLAUDE\.md|AGENTS\.md|GEMINI\.md|copilot-instructions\.md|\.cursorrules|\.clinerules|\.windsurfrules)$|(^|/)\.(cursor|claude|windsurf|remember|aider[^/]*)(/|$)|(^|/)llm-guides(/|$)'
+SECRET_FILE_RE='(^|/)\.env(\.[^/]*)?$|\.(jks|keystore|p12|pfx|p8|pem|key|mobileprovision)$|(^|/)id_(rsa|dsa|ecdsa|ed25519)$|(^|/)(service[-_]?account[^/]*|[^/]*firebase-adminsdk[^/]*|credentials)\.json$|(^|/)key\.properties$|(^|/)\.npmrc$|(^|/)\.netrc$'
+SECRET_RE='AKIA[0-9A-Z]{16}|sk-(proj-|ant-)?[A-Za-z0-9_-]{20,}|sk_live_[0-9A-Za-z]{16,}|rk_live_[0-9A-Za-z]{16,}|gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{40,}|xox[abprs]-[A-Za-z0-9-]{10,}|-----BEGIN ([A-Z]+ )?PRIVATE KEY-----|"private_key"[[:space:]]*:|AccountKey=[A-Za-z0-9+/=]{20,}|(storePassword|keyPassword)[[:space:]]*=[[:space:]]*[^[:space:]]+'
+echo "[0] Every branch and tag (each one ships in the export)"
+printf '        %-6s %-28s %8s %4s %6s %8s  %s\n' kind name commits AI secret-f secret-s run_instruction.md
+g for-each-ref --format='%(refname)' refs/heads refs/tags >"$TMP/refs"
+: >"$TMP/ri-missing"
+while read -r ref; do
+  kind=branch; case "$ref" in refs/tags/*) kind=tag ;; esac
+  name="${ref#refs/*/}"
+  n=$(g rev-list --count "$ref" 2>/dev/null || echo 0)
+  g rev-list --objects "$ref" 2>/dev/null | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$TMP/refpaths"
+  ai=$(grep -ciE "$AI_RE" "$TMP/refpaths" || true)
+  sf=$(grep -iE "$SECRET_FILE_RE" "$TMP/refpaths" | grep -cviE '\.(example|sample|template|dist)$|\.env\.(example|sample|template)' || true)
+  ss=$(g log -p --no-color --no-ext-diff --format= "$ref" 2>/dev/null | grep -E '^\+' | grep -cE "$SECRET_RE" || true)
+  if g cat-file -e "$ref:run_instruction.md" 2>/dev/null; then ri=yes; else ri=MISSING; [ "$kind" = branch ] && echo "$name" >>"$TMP/ri-missing"; fi
+  printf '        %-6s %-28s %8s %4s %6s %8s  %s\n' "$kind" "$name" "$n" "$ai" "$sf" "$ss" "$ri"
+done <"$TMP/refs"
+info "AI = AI tooling paths, secret-f = secret-type files, secret-s = credential strings,"
+info "all counted through that ref's whole history. Every count must be 0 on every row."
+info "Tags point at older commits, so run_instruction.md may be missing there; that's fine."
+grep -iE '(^|/)(pre-sanitise|pre-clean|pre-rewrite|backup|bak)([/_-]|$)' "$TMP/refs" >"$TMP/backups" || true
+if [ -s "$TMP/backups" ]; then
+  warn "branches or tags that look like backups. The export ships every branch: delete them"
+  info "from the remote before exporting, and keep your backup offline instead:"
+  show "$TMP/backups"
+fi
+if [ "$(g rev-parse --is-bare-repository)" = "false" ]; then
+  g for-each-ref --format='%(refname)' refs/remotes/origin | sed 's#^refs/remotes/origin/##' | grep -vx HEAD | sort -u >"$TMP/remote-branches" || true
+  sed -n 's#^refs/heads/##p' "$TMP/refs" | sort -u | comm -23 "$TMP/remote-branches" - >"$TMP/unchecked" || true
+  if [ -s "$TMP/unchecked" ]; then
+    warn "branches that exist only as origin/<name> here were NOT checked. Check a mirror copy:"
+    info "git clone --mirror <your-repo-url> check.git && bash check-repo.sh check.git"
+    show "$TMP/unchecked"
+  fi
+fi
+echo
+
 # --- 1. AI tooling ------------------------------------------------------------
 echo "[1] AI tooling files (tip and history)"
-AI_RE='(^|/)(CLAUDE\.md|AGENTS\.md|GEMINI\.md|copilot-instructions\.md|\.cursorrules|\.clinerules|\.windsurfrules)$|(^|/)\.(cursor|claude|windsurf|remember|aider[^/]*)(/|$)|(^|/)llm-guides(/|$)'
 grep -iE "$AI_RE" "$TMP/paths" >"$TMP/ai" || true
 if [ -s "$TMP/ai" ]; then
   fail "AI tooling files found in history ($(wc -l <"$TMP/ai" | tr -d ' ')):"
@@ -110,7 +152,6 @@ echo
 
 # --- 2. Secret files ----------------------------------------------------------
 echo "[2] Secret and credential files (history)"
-SECRET_FILE_RE='(^|/)\.env(\.[^/]*)?$|\.(jks|keystore|p12|pfx|p8|pem|key|mobileprovision)$|(^|/)id_(rsa|dsa|ecdsa|ed25519)$|(^|/)(service[-_]?account[^/]*|[^/]*firebase-adminsdk[^/]*|credentials)\.json$|(^|/)key\.properties$|(^|/)\.npmrc$|(^|/)\.netrc$'
 grep -iE "$SECRET_FILE_RE" "$TMP/paths" | grep -viE '\.(example|sample|template|dist)$|\.env\.(example|sample|template)' >"$TMP/secretfiles" || true
 if [ -s "$TMP/secretfiles" ]; then
   fail "secret-type files found in history ($(wc -l <"$TMP/secretfiles" | tr -d ' ')):"
@@ -122,7 +163,6 @@ echo
 
 # --- 3. Secret strings ---------------------------------------------------------
 echo "[3] Secret strings (every line ever committed)"
-SECRET_RE='AKIA[0-9A-Z]{16}|sk-(proj-|ant-)?[A-Za-z0-9_-]{20,}|sk_live_[0-9A-Za-z]{16,}|rk_live_[0-9A-Za-z]{16,}|gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{40,}|xox[abprs]-[A-Za-z0-9-]{10,}|-----BEGIN ([A-Z]+ )?PRIVATE KEY-----|"private_key"[[:space:]]*:|AccountKey=[A-Za-z0-9+/=]{20,}|(storePassword|keyPassword)[[:space:]]*=[[:space:]]*[^[:space:]]+'
 grep -oE "$SECRET_RE" "$TMP/added" | sort | uniq -c | sort -rn >"$TMP/secrets" || true
 if [ -s "$TMP/secrets" ]; then
   fail "possible live credentials found ($(wc -l <"$TMP/secrets" | tr -d ' ') distinct). Rotate them, then scrub:"
@@ -181,7 +221,7 @@ if [ -s "$TMP/builddirs" ]; then
   show "$TMP/builddirsum"
 fi
 info "Largest files ever committed:"
-g rev-list --objects --all | g cat-file --batch-check='%(objecttype) %(objectsize) %(rest)' |
+g rev-list --objects --branches --tags | g cat-file --batch-check='%(objecttype) %(objectsize) %(rest)' |
   awk '$1=="blob" && NF>2 {printf "%8.1f MB  %s\n", $2/1048576, substr($0, index($0,$3))}' |
   sort -rn | head -5 | sed 's/^/        /'
 echo
@@ -236,7 +276,13 @@ fi
 echo
 
 # --- 8. Run instructions ------------------------------------------------------------
-echo "[8] run_instruction.md at the repo root ($HEAD_REF)"
+echo "[8] run_instruction.md at the repo root (every branch; details for $HEAD_REF)"
+if [ -s "$TMP/ri-missing" ]; then
+  fail "run_instruction.md missing at the tip of $(wc -l <"$TMP/ri-missing" | tr -d ' ') branch(es). Every branch ships, so commit it on each one BEFORE cleaning:"
+  show "$TMP/ri-missing"
+elif [ -s "$TMP/refs" ]; then
+  pass "run_instruction.md at the tip of every branch"
+fi
 if grep -qx 'run_instruction.md' "$TMP/tip"; then
   RI_LINES=$(g show HEAD:run_instruction.md | wc -l | tr -d ' ')
   RI_MISSING=""
@@ -248,6 +294,8 @@ if grep -qx 'run_instruction.md' "$TMP/tip"; then
   else
     pass "run_instruction.md present ($RI_LINES lines)"
   fi
+elif [ -s "$TMP/ri-missing" ]; then
+  info "Template and AI prompt: https://xephas.me/code/prepare/#ai-docs"
 else
   fail "run_instruction.md missing from the root. Template and AI prompt: https://xephas.me/code/prepare/#ai-docs"
 fi
@@ -261,7 +309,7 @@ echo
 
 # --- 9. History and size --------------------------------------------------------------
 echo "[9] History and size"
-COMMITS=$(g rev-list --count --all)
+COMMITS=$(g rev-list --count --branches --tags)
 if [ "$COMMITS" -lt 20 ]; then
   warn "only $COMMITS commits. Squashed or re-initialised histories don't qualify"
 else
@@ -292,6 +340,39 @@ else
 fi
 echo
 
+
+# --- 10. GitHub pull request refs ------------------------------------------------------
+echo "[10] Pull request refs (refs/pull/*)"
+PR_REFS=$(g for-each-ref --format='%(refname)' refs/pull 2>/dev/null)
+if [ -z "$PR_REFS" ]; then
+  info "No refs/pull/* in this copy. A git clone --mirror of a GitHub repo includes them."
+  info "To list them without cloning:  git ls-remote <your-repo-url> 'refs/pull/*'"
+else
+  N_PR=$(printf '%s\n' "$PR_REFS" | wc -l | tr -d ' ')
+  # shellcheck disable=SC2086 # ref names never contain spaces
+  ONLY=$(g rev-list --count $PR_REFS --not --branches --tags 2>/dev/null || echo 0)
+  info "$N_PR pull request ref(s). GitHub keeps them read-only: you can't delete or rewrite"
+  info "them, and the export includes them. $ONLY commit(s) are reachable ONLY from them,"
+  info "commits from before the clean-up: GitHub never rewrites these refs."
+  if [ "$ONLY" != "0" ]; then
+    # shellcheck disable=SC2086
+    g rev-list --objects $PR_REFS --not --branches --tags 2>/dev/null | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$TMP/prpaths"
+    grep -iE "$AI_RE|$SECRET_FILE_RE" "$TMP/prpaths" >"$TMP/prfiles" || true
+    # shellcheck disable=SC2086
+    g log -p --no-color --no-ext-diff --format= $PR_REFS --not --branches --tags 2>/dev/null |
+      grep -E '^\+' | grep -oE "$SECRET_RE" | sort | uniq -c | sort -rn >"$TMP/prsecrets" || true
+    if [ -s "$TMP/prfiles" ] || [ -s "$TMP/prsecrets" ]; then
+      warn "pull request refs still hold AI tooling, secret files or credential strings."
+      info "Rotate every real credential. Personal data here isn't fixed by rotation: paste this"
+      info "section into the form, and we decide together on the handover call."
+      [ -s "$TMP/prfiles" ] && show "$TMP/prfiles"
+      [ -s "$TMP/prsecrets" ] && show "$TMP/prsecrets"
+    else
+      pass "no AI tooling, secret files or credential strings in commits only the pull request refs hold"
+    fi
+  fi
+fi
+echo
 # --- Summary --------------------------------------------------------------------------
 echo "=============================================================="
 if [ "$FAILS" -eq 0 ]; then
