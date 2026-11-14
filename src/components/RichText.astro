@@ -24,7 +24,7 @@ const parts = Astro.props.text.split(RICH_RE);
 ---
 {parts.map((part) =>
   part === githubHandle ? <CopyHandle /> :
-  part in fileLinks ? <a href={fileLinks[part]} download class="link-underline font-semibold">{part}</a> :
-  part === FORM_TEXT ? <a href={CHECK_FORM_URL} target="_blank" rel="noopener" class="link-underline font-semibold">{part}</a> :
+  part in fileLinks ? <a href={fileLinks[part]} download class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">{part}</a> :
+  part === FORM_TEXT ? <a href={CHECK_FORM_URL} target="_blank" rel="noopener" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">{part}</a> :
   part
 )}
