@@ -5,11 +5,10 @@ import type { APIRoute } from "astro";
 import { baseUrl } from "../../scripts/constants.js";
 import {
   prompts, downloads, handover, steps, checklist,
-  remove, keep, runInstruction, faqs, pad, exportSummary, finishSend, finishNext,
+  remove, keep, runInstruction, faqs, pad, exportSummary, finishSend, finishNext, CHECK_FORM_URL,
 } from "../../scripts/code_prepare";
 import { company } from "../../scripts/code_offer";
 
-const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
 const origin = baseUrl.replace(/\/$/, "");
 // The page fills these from two inputs; in Markdown they stay as placeholders.
 const fill = (s: string) => s.replaceAll("__USER__", "{github-username}").replaceAll("__REPO__", "{repo-name}");
@@ -19,7 +18,7 @@ const out: string[] = [];
 out.push(`# Preparing your repo for sale`);
 out.push(`${company} · Source Code Acquisition. Page: ${origin}/code/prepare/`);
 out.push(
-  "Once your project is shortlisted, you clean the repository and its git history before we pay, using the free scripts below. Then we build the archive together on a call, and payment is released on that call once the archive passes.",
+  "Once your project is shortlisted, you clean the repository and its git history before we pay, using the free scripts below. Then you export the archive yourself, and payment is released on a call once we have verified it.",
 );
 
 out.push(`## How the handover works`);
@@ -37,7 +36,7 @@ steps.forEach((s, i) => {
 });
 
 out.push(`## Checklist`);
-out.push(`Tick every item before inviting us. Submit the report in the form: ${CHECK_FORM_URL}`);
+out.push(`Tick every item before inviting us. Submit the form (name, check-repo.sh report, .tar.gz archive): ${CHECK_FORM_URL}`);
 checklist.forEach((c, i) => {
   const parts = [`### ${pad(i + 1)}. ${c.title}`, fill(c.body)];
   if (c.items) parts.push(c.items.map((x) => `- ${x}`).join("\n"));
@@ -48,30 +47,30 @@ checklist.forEach((c, i) => {
 
 out.push(`## Export the archive (the crucial step)`);
 out.push(exportSummary.lead);
-for (const r of [exportSummary.routeA, exportSummary.routeB]) out.push(`### ${r.title}\n\n**Who:** ${r.who}\n\n${r.body}`);
-out.push(`### Route A in brief (GitHub)`);
+for (const r of [exportSummary.routeA]) out.push(`### ${r.title}\n\n**Who:** ${r.who}\n\n${r.body}`);
+out.push(`### In brief (GitHub)`);
 out.push(exportSummary.points.map((p, i) => `${i + 1}. **${p.title}.** ${p.body}`).join("\n"));
 out.push(`> ${exportSummary.warning}`);
 out.push(exportSummary.pullNote.replace("(step 06)", "(step 6 above)").replace("(step 11)", "(step 11 above)"));
 out.push(fence(exportSummary.code));
 out.push(`The archive must contain:\n\n${exportSummary.inside.map((x) => `- ${x}`).join("\n")}`);
 out.push(exportSummary.runNote.replace("(step 05)", "(step 5 above)"));
-out.push(`Both routes in full, with screenshots, GitLab, organisation repositories and how to verify the archive: ${origin}/code/export/`);
+out.push(`The full guide, with screenshots, GitLab, organisation repositories and how to verify the archive: ${origin}/code/export/`);
 
 out.push(`## What we remove\n\n${remove.map((x) => `- ${x}`).join("\n")}`);
 out.push(`## What stays\n\n${keep.map((x) => `- ${x}`).join("\n")}`);
+out.push(`## Downloads\n\n${downloads.map((d) => `- [${d.title}](${origin}/code/${d.file}): ${d.body}`).join("\n")}`);
+
 out.push(
   `## What run_instruction.md covers\n\n${runInstruction.map((r) => `- **${r.title}.** ${r.body}`).join("\n")}`,
 );
-
-out.push(`## Downloads\n\n${downloads.map((d) => `- [${d.title}](${origin}/code/${d.file}): ${d.body}`).join("\n")}`);
 
 out.push(`## AI prompts for run_instruction.md and FEATURES.md`);
 out.push("Paste into Claude Code, Cursor, Copilot or any AI coding assistant opened in your repo, then check every line against your code.");
 for (const p of prompts) out.push(`### ${p.title}\n\n${p.body}\n\n\`\`\`\`markdown\n${p.text}\n\`\`\`\``);
 
-out.push(`## Final step: submit your check report`);
-out.push(`Submit it in the check-report form: ${CHECK_FORM_URL}`);
+out.push(`## Final step: submit the form`);
+out.push(`Invite the GitHub account with Read access, then submit the submission form: ${CHECK_FORM_URL}`);
 out.push(`What to put in the form:\n\n${finishSend.map((x) => `- ${x}`).join("\n")}`);
 out.push(`What happens next:\n\n${finishNext.map((s, i) => `${i + 1}. **${s.title}.** ${s.body}`).join("\n")}`);
 

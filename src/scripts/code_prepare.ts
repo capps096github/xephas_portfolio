@@ -60,12 +60,12 @@ export const downloads = [
 export const handover = [
   { n: "01", title: "Shortlisted", body: "We contact you once your project is shortlisted and a price is agreed." },
   { n: "02", title: "You clean", body: "You back up the repo, then clean every branch and tag and force-push them back in place, following the steps below." },
-  { n: "03", title: "You submit the check", body: `You paste the check-repo.sh report for the cleaned repo, with its pull request refs, into the form and invite ${githubHandle} on GitHub with Read access.` },
-  { n: "04", title: "Handover call", body: "On a call, we export the archive from your cleaned repository together, verify it and print a receipt." },
-  { n: "05", title: "Payment", body: "Once the archive passes, payment is released on the call. You get the receipt with the archive's SHA-256 fingerprint." },
+  { n: "03", title: "You submit the check", body: `You invite ${githubHandle} on GitHub with Read access, then submit the form with your name, the check-repo.sh report for the cleaned repo and the .tar.gz archive you exported.` },
+  { n: "04", title: "Handover call", body: "On a call, we verify the archive you uploaded in the form." },
+  { n: "05", title: "Payment", body: "Once the archive passes our checks, payment is released on the call." },
 ];
 
-// Commands below carry these tokens; the username/repo fields above the steps fill them in.
+// Commands below carry these tokens; the __USER__/__REPO__ fields above the steps fill them in.
 export const TOKEN_RE = /(__USER__|__REPO__)/;
 export const tokenFor = { __USER__: { key: "user", placeholder: "{github-username}" }, __REPO__: { key: "repo", placeholder: "{repo-name}" } } as const;
 
@@ -168,7 +168,7 @@ git push ${REPO_URL} --delete <backup-branch>`,
   },
   {
     title: "Check what is on GitHub now, and the pull request refs",
-    body: "Check a new fresh copy. When it reads RESULT: ready, paste the full report and the refs/pull list into the form. GitHub keeps a read-only ref for every pull request (refs/pull/<n>/head). It never rewrites them, you can't delete them, and the export includes them, so they still hold each pull request's files from before the clean-up. Rotating every credential (step 06) makes any secret left there useless. Personal data there isn't fixed by rotation: check-repo.sh reports what those refs hold in section [10], and we decide together on the handover call.",
+    body: "Check a new fresh copy. When it reads RESULT: ready, keep the full report: it goes in the form. GitHub keeps a read-only ref for every pull request (refs/pull/<n>/head). It never rewrites them, you can't delete them, and the export includes them, so they still hold each pull request's files from before the clean-up. Rotating every credential (step 06) makes any secret left there useless. Personal data there isn't fixed by rotation: check-repo.sh reports what those refs hold in section [10], and we decide together on the handover call.",
     code: `git clone --mirror ${REPO_URL} check.git
 bash check-repo.sh check.git | tee report.txt
 git ls-remote ${REPO_URL} 'refs/pull/*' | tee pull-refs.txt`,
@@ -176,7 +176,7 @@ git ls-remote ${REPO_URL} 'refs/pull/*' | tee pull-refs.txt`,
   {
     title: "Invite us with Read access",
     body: `On GitHub: Settings > Collaborators > Add people, add ${githubHandle} (github.com/${githubHandle}) with the Read role. On GitLab or Bitbucket, message us for the account to invite, with the Reporter or Read role. Then message us to book the handover call. Delete secrets.txt: it holds your real secrets.`,
-    note: "Required: submit your clean report in the form before you message us. That means the full check-repo.sh output for a fresh copy of the repo after the force-push, ending RESULT: ready, plus the refs/pull list. We can't book the handover call without it.",
+    note: "Required: submit the form before you message us. It takes your name, the full check-repo.sh report for a fresh copy of the repo after the force-push (ending RESULT: ready) and your .tar.gz archive from the export below. We can't book the handover call without it.",
     code: `# Invite this GitHub user with the Read role
 ${githubHandle}
 
@@ -255,18 +255,18 @@ export const checklist: { title: string; body: string; items?: string[]; code?: 
   },
   {
     title: "Do a final check on a fresh mirror clone, with the pull request refs",
-    body: "Check a new fresh copy of the whole repo. Paste the full report into the form, with the git ls-remote 'refs/pull/*' list. It must end with RESULT: ready; explain any warnings that are fine, such as your own support email.",
+    body: "Check a new fresh copy of the whole repo. Paste the full report into the form. It must end with RESULT: ready. Review any warnings: some are fine, such as your own support email.",
     code: `git clone --mirror ${REPO_URL} check.git
 bash check-repo.sh check.git | tee report.txt
 git ls-remote ${REPO_URL} 'refs/pull/*' | tee pull-refs.txt`,
   },
   {
     title: "Don't push to the repo after you submit",
-    body: "We export the repo exactly as you checked it. Anything pushed after your check isn't checked, and the export ships every branch.",
+    body: "Your archive is made from the repo as it stands when you export it. Anything pushed after your check isn't checked, and the export ships every branch.",
   },
   {
     title: "Invite us with Read access",
-    body: `GitHub: Settings > Collaborators > Add people, add ${githubHandle}, role Read. Then message us on WhatsApp to book the handover call.`,
+    body: `GitHub: Settings > Collaborators > Add people, add ${githubHandle}, role Read. Then submit the form and message us on WhatsApp to book the handover call.`,
   },
 ];
 
@@ -274,32 +274,24 @@ git ls-remote ${REPO_URL} 'refs/pull/*' | tee pull-refs.txt`,
 // /code/export. Built from the existing steps and handover text, not new claims.
 export const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
 export const finishSend = [
-  "The full check-repo.sh output for a fresh copy of the repo after the force-push (step 11), ending RESULT: ready",
-  "The refs/pull list from step 11: git ls-remote <your-repo-url> 'refs/pull/*'",
-  "A short note on any warning that is fine, such as your own support email",
+  `First, invite ${githubHandle} on GitHub with the Read role (Settings > Collaborators > Add people). On GitLab or Bitbucket, message us for the account to invite, with the Reporter or Read role.`,
+  "Name: your full name",
+  "check-repo.sh Report: paste the full output for a fresh copy of the repo after the force-push (step 11), ending RESULT: ready",
+  "Submission File of the Codebase: upload your .tar.gz archive, exported as described on /code/export",
 ];
 export const finishNext = [
-  {
-    title: steps[11].title,
-    body: `On GitHub: Settings > Collaborators > Add people, add ${githubHandle} with the Read role. On GitLab or Bitbucket, message us for the account to invite, with the Reporter or Read role.`,
-  },
-  { title: "Book the handover call", body: "Then message us to book the handover call. We can't book it without your clean report." },
+  { title: "Book the handover call", body: "Then message us to book the handover call. We can't book it without your submission in the form." },
   { title: handover[3].title, body: handover[3].body },
   { title: handover[4].title, body: handover[4].body },
 ];
 
 // The export: the short version. Full commands and screenshots on /code/export.
 export const exportSummary = {
-  lead: "Everything above gets the repo ready. The archive is what the sale delivers: one .tar.gz with the full commit history, plus the pull requests with their reviews and comments, built with GitHub's Migration API or GitLab's project export. GitHub only exports repositories the caller owns (or an organisation Owner or Migrator), and GitLab needs the Maintainer role or higher, so there are two routes to it. Pick one once the checklist is done.",
+  lead: "Everything above gets the repo ready. The archive is what the sale delivers: one .tar.gz with the full commit history, plus the pull requests with their reviews and comments, which you make yourself with GitHub's Migration API or GitLab's project export. GitHub only exports repositories the caller owns (or an organisation Owner or Migrator), and GitLab needs the Maintainer role or higher. Do it once the checklist is done.",
   routeA: {
-    title: "Route A: you run the export",
+    title: "You run the export",
     who: "GitHub: you own the repository, or it's in an organisation where you are an Owner or have the Migrator role. GitLab: you have the Maintainer role or higher.",
-    body: "You create a token and run three API calls, below in brief. The export packs the whole repository: every branch, tag and pull request ref. Your branches and tags ship clean. The pull request refs ship as they are and may still hold pre-clean files (see below). Pull requests end up inside the archive as pull_requests_*.json. This is the route that delivers the full record.",
-  },
-  routeB: {
-    title: "Route B: we build it on the call",
-    who: "You can't export it yourself (a GitHub collaborator without either organisation role, or below Maintainer on GitLab), or you would rather not handle tokens.",
-    body: "You invite us with Read access on GitHub, or the Reporter role on GitLab (step 12). On the handover call, while you watch, we copy one branch (your default branch, or the one you name), check it, save your pull requests, put the branch into a new private repository on our account as main and run the same export there, then verify the archive. The archive holds that one branch, delivered as main: your other branches and tags are not in it, so route B earns less than route A. Use it only when route A isn't possible. Pull requests are saved with their reviews and comments in a JSON file beside the archive, not inside it. You never create a token.",
+    body: "You create a token and run three API calls, below in brief. The export packs the whole repository: every branch, tag and pull request ref. Your branches and tags ship clean. The pull request refs ship as they are and may still hold pre-clean files (see below). Pull requests end up inside the archive as pull_requests_*.json. This delivers the full record.",
   },
   points: [
     { title: "Token", body: "A classic personal access token. Your own account: scopes repo and user. An organisation: repo and admin:org. Copy it straight away." },
@@ -307,18 +299,18 @@ export const exportSummary = {
     { title: "Wait", body: "GET /user/migrations/<MIGRATION_ID> (or /orgs/<YOUR_ORG_NAME>/migrations/<MIGRATION_ID>) until \"state\" is \"exported\"." },
     { title: "Download", body: "GET /user/migrations/<MIGRATION_ID>/archive (or /orgs/<YOUR_ORG_NAME>/migrations/<MIGRATION_ID>/archive) to save the .tar.gz, or use the link GitHub emails you." },
   ],
-  pullNote: "What the archive can still hold: GitHub never rewrites pull request refs (refs/pull/*), and the export includes them, so they keep each pull request's files from before the clean-up. You can't delete them. Rotating every credential (step 06) makes any secret there useless. Personal data there isn't fixed by rotation: send us what check-repo.sh reports in section [10] and the refs/pull list (step 11), and we decide together on the handover call.",
-  warning: "Route A only: a user export works only for repositories your account owns. Collaborator access is rejected (typically 422 Validation Failed). For a repository in an organisation, you must be an Owner of the organisation or have the Migrator role. Otherwise, use route B.",
+  pullNote: "What the archive can still hold: GitHub never rewrites pull request refs (refs/pull/*), and the export includes them, so they keep each pull request's files from before the clean-up. You can't delete them. Rotating every credential (step 06) makes any secret there useless. Personal data there isn't fixed by rotation: send us what check-repo.sh reports in section [10] (step 11), and we decide together on the handover call.",
+  warning: "A user export works only for repositories your account owns. Collaborator access is rejected (typically 422 Validation Failed). For a repository in an organisation, you must be an Owner of the organisation or have the Migrator role. Otherwise, message us before you go further.",
   inside: [
     "The full commit history: the git repository, unsquashed",
-    "The pull requests, with reviews and comments: inside the archive (route A) or in a JSON file beside it (route B)",
+    "The pull requests, with reviews and comments: inside the archive",
     "run_instruction.md at the root of the repo",
   ],
-  runNote: "run_instruction.md travels inside the archive only if it is committed. Write it and commit it on every branch (step 05) before you clean the history and before anyone exports, on either route. If you add it afterwards, you redo the clean-up and the export.",
+  runNote: "run_instruction.md travels inside the archive only if it is committed. Write it and commit it on every branch (step 05) before you clean the history and before anyone exports. If you add it afterwards, you redo the clean-up and the export.",
   code: `# 1. Start (your account; organisations use /orgs/<YOUR_ORG_NAME>/migrations)
 curl -L -X POST -H "Accept: application/vnd.github+json" \\
   -H "Authorization: Bearer <YOUR_TOKEN>" -H "X-GitHub-Api-Version: 2022-11-28" \\
-  -d '{"lock_repositories":false, "repositories":["username/repo"]}' \\
+  -d '{"lock_repositories":false, "repositories":["__USER__/__REPO__"]}' \\
   https://api.github.com/user/migrations
 
 # 2. Repeat until "state" is "exported"
@@ -329,7 +321,7 @@ curl -L -H "Accept: application/vnd.github+json" \\
 # 3. Download
 curl -L -H "Accept: application/vnd.github+json" \\
   -H "Authorization: Bearer <YOUR_TOKEN>" -H "X-GitHub-Api-Version: 2022-11-28" \\
-  https://api.github.com/user/migrations/<MIGRATION_ID>/archive -o <your_archive_name>.tar.gz`,
+  https://api.github.com/user/migrations/<MIGRATION_ID>/archive -o __REPO__.tar.gz`,
 };
 
 export const remove = [
@@ -374,7 +366,7 @@ export const faqs = [
   },
   {
     q: "What are refs/pull/* and why can't I delete them?",
-    a: "GitHub keeps a read-only ref for each pull request's head commit and never rewrites it, and the export includes them. So they still hold each pull request's files from before the clean-up, and only GitHub can delete them. Rotating every credential (step 6) makes any secret there useless. Personal data there isn't fixed by rotation: send us what check-repo.sh reports in section [10] and the git ls-remote list from step 11, and we decide together on the handover call.",
+    a: "GitHub keeps a read-only ref for each pull request's head commit and never rewrites it, and the export includes them. So they still hold each pull request's files from before the clean-up, and only GitHub can delete them. Rotating every credential (step 6) makes any secret there useless. Personal data there isn't fixed by rotation: send us what check-repo.sh reports in section [10] (step 11), and we decide together on the handover call.",
   },
   {
     q: "What about my collaborators?",
@@ -390,7 +382,7 @@ export const faqs = [
   },
   {
     q: "When can I remove your access?",
-    a: "Any time after payment. Once the archive is built and verified on the call, we no longer need the repo.",
+    a: "Any time after payment. Once the archive is verified on the call, we no longer need the repo.",
   },
   {
     q: "Can I use AI to write run_instruction.md and FEATURES.md?",
@@ -398,6 +390,6 @@ export const faqs = [
   },
   {
     q: "The check flags something that's fine.",
-    a: "Warnings are for you to review, not automatic failures. Explain them in the form, for example: \"0758... is our public support line\".",
+    a: "Warnings are for you to review, not automatic failures. Some are fine to leave, for example \"0758... is our public support line\". Message us if you are unsure about one.",
   },
 ];

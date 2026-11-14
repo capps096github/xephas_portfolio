@@ -26,17 +26,11 @@ WHAT TO DO, IN ORDER
 1. Work out where the repo lives. Run `git remote -v` and tell me the host
    (GitHub or GitLab) and the owner/repo path.
 
-2. Work out which route applies. Ask me, don't guess:
-   - Route A (I run the export): on GitHub I own the repo on my own account,
-     or it is in an organisation where I am an Owner or have the Migrator
-     role. On GitLab I have the Maintainer role or higher on the project.
-   - Route B (they build it on the handover call): I am only a collaborator,
-     I have neither organisation role, I am below Maintainer on GitLab, or I
-     would rather not handle tokens. Route B delivers one branch only, so it
-     earns less than route A: tell me that, and suggest route A if I could
-     get the owner role. For route B I only invite them with Read access
-     (GitHub) or the Reporter role (GitLab), and the rest of this prompt is
-     just the checks in step 3. Stop after step 3.
+2. Check I can run the export. Ask me, don't guess: on GitHub I own the repo
+   on my own account, or it is in an organisation where I am an Owner or have
+   the Migrator role. On GitLab I have the Maintainer role or higher on the
+   project. If none applies, stop and tell me to message the buyers before
+   going further.
 
 3. Check the repo before any export. The export ships every branch, tag and
    pull request ref, so the guide has me clean every branch and tag IN PLACE
@@ -67,7 +61,7 @@ WHAT TO DO, IN ORDER
      NOT fixed by rotation. I report what check-repo.sh section [10] shows,
      and the decision is made on the handover call.
 
-4. Route A only: the token. Tell me exactly which token to create:
+4. The token. Tell me exactly which token to create:
    - GitHub: a classic personal access token (it starts with ghp_; tokens
      starting github_pat_ don't work). Scopes: repo and user for a repo on my
      account; repo and admin:org for an organisation repo.
@@ -76,7 +70,7 @@ WHAT TO DO, IN ORDER
    or landing in my shell history:
      read -rs MIGRATION_TOKEN && export MIGRATION_TOKEN
 
-5. Route A only: the export commands. Give me the exact commands for my case,
+5. The export commands. Give me the exact commands for my case,
    with my owner/repo filled in, using "$MIGRATION_TOKEN" for the token. Use
    placeholders like <MIGRATION_ID> and <PROJECT_ID> where I have to copy a
    value from a response. GitHub, repo on my account (organisations use
@@ -125,7 +119,7 @@ WHAT TO DO, IN ORDER
      `git clone --bare export-check/project.bundle export-check/repo.git` (I
      run it) and do the same ref, run_instruction.md and check-repo.sh checks.
 
-7. Finish with a short summary: the route, the branches and tags in the
+7. Finish with a short summary: the branches and tags in the
    archive, the number of refs/pull/* and what check-repo.sh said about them, the commit count, the number of pull request files, whether
    run_instruction.md is there, and anything I still need to fix. Remind me to
    delete the token on GitHub or GitLab once the archive is verified.

@@ -9,24 +9,24 @@ import SubmitCta from "../../components/SubmitCta.astro";
 import CopyPageMenu from "../../components/CopyPageMenu.astro";
 import FinishCard from "../../components/FinishCard.astro";
 import { CHECK_FORM_URL, finishNext } from "../../scripts/code_prepare";
-import { IMG_DIR, intro, routes, routeBSteps, beforeYouStart, mustContain, githubSteps, gitlabSteps, faqs, aiPrompt, aiRules, exportFinishSend } from "../../scripts/code_export";
+import { IMG_DIR, intro, routes, beforeYouStart, mustContain, githubSteps, gitlabSteps, faqs, aiPrompt, aiRules, exportFinishSend, TOKEN_RE, tokenFor } from "../../scripts/code_export";
 import type { Step } from "../../scripts/code_export";
 import { company } from "../../scripts/code_offer";
 
 const pageTitle = "Exporting Your Repo | " + company + " through Cephas";
 const pageDescription =
-  "How sellers get the .tar.gz archive of a repository with its full commit history and pull requests: export it yourself with GitHub's Migration API or GitLab's project export, or have us build it on the handover call.";
+  "How sellers get the .tar.gz archive of a repository with its full commit history and pull requests: export it yourself with GitHub's Migration API or GitLab's project export.";
 
 const sections: { id: string; title: string; lead: string; steps: Step[] }[] = [
   {
     id: "github",
-    title: "Route A on GitHub: the Migration API",
-    lead: "Seven steps: a token, three API calls, and a check. Every command uses placeholders: replace <YOUR_TOKEN>, <MIGRATION_ID>, <YOUR_ORG_NAME> and username/repo with yours.",
+    title: "GitHub: the Migration API",
+    lead: "Seven steps: a token, three API calls, and a check. Fill in your username and repository at the top of this page and the commands fill themselves in. Replace <YOUR_TOKEN>, <MIGRATION_ID> and <YOUR_ORG_NAME> yourself.",
     steps: githubSteps,
   },
   {
     id: "gitlab",
-    title: "Route A on GitLab: the project export",
+    title: "GitLab: the project export",
     lead: "The same idea on GitLab: a token, then start, wait and download.",
     steps: gitlabSteps,
   },
@@ -60,29 +60,28 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
       <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">{intro}</p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href="#routes"
+          href="#ai"
           class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
         >
-          Pick your route
+          Use the AI prompt
         </a>
-        <a href="#github" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">GitHub export</a>
-        <a href="#gitlab" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">GitLab export</a>
+        <a href="#routes" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Who can export</a>
+        <a href="#github" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Manual steps: GitHub</a>
+        <a href="#gitlab" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Manual steps: GitLab</a>
         <a href="#verify" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Verify the archive</a>
-        <a href="#ai" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">AI walkthrough</a>
-        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Submit your report</a>
+        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Submit your code</a>
         <CopyPageMenu md="/code/export.md" />
       </div>
     </section>
 
-    <!-- ROUTES: two ways to the archive -->
+    <!-- WHO RUNS THE EXPORT -->
     <section id="routes" class="scroll-mt-16 px-6 pt-14 pb-14 sm:px-10">
       <div class="text-[11px] font-semibold tracking-[0.18em] text-[#0a0a0a] uppercase">The crucial step</div>
-      <h2 class="font-xeroda mt-3 text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Two routes to the archive</h2>
-      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+      <h2 class="font-xeroda mt-3 text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Who runs the export</h2>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-6">
         {
           routes.map((r) => (
             <div id={r.id} class="flex min-w-0 scroll-mt-24 flex-col rounded-2xl border-2 border-[#0a0a0a] p-5 sm:p-6">
-              <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">{r.label}</div>
               <h3 class="mt-2 text-[18px] font-semibold tracking-[-0.01em]">{r.title}</h3>
               <p class="mt-3 text-[14px] leading-[1.65] font-semibold">{r.who}</p>
               <p class="mt-3 text-[14px] leading-[1.65] text-[#555]">
@@ -136,6 +135,89 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
       </div>
     </section>
 
+    <!-- YOUR REPO: fills every command and the AI prompt -->
+    <section id="your-repo" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Your repository</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Fill these in once. The AI prompt and every command below are generated
+        for your repo, so you can copy them as they are.
+      </p>
+      <div class="mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+        {
+          [
+            { key: "user", label: "GitHub username", placeholder: "github-username" },
+            { key: "repo", label: "Repository name", placeholder: "repo-name" },
+          ].map((field) => (
+            <label class="block">
+              <span class="text-[11px] tracking-[0.18em] text-[#888] uppercase">{field.label}</span>
+              <input
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder={field.placeholder}
+                data-repo-field={field.key}
+                class="mt-2 w-full min-w-0 rounded-xl border border-[#0a0a0a]/15 bg-white px-4 py-3 font-mono text-[14px] placeholder:text-[#0a0a0a]/30 focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none"
+              />
+            </label>
+          ))
+        }
+      </div>
+      <p class="mt-3 max-w-3xl text-[13px] leading-[1.6] text-[#666]">
+        You can also paste the full repo URL into either field. On GitLab, use your GitLab username and project name (a project inside a subgroup needs its full path, so fill the commands in by hand).
+      </p>
+    </section>
+
+    <!-- AI WALKTHROUGH -->
+    <section id="ai" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Let an AI assistant walk you through it</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Open your repo in an AI coding assistant (Claude Code, Cursor or
+        similar) and paste the prompt. It reads your repo and guides you through
+        it step by step. You stay in charge:
+      </p>
+      <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
+        {aiRules.map((r) => <li>— {r}</li>)}
+      </ul>
+      <div class="mt-8 max-w-3xl border-t border-[#e5e3df] pt-5">
+        <div class="font-mono text-[14px] font-semibold">{aiPrompt.title}</div>
+        <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{aiPrompt.body}</p>
+        <div class="mt-4">
+          <div class="mb-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              data-copy-prompt
+              data-label="Copy the export prompt"
+              aria-live="polite"
+              class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.12em] text-[#f4f2ef] uppercase"
+            >
+              Copy the export prompt
+            </button>
+            <a
+              href={`/code/${aiPrompt.file}`}
+              download
+              class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+            >
+              <Download class="h-3.5 w-3.5" />
+              Download
+            </a>
+          </div>
+          <pre class="max-h-80 overflow-auto rounded-xl bg-[#0a0a0a] p-4 font-mono text-[12px] leading-[1.6] whitespace-pre-wrap text-[#f4f2ef]"><code><span data-prompt-context></span>{aiPrompt.text}</code></pre>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3 border-t border-[#e5e3df] pt-5">
+        <span class="text-[14px] text-[#555]">Prefer to do it by hand?</span>
+        <a
+          href="#github"
+          class="btn-anim inline-flex items-center gap-2 rounded-full border border-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.12em] uppercase transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+        >
+          Go to the manual steps
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="size-3.5"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
+        </a>
+      </div>
+    </section>
+
     <!-- GITHUB / GITLAB -->
     {
       sections.map((sec, si) => (
@@ -162,7 +244,7 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
                       <div class="mt-4 max-w-3xl">
                         {c.label && <div class="mb-2 text-[13px] font-semibold">{c.label}</div>}
                         <div class="relative">
-                          <pre class={pre}><code>{c.code}</code></pre>
+                          <pre class={pre}><code>{c.code.split(TOKEN_RE).map((part) => part in tokenFor ? <span class="repo-token" data-token={tokenFor[part as keyof typeof tokenFor].key} data-empty>{tokenFor[part as keyof typeof tokenFor].placeholder}</span> : part)}</code></pre>
                           <button type="button" data-copy class={copyBtn}>
                             <span data-copy-text aria-live="polite">Copy</span><span class="sr-only"> command: {s.title}{c.label ? `, ${c.label}` : ""}</span>
                           </button>
@@ -210,63 +292,15 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
       ))
     }
 
-    <!-- ROUTE B -->
-    <section id="route-b-steps" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
-      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Route B: we build it on the call</h2>
-      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">No token and no commands on your side. Works the same for GitHub and GitLab.</p>
-      <ol class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
-        {
-          routeBSteps.map((s, i) => (
-            <li class="border-t border-[#e5e3df] py-5">
-              <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
-              <h3 class="mt-2 text-[15px] font-semibold">{s.title}</h3>
-              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">
-                {s.body.split(LINK_RE).map((part) => (LINK_RE.test(part) ? <a href="/code/prepare/" class={link}>{part}</a> : <RichText text={part} />))}
-              </p>
-            </li>
-          ))
-        }
-      </ol>
-    </section>
-
-    <!-- AI WALKTHROUGH -->
-    <section id="ai" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
-      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Let an AI assistant walk you through it</h2>
-      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
-        Open your repo in an AI coding assistant (Claude Code, Cursor or
-        similar) and paste the prompt. It reads your repo and guides you through
-        your route step by step. You stay in charge:
-      </p>
-      <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
-        {aiRules.map((r) => <li>— {r}</li>)}
-      </ul>
-      <div class="mt-8 max-w-3xl border-t border-[#e5e3df] pt-5">
-        <div class="font-mono text-[14px] font-semibold">{aiPrompt.title}</div>
-        <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{aiPrompt.body}</p>
-        <div class="mt-4">
-          <div class="mb-3 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              data-copy-prompt
-              data-label="Copy the export prompt"
-              aria-live="polite"
-              class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.12em] text-[#f4f2ef] uppercase"
-            >
-              Copy the export prompt
-            </button>
-            <a
-              href={`/code/${aiPrompt.file}`}
-              download
-              class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
-            >
-              <Download class="h-3.5 w-3.5" />
-              Download
-            </a>
-          </div>
-          <pre class="max-h-80 overflow-auto rounded-xl bg-[#0a0a0a] p-4 font-mono text-[12px] leading-[1.6] whitespace-pre-wrap text-[#f4f2ef]"><code>{aiPrompt.text}</code></pre>
-        </div>
-      </div>
-    </section>
+    <!-- FINAL STEP: submit the check report -->
+    <FinishCard
+      eyebrow="Final step"
+      heading="Submit your code"
+      lead="When the archive is verified, invite the GitHub account with Read access, then upload it in the form with your name and your check-repo.sh report. It opens in a new tab."
+      send={exportFinishSend}
+      next={finishNext}
+      formUrl={CHECK_FORM_URL}
+    />
 
     <!-- FAQ -->
     <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
@@ -283,16 +317,6 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
       </div>
     </section>
 
-    <!-- FINAL STEP: submit the check report -->
-    <FinishCard
-      eyebrow="Final step"
-      heading="Submit your check report"
-      lead="When the archive is verified (route A) or your clean-up is done (route B), send us your report in the check-report form. It opens in a new tab."
-      send={exportFinishSend}
-      next={finishNext}
-      formUrl={CHECK_FORM_URL}
-    />
-
     <!-- CTA -->
     <SubmitCta
       eyebrow="Stuck?"
@@ -301,6 +325,74 @@ const link = "font-semibold break-words text-[#1a56db] transition-colors hover:t
     />
 
     <Footer />
+
+    <!-- Repo fields: fill the username / repo tokens and the AI prompt -->
+    <script>
+      const PLACEHOLDERS: Record<string, string> = { user: "{github-username}", repo: "{repo-name}" };
+      // Same key as /code/prepare, so the values carry over between the pages.
+      const STORE = "code-prepare-repo";
+      const fields = document.querySelectorAll<HTMLInputElement>("[data-repo-field]");
+      const field = (key: string) => [...fields].find((f) => f.dataset.repoField === key)!;
+      const clean = (v: string) => v.trim().replace(/\.git$/, "").replace(/[^A-Za-z0-9._-]/g, "");
+
+      // Owner/repo from a pasted URL ("https://github.com/o/r.git", "git@github.com:o/r") or "owner/repo".
+      // Extra path (/tree/main) is only dropped for github.com; other hosts may use subgroups, so no autofill.
+      function parseRepo(v: string): { user: string; repo: string } | null {
+        const m = v.trim().match(/^(?:https?:\/\/([^/]+)\/|git@([^:]+):)?([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+?)(?:\.git)?(\/.*)?$/);
+        if (!m) return null;
+        const host = m[1] || m[2] || "";
+        if (m[5] && !/(^|\.)github\.com$/i.test(host)) return null;
+        return { user: m[3], repo: m[4] };
+      }
+
+      function apply() {
+        const values: Record<string, string> = {};
+        fields.forEach((f) => (values[f.dataset.repoField!] = clean(f.value)));
+        document.querySelectorAll<HTMLElement>("[data-token]").forEach((t) => {
+          const v = values[t.dataset.token!];
+          t.textContent = v || PLACEHOLDERS[t.dataset.token!];
+          t.toggleAttribute("data-empty", !v);
+        });
+        // The AI prompt starts with the seller's repo once both fields are filled.
+        const ctx = document.querySelector<HTMLElement>("[data-prompt-context]");
+        if (ctx)
+          ctx.textContent =
+            values.user && values.repo
+              ? `MY REPOSITORY\nOwner (username): ${values.user}\nRepository (project) name: ${values.repo}\nUse these exact values in every command you give me. Still confirm the host (GitHub or GitLab) from git remote -v.\n\n`
+              : "";
+        try {
+          localStorage.setItem(STORE, JSON.stringify(values));
+        } catch {}
+      }
+
+      fields.forEach((f) =>
+        f.addEventListener("input", () => {
+          // A pasted URL or owner/repo fills both fields.
+          const parsed = parseRepo(f.value);
+          if (parsed) {
+            field("user").value = parsed.user;
+            field("repo").value = parsed.repo;
+          }
+          apply();
+        }),
+      );
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE) ?? "{}");
+        fields.forEach((f) => (f.value = saved[f.dataset.repoField!] ?? ""));
+      } catch {}
+      apply();
+    </script>
+    <style>
+      .repo-token {
+        border-radius: 4px;
+        background: rgba(244, 242, 239, 0.14);
+        padding: 0 2px;
+      }
+      .repo-token[data-empty] {
+        color: #f5c46b;
+      }
+    </style>
 
     <!-- Copy buttons -->
     <script>

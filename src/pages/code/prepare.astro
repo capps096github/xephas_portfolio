@@ -14,10 +14,9 @@ import { baseUrl, githubHandle } from "../../scripts/constants.js";
 
 import {
   prompts, downloads, handover, TOKEN_RE, tokenFor, steps,
-  checkSteps, stepChecks, pad, checklist, remove, keep, runInstruction, faqs, exportSummary, finishSend, finishNext,
+  checkSteps, stepChecks, pad, checklist, remove, keep, runInstruction, faqs, exportSummary, finishSend, finishNext, CHECK_FORM_URL,
 } from "../../scripts/code_prepare";
 import { company } from "../../scripts/code_offer";
-const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
 
 const ogImage = baseUrl + "images/code-prepare-og.png?v=1";
 const ogImageAlt = "Preparing your repository for sale. Apta Innovations Limited, xephas.me/code/prepare.";
@@ -54,9 +53,9 @@ const pageDescription =
       </h1>
       <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
         Once your project is shortlisted, you clean the repository and its git
-        history before we pay, using the free scripts on this page. Then we
-        build the archive together on a call, and payment is released on that
-        call once the archive passes.
+        history before we pay, using the free scripts on this page. Then you
+        export the archive yourself, and payment is released on a call once
+        we've verified it.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
@@ -68,7 +67,7 @@ const pageDescription =
         <a href="#checklist" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">See the checklist</a>
         <a href="#downloads" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Download the scripts</a>
         <a href="#export" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Export the archive</a>
-        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Submit your report</a>
+        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Submit your code</a>
         <CopyPageMenu md="/code/prepare.md" />
       </div>
     </section>
@@ -256,10 +255,10 @@ const pageDescription =
         }
       </ol>
       <p class="mt-4 max-w-3xl border-t border-[#0a0a0a] pt-5 text-[14px] leading-[1.65]">
-        <span class="font-semibold">When every box is ticked:</span> you confirm in
-        <a href="#finish" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">the form</a> that every item is done on the repo and its full history. We
-        then build the archive together on a call, and payment is released once
-        it passes the checks.
+        <span class="font-semibold">When every box is ticked:</span> you submit
+        <a href="#finish" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">the form</a>: your name, the report and your archive. We
+        then verify the archive you exported on a call, and payment is released
+        once it passes the checks.
       </p>
     </section>
 
@@ -270,9 +269,9 @@ const pageDescription =
         <div class="text-[11px] font-semibold tracking-[0.18em] text-[#0a0a0a] uppercase">The crucial step</div>
         <h2 class="font-xeroda mt-3 text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Export the archive</h2>
         <p class="mt-4 text-[15px] leading-[1.7] text-[#555]">{exportSummary.lead}</p>
-        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="mt-6 grid grid-cols-1 gap-4">
           {
-            [exportSummary.routeA, exportSummary.routeB].map((r) => (
+            [exportSummary.routeA].map((r) => (
               <div class="min-w-0 rounded-xl border border-[#0a0a0a] p-4">
                 <h3 class="text-[15px] font-semibold">{r.title}</h3>
                 <p class="mt-2 text-[13px] leading-[1.6] font-semibold">{r.who}</p>
@@ -281,7 +280,7 @@ const pageDescription =
             ))
           }
         </div>
-        <h3 class="mt-8 text-[15px] font-semibold">Route A in brief (GitHub)</h3>
+        <h3 class="mt-8 text-[15px] font-semibold">In brief (GitHub)</h3>
         <ol class="mt-3 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
           {
             exportSummary.points.map((p, i) => (
@@ -300,7 +299,7 @@ const pageDescription =
           )}
         </p>
         <div class="relative mt-5">
-          <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{exportSummary.code}</code></pre>
+          <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{exportSummary.code.split(TOKEN_RE).map((part) => part in tokenFor ? <span class="repo-token" data-token={tokenFor[part as keyof typeof tokenFor].key} data-empty>{tokenFor[part as keyof typeof tokenFor].placeholder}</span> : part)}</code></pre>
           <button
             type="button"
             data-copy
@@ -330,7 +329,7 @@ const pageDescription =
           href="/code/export/"
           class="btn-anim mt-6 inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
         >
-          Both routes in full, with screenshots
+          The full guide, with screenshots
           <ArrowUpRight class="h-3.5 w-3.5" />
         </a>
         <p class="mt-3 text-[13px] leading-[1.6] text-[#666]">Includes GitLab, organisation repositories, and how to verify the archive.</p>
@@ -492,6 +491,16 @@ const pageDescription =
       </div>
     </section>
 
+    <!-- FINAL STEP: submit the check report -->
+    <FinishCard
+      eyebrow="Final step"
+      heading="Submit your code"
+      lead="When every step and checklist item is done and you have exported the archive, submit the form. Invite the GitHub account with Read access first. It opens in a new tab."
+      send={finishSend}
+      next={finishNext}
+      formUrl={CHECK_FORM_URL}
+    />
+
     <!-- FAQ -->
     <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
       <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Questions</h2>
@@ -506,16 +515,6 @@ const pageDescription =
         }
       </div>
     </section>
-
-    <!-- FINAL STEP: submit the check report -->
-    <FinishCard
-      eyebrow="Final step"
-      heading="Submit your check report"
-      lead="When every step and checklist item is done, send us your report in the check-report form. It opens in a new tab."
-      send={finishSend}
-      next={finishNext}
-      formUrl={CHECK_FORM_URL}
-    />
 
     <!-- CTA -->
     <SubmitCta
@@ -551,6 +550,16 @@ const pageDescription =
       // Keep only what's valid in a GitHub owner / repo name; drop a trailing .git.
       const clean = (v: string) => v.trim().replace(/\.git$/, "").replace(/[^A-Za-z0-9._-]/g, "");
 
+      // Owner/repo from a pasted URL ("https://github.com/o/r.git", "git@github.com:o/r") or "owner/repo".
+      // Extra path (/tree/main) is only dropped for github.com; other hosts may use subgroups, so no autofill.
+      function parseRepo(v: string): { user: string; repo: string } | null {
+        const m = v.trim().match(/^(?:https?:\/\/([^/]+)\/|git@([^:]+):)?([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+?)(?:\.git)?(\/.*)?$/);
+        if (!m) return null;
+        const host = m[1] || m[2] || "";
+        if (m[5] && !/(^|\.)github\.com$/i.test(host)) return null;
+        return { user: m[3], repo: m[4] };
+      }
+
       function apply() {
         const values: Record<string, string> = {};
         fields.forEach((f) => (values[f.dataset.repoField!] = clean(f.value)));
@@ -566,11 +575,11 @@ const pageDescription =
 
       fields.forEach((f) =>
         f.addEventListener("input", () => {
-          // A pasted URL (https://github.com/owner/repo.git or git@github.com:owner/repo) fills both fields.
-          const url = f.value.match(/[/:]([A-Za-z0-9-]+)\/([A-Za-z0-9._-]+?)(?:\.git)?\/?$/);
-          if (url && /[/:]/.test(f.value)) {
-            field("user").value = url[1];
-            field("repo").value = url[2];
+          // A pasted URL or owner/repo fills both fields.
+          const parsed = parseRepo(f.value);
+          if (parsed) {
+            field("user").value = parsed.user;
+            field("repo").value = parsed.repo;
           }
           apply();
         }),
