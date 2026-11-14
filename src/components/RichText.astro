@@ -1,0 +1,30 @@
+---
+// Prose that auto-links: the GitHub handle (copy chip), the downloadable
+// script names (download links) and "the form" (check-report Tally form).
+import CopyHandle from "./CopyHandle.astro";
+import { githubHandle } from "../scripts/constants.js";
+
+interface Props {
+  text: string;
+}
+
+const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
+const FORM_TEXT = "the form";
+const fileLinks: Record<string, string> = {
+  "check-repo.sh": "/code/check-repo.sh",
+  "clean-history.sh": "/code/clean-history.sh",
+  "build-archive.sh": "/code/build-archive.sh",
+  "secrets.example.txt": "/code/secrets.example.txt",
+  "run_instruction.template.md": "/code/run_instruction.template.md",
+};
+const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// (?<!/) keeps the handle inside a URL like github.com/<handle> as plain text.
+const RICH_RE = new RegExp(`(?<!/)(${githubHandle}|${Object.keys(fileLinks).map(escapeRe).join("|")}|${FORM_TEXT})`);
+const parts = Astro.props.text.split(RICH_RE);
+---
+{parts.map((part) =>
+  part === githubHandle ? <CopyHandle /> :
+  part in fileLinks ? <a href={fileLinks[part]} download class="link-underline font-semibold">{part}</a> :
+  part === FORM_TEXT ? <a href={CHECK_FORM_URL} target="_blank" rel="noopener" class="link-underline font-semibold">{part}</a> :
+  part
+)}

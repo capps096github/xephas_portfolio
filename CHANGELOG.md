@@ -8,6 +8,8 @@ Changes to the xephas.me portfolio site, newest first.
 
 #### Changed
 
+- `/code/prepare` last step ("Invite us with Read access"): added a bordered, bold "Required" note that sellers must submit the clean `check-repo.sh` report (ending `RESULT: ready`) in the form before messaging us, as the handover call can't be booked without it. Key file: `src/pages/code/prepare.astro`. Verified: `npm run build`; not checked in a browser.
+- `/code/prepare`: every "the form" in the page text now links to the check-report Tally form (https://tally.so/r/BEdoGN, opens in a new tab). The auto-linking of handle, script names and the form moved into a new `src/components/RichText.astro`, used by `src/pages/code/prepare.astro`. Verified: `npm run build` (17 pages); the built page has 7 links to the form. Not checked in a browser. The older `TALLY_URL` in `src/scripts/code_offer.ts` is a different form and was left alone.
 - `/code/prepare` "Step by step": added a paragraph telling sellers to generate and copy the commands and scripts from that section instead of doing things manually, so they don't have to redo work. Key file: `src/pages/code/prepare.astro`. Not built or checked in a browser.
 
 #### Fixed
