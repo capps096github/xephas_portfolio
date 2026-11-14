@@ -27,8 +27,18 @@ const prompts = [
     body: "Goes through every module, route, endpoint and model, then lists every implemented feature, grouped by area, one concrete bullet each.",
   },
 ].map((p) => ({ ...p, text: readFileSync(`public/code/${p.file}`, "utf8").trim() }));
-// Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />.
-const withHandle = (text: string) => text.split(new RegExp(`(?<!/)(${githubHandle})`));
+// Split prose on the bare handle (not inside a URL like github.com/<handle>) so it renders as <CopyHandle />,
+// and on the downloadable file names so each one links to its file in public/code/.
+const fileLinks: Record<string, string> = {
+  "check-repo.sh": "/code/check-repo.sh",
+  "clean-history.sh": "/code/clean-history.sh",
+  "build-archive.sh": "/code/build-archive.sh",
+  "secrets.example.txt": "/code/secrets.example.txt",
+  "run_instruction.template.md": "/code/run_instruction.template.md",
+};
+const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const RICH_RE = new RegExp(`(?<!/)(${githubHandle}|${Object.keys(fileLinks).map(escapeRe).join("|")})`);
+const withHandle = (text: string) => text.split(RICH_RE);
 
 const ogImage = baseUrl + "images/code-prepare-og.png?v=1";
 const ogImageAlt = "Preparing your repository for sale. Apta Innovations Limited, xephas.me/code/prepare.";
@@ -337,7 +347,7 @@ const faqs = [
             <li class="border-t border-[#e5e3df] py-5">
               <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{s.n}</div>
               <div class="mt-2 text-[15px] font-semibold">{s.title}</div>
-              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part in fileLinks ? <a href={fileLinks[part]} download class="link-underline font-semibold">{part}</a> : part)}</p>
             </li>
           ))
         }
@@ -382,7 +392,7 @@ const faqs = [
                     ))}
                   </ul>
                 )}
-                <p class="text-[14px] leading-[1.65] text-[#555]">{withHandle(c.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
+                <p class="text-[14px] leading-[1.65] text-[#555]">{withHandle(c.body).map((part) => part === githubHandle ? <CopyHandle /> : part in fileLinks ? <a href={fileLinks[part]} download class="link-underline font-semibold">{part}</a> : part)}</p>
                 {c.link && (
                   <a href={c.link.href} class="link-underline mt-2 inline-block text-[13px] font-semibold">{c.link.label}</a>
                 )}
@@ -500,6 +510,12 @@ const faqs = [
         Enter your GitHub username and repository name and every command
         below fills them in. Keep a backup of your repo before you start.
       </p>
+      <p class="mt-3 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Use this section to generate the exact commands and scripts for your
+        repo, then copy them from here. Don't run things by hand from memory
+        or from another guide: the steps and flags have to match, and doing
+        it differently can mean redoing the work.
+      </p>
       <div class="mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
         {
           [
@@ -535,7 +551,7 @@ const faqs = [
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="text-[16px] font-semibold">{s.title}</div>
-                  <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part)}</p>
+                  <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{withHandle(s.body).map((part) => part === githubHandle ? <CopyHandle /> : part in fileLinks ? <a href={fileLinks[part]} download class="link-underline font-semibold">{part}</a> : part)}</p>
                   {s.link && (
                     <a
                       href={s.link.href}

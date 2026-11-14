@@ -4,6 +4,16 @@ Changes to the xephas.me portfolio site, newest first.
 
 ## Unreleased
 
+### 2026-11-14
+
+#### Changed
+
+- `/code/prepare` "Step by step": added a paragraph telling sellers to generate and copy the commands and scripts from that section instead of doing things manually, so they don't have to redo work. Key file: `src/pages/code/prepare.astro`. Not built or checked in a browser.
+
+#### Fixed
+
+- `/code/prepare`: script and file names in the handover and step text (`check-repo.sh`, `clean-history.sh`, `build-archive.sh`, `secrets.example.txt`, `run_instruction.template.md`) are now links to their files in `public/code/`, so readers can find them. Key file: `src/pages/code/prepare.astro` (`withHandle`/`fileLinks`). Verified: `npm run build` (17 pages) and the built HTML contains the links. Names inside the dark command blocks are not linked; step 1 already lists the download URLs.
+
 ### 2026-11-03
 
 #### Added
