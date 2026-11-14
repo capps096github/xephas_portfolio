@@ -6,8 +6,13 @@ Changes to the xephas.me portfolio site, newest first.
 
 ### 2026-11-14
 
+#### Added
+
+- `/code/prepare`: a "Copy page" menu in the hero, like laces_web. The main button copies the whole page as Markdown (for pasting into any AI); the chevron opens Copy page, View as Markdown, and Open in ChatGPT / Claude / Perplexity (each pre-asked to read the page's `.md`). Works as plain links with JavaScript off. New: `src/components/CopyPageMenu.astro`, `src/pages/code/prepare.md.ts` (serves `/code/prepare.md`, built from the same data as the page, including the two AI prompts in full, with `{github-username}` / `{repo-name}` placeholders). Verified: `npm run build` passes (17 pages), `dist/code/prepare.md` output read; NOT checked in a browser (clipboard copy and AI links untested).
+
 #### Changed
 
+- `/code/prepare`: page data (steps, checklist, downloads, FAQ, prompts) moved word for word out of `prepare.astro` into `src/scripts/code_prepare.ts` so the page and its Markdown twin share one source. No visual change intended; built page still has 8 steps with anchors.
 - `/code/prepare`: the steps now start with a new step 1, "Create a new branch to work on: sale-prep" (`git switch -c sale-prep main`, then push), so sellers never work on or rewrite their main branch. Following steps now use it: the check clones `sale-prep`, the two docs are committed and pushed to it, `clean-history.sh` runs with `SOURCE_BRANCH=sale-prep`, and the push step (also in the checklist) pushes `sale-prep:refs/heads/cleaned_version`. The old "selling another branch" example was dropped as redundant. All steps after 1 moved down one number, and the step/checklist cross-links (`checkSteps`/`stepChecks`) were renumbered to match. Key file: `src/pages/code/prepare.astro`. Verified: `npm run build`. The commands were NOT run against a real repo: I confirmed from `public/code/clean-history.sh` that `SOURCE_BRANCH` is honoured, nothing more.
 - `/code/prepare` "Step by step" intro: now says the steps prepare the repo for submission (from its current state to a cleaned branch ready to submit). Key file: `src/pages/code/prepare.astro`. Verified: `npm run build`; not checked in a browser.
 - `/code/prepare`: steps and checklist items now link to each other. Each step shows "Checklist: 02 · 03" and each checklist item shows "Done in steps: 04 · 06", jumping to `#step-N` / `#check-N` (new ids, with scroll offset for the floating nav). The mapping lives in `checkSteps` / `stepChecks` in `src/pages/code/prepare.astro`; step 1 (install) has no link. I derived the mapping from what each command does (e.g. `clean-history.sh` handles AI files and machine paths automatically). Verified: `npm run build`; link targets not clicked through in a browser.
