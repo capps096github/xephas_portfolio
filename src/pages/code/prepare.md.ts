@@ -4,8 +4,8 @@
 import type { APIRoute } from "astro";
 import { baseUrl } from "../../scripts/constants.js";
 import {
-  branch, workBranch, prompts, downloads, handover, steps, checklist,
-  remove, keep, runInstruction, faqs, pad,
+  prompts, downloads, handover, steps, checklist,
+  remove, keep, runInstruction, faqs, pad, exportSummary, finishSend, finishNext,
 } from "../../scripts/code_prepare";
 import { company } from "../../scripts/code_offer";
 
@@ -27,7 +27,7 @@ out.push(handover.map((h) => `${Number(h.n)}. **${h.title}.** ${h.body}`).join("
 
 out.push(`## Step by step`);
 out.push(
-  `Replace \`{github-username}\` and \`{repo-name}\` in the commands with yours. All work happens on \`${workBranch}\`; the cleaned result goes to \`${branch}\`.`,
+  `Replace \`{github-username}\` and \`{repo-name}\` in the commands with yours. Make the backup in step 1 first. Every branch and tag is cleaned and force-pushed back in place.`,
 );
 steps.forEach((s, i) => {
   const parts = [`### ${i + 1}. ${s.title}`, fill(s.body)];
@@ -46,6 +46,18 @@ checklist.forEach((c, i) => {
   out.push(parts.join("\n\n"));
 });
 
+out.push(`## Export the archive (the crucial step)`);
+out.push(exportSummary.lead);
+for (const r of [exportSummary.routeA, exportSummary.routeB]) out.push(`### ${r.title}\n\n**Who:** ${r.who}\n\n${r.body}`);
+out.push(`### Route A in brief (GitHub)`);
+out.push(exportSummary.points.map((p, i) => `${i + 1}. **${p.title}.** ${p.body}`).join("\n"));
+out.push(`> ${exportSummary.warning}`);
+out.push(exportSummary.pullNote.replace("(step 06)", "(step 6 above)").replace("(step 11)", "(step 11 above)"));
+out.push(fence(exportSummary.code));
+out.push(`The archive must contain:\n\n${exportSummary.inside.map((x) => `- ${x}`).join("\n")}`);
+out.push(exportSummary.runNote.replace("(step 05)", "(step 5 above)"));
+out.push(`Both routes in full, with screenshots, GitLab, organisation repositories and how to verify the archive: ${origin}/code/export/`);
+
 out.push(`## What we remove\n\n${remove.map((x) => `- ${x}`).join("\n")}`);
 out.push(`## What stays\n\n${keep.map((x) => `- ${x}`).join("\n")}`);
 out.push(
@@ -57,6 +69,11 @@ out.push(`## Downloads\n\n${downloads.map((d) => `- [${d.title}](${origin}/code/
 out.push(`## AI prompts for run_instruction.md and FEATURES.md`);
 out.push("Paste into Claude Code, Cursor, Copilot or any AI coding assistant opened in your repo, then check every line against your code.");
 for (const p of prompts) out.push(`### ${p.title}\n\n${p.body}\n\n\`\`\`\`markdown\n${p.text}\n\`\`\`\``);
+
+out.push(`## Final step: submit your check report`);
+out.push(`Submit it in the check-report form: ${CHECK_FORM_URL}`);
+out.push(`What to put in the form:\n\n${finishSend.map((x) => `- ${x}`).join("\n")}`);
+out.push(`What happens next:\n\n${finishNext.map((s, i) => `${i + 1}. **${s.title}.** ${s.body}`).join("\n")}`);
 
 out.push(`## FAQ\n\n${faqs.map((f) => `**${f.q}**\n${f.a}`).join("\n\n")}`);
 

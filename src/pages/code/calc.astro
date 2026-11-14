@@ -8,15 +8,57 @@ import CopyHandle from "../../components/CopyHandle.astro";
 import SubmitCta from "../../components/SubmitCta.astro";
 import { TALLY_URL, deadline } from "../../scripts/code_offer";
 import { baseUrl, githubHandle } from "../../scripts/constants.js";
-import { ACQUISITION_PRICING, MAX_QUALITY_BONUS, QUALITY_LEVELS } from "../../scripts/code_rate";
+import { ACQUISITION_PRICING, MAX_HISTORY_CREDIT, MAX_QUALITY_BONUS, QUALITY_LEVELS } from "../../scripts/code_rate";
 
 const company = "Apta Innovations Limited";
 const minLoc = ACQUISITION_PRICING.minimumLOC.toLocaleString("en-US");
 const maxBonus = Math.round(MAX_QUALITY_BONUS * 100);
+const pct = (n: number) => Math.round(n * 100) + "%";
+const fmtN = (n: number) => n.toLocaleString("en-US");
+const { historyCredits: credit, referenceLOC, priceAtReference, bandLog } = ACQUISITION_PRICING;
+const bandDown = pct(1 - Math.exp(-bandLog));
+const bandUp = pct(Math.exp(bandLog) - 1);
+
+// History inputs. Each earns a capped credit on top of the lines-of-code value.
+// Commands are read-only. Commits and branches both cover local and origin refs (plus tags for
+// commits), matching how the calibration repos were counted; each is counted once.
+const branchCmd =
+  "git for-each-ref --format='%(refname)' refs/heads refs/remotes/origin | sed -e 's#^refs/heads/##' -e 's#^refs/remotes/origin/##' | grep -vx HEAD | sort -u | wc -l";
+const historyFields = [
+  {
+    key: "commits",
+    label: "Commits",
+    placeholder: "0",
+    cmd: "git rev-list --count --branches --remotes=origin --tags",
+    hint: "Each commit once, across your local and origin branches and your tags. Run git fetch first.",
+  },
+  {
+    key: "prs",
+    label: "Pull requests",
+    placeholder: "0",
+    cmd: "gh pr list --state all --limit 1000 --json number --jq length",
+    hint: "Open, closed and merged, with the GitHub CLI. On GitLab, count merge requests (All).",
+  },
+  {
+    key: "branches",
+    label: "Branches",
+    placeholder: "1",
+    cmd: branchCmd,
+    hint: "Each branch name once, local and on origin together. Run git fetch first; on Windows, use Git Bash.",
+  },
+];
+
+// The "How this is calculated" panel, built from the live config.
+const howItWorks = [
+  `Lines of code set the value. It grows a little slower than the line count: twice the lines comes to about ${pct(Math.pow(2, ACQUISITION_PRICING.locExponent) - 1)} more, not 100% more. A ${fmtN(referenceLOC)}-line repository with no history credit is UGX ${fmtN(priceAtReference)}.`,
+  `Your git history adds a credit of up to ${pct(MAX_HISTORY_CREDIT)} in total: up to ${pct(credit.commits.max)} for history depth (commits, full at ${fmtN(credit.commits.fullAt)}), up to ${pct(credit.pullRequests.max)} for a review record (pull requests, full at ${fmtN(credit.pullRequests.fullAt)}) and up to ${pct(credit.branches.max)} for breadth (branches, full at ${fmtN(credit.branches.fullAt)}). Each credit grows quickly at first, then levels off. Blank fields earn no credit and never lower the estimate.`,
+  `The range runs from about ${bandDown} below to ${bandUp} above the likely figure. That is how far comparable past repositories landed from what this formula would have predicted for them: most fell inside it, some did not.`,
+  `It is indicative, not an offer. The final price follows verification of the line count and history, a code quality review (worth up to +${maxBonus}%) and approval by ${company}.`,
+];
 
 // Share card (1200x630); bump ?v= after regenerating so social platforms re-scrape.
-const ogImage = baseUrl + "images/code-calc-og.png?v=2";
-const ogImageAlt = "What's your code worth? Pricing calculator, Apta Innovations Limited, xephas.me/code/calc.";
+const ogImage = baseUrl + "images/code-calc-og.png?v=3";
+const ogImageAlt = "What's your code worth? About 100,000 lines: UGX 1,100,000. Pricing calculator, Apta Innovations Limited, xephas.me/code/calc.";
 
 const presets = [30_000, 50_000, 100_000, 250_000, 500_000, 1_000_000];
 
@@ -64,7 +106,7 @@ const fieldClass =
 <html lang="en">
   <Head
     pageTitle={"Source Code Price Calculator | " + company}
-    pageDescription={`Enter your repository's lines of code and see its estimated value. ${company} acquires codebases from ${minLoc} lines, and you keep all your rights.`}
+    pageDescription={`Enter your repository's lines of code, commits, pull requests and branches, and see its estimated value range. ${company} acquires codebases from ${minLoc} lines, and you keep all your rights.`}
     canonicalPath="code/calc/"
     pageCoverImage={ogImage}
     pageCoverImageAlt={ogImageAlt}
@@ -85,9 +127,9 @@ const fieldClass =
         What's your code worth?
       </h1>
       <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
-        Enter your lines of code and the value calculates itself. Repositories
-        start at {minLoc} lines. You keep all your rights: all you do is invite
-        us to your GitHub repo.
+        Enter your lines of code, and your git history if you have it, and the
+        value range calculates itself. Repositories start at {minLoc} lines.
+        You keep all your rights: all you do is invite us to your GitHub repo.
       </p>
     </section>
 
@@ -104,7 +146,7 @@ const fieldClass =
             autocomplete="off"
             placeholder="50,000"
             maxlength="13"
-            aria-describedby="loc-hint"
+            aria-describedby="loc-hint loc-error"
             data-calc-input
             class="tnum w-full min-w-0 rounded-2xl border border-[#0a0a0a]/10 bg-white py-5 pr-20 pl-5 text-[26px] font-bold tracking-[-0.02em] placeholder:font-semibold placeholder:text-[#0a0a0a]/30 focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none sm:text-[30px]"
           />
@@ -149,8 +191,47 @@ const fieldClass =
           Lines of code as counted by cloc: the SUM row, code column.{" "}
           <a href="#count" data-count-link class="link-underline font-semibold text-[#0a0a0a]">How to count</a>
         </p>
+        <p id="loc-error" data-calc-loc-error class="mt-1 text-[12px] leading-snug font-semibold text-[#b42318]"></p>
 
-        <!-- PUBLIC RESULT: base price only -->
+        <!-- GIT HISTORY: optional, each earns a capped credit -->
+        <fieldset class="mt-8">
+          <legend class={labelClass}>Git history <span class="font-medium tracking-normal normal-case">(optional)</span></legend>
+          <p class="mt-2 text-[12.5px] leading-snug text-[#666]">
+            Leave a field blank if you're not sure: it simply earns no credit.{" "}
+            <a href="#count-history" class="link-underline font-semibold text-[#0a0a0a]">How to count</a>
+          </p>
+          <div class="mt-3 grid gap-4 sm:grid-cols-3">
+            {
+              historyFields.map((f) => (
+                <div class="min-w-0">
+                  <label for={`hist-${f.key}`} class="text-[13px] font-semibold">{f.label}</label>
+                  <input
+                    id={`hist-${f.key}`}
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    maxlength="9"
+                    placeholder={f.placeholder}
+                    aria-describedby={`hist-${f.key}-hint hist-${f.key}-error`}
+                    data-calc-history={f.key}
+                    class={`tnum mt-2 ${fieldClass}`}
+                  />
+                  <p id={`hist-${f.key}-hint`} class="mt-2 text-[12px] leading-snug text-[#666]">
+                    {f.hint}{" "}
+                    {f.key === "branches" ? (
+                      <a href="#count-history" class="link-underline font-semibold text-[#0a0a0a]">The command</a>
+                    ) : (
+                      <code class="font-mono text-[11.5px] break-all text-[#0a0a0a]">{f.cmd}</code>
+                    )}
+                  </p>
+                  <p id={`hist-${f.key}-error`} data-calc-history-error={f.key} class="mt-1 text-[12px] leading-snug font-semibold text-[#b42318]"></p>
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <!-- PUBLIC RESULT: indicative range -->
         <div class="mt-8 rounded-3xl bg-[#0a0a0a] p-6 text-[#f4f2ef] sm:p-8">
           <div class="text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">
             Estimated acquisition value
@@ -158,15 +239,32 @@ const fieldClass =
           <p data-calc-note class="mt-1.5 text-[13px] leading-snug text-[#f4f2ef]/70">
             Enter your lines of code.
           </p>
+          <div class="mt-6 text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">Likely</div>
           <div
-            aria-live="polite"
-            class="tnum font-xeroda mt-6 text-[38px] leading-none font-semibold tracking-[-0.03em] sm:text-[56px]"
+            aria-hidden="true"
+            class="tnum font-xeroda mt-2 text-[38px] leading-none font-semibold tracking-[-0.03em] sm:text-[56px]"
           >
             <span data-calc-currency class="text-[0.4em] tracking-normal text-[#f4f2ef]/55">UGX</span>
             <span data-calc-price>–</span>
           </div>
+          <dl aria-hidden="true" class="tnum mt-5 grid grid-cols-2 gap-x-6 gap-y-1 text-[#f4f2ef]">
+            <dt class="text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">Low</dt>
+            <dt class="text-[11px] font-semibold tracking-[0.18em] text-[#f4f2ef]/55 uppercase">High</dt>
+            <dd class="text-[17px] font-semibold sm:text-[20px]"><span class="text-[0.7em] text-[#f4f2ef]/55">UGX</span> <span data-calc-low>–</span></dd>
+            <dd class="text-[17px] font-semibold sm:text-[20px]"><span class="text-[0.7em] text-[#f4f2ef]/55">UGX</span> <span data-calc-high>–</span></dd>
+          </dl>
+          <!-- Two lines reserved so the card does not jump as the credit line changes length. -->
+          <p data-calc-credit class="mt-3 min-h-[2.75em] text-[12.5px] leading-snug text-[#f4f2ef]/70"></p>
+          <noscript>
+            <p class="mt-3 text-[12.5px] leading-snug text-[#f4f2ef]/70">
+              The calculator needs JavaScript. The formula is set out under "How this is calculated" below.
+            </p>
+          </noscript>
+          <!-- One settled sentence for screen readers, instead of every frame of the rolling figures. -->
+          <p data-calc-live aria-live="polite" class="sr-only"></p>
           <p class="mt-6 border-t border-[#f4f2ef]/15 pt-4 text-[12.5px] leading-relaxed text-[#f4f2ef]/60">
-            Your price varies with your exact line count.{" "}
+            An indicative range, not an offer. It moves with your exact line
+            count and history.{" "}
             <strong class="font-semibold text-[#f4f2ef]">The final price is negotiable</strong>{" "}
             depending on your project: its stack, completeness, code quality and
             history. Well-built repositories can earn a quality bonus of up to{" "}
@@ -178,6 +276,14 @@ const fieldClass =
           This is an estimate, not an offer. Final offers are subject to
           verification, code quality assessment and approval by {company}.
         </p>
+
+        <!-- HOW THIS IS CALCULATED -->
+        <div data-calc-how class="mt-6 rounded-3xl border border-[#0a0a0a]/10 bg-white p-6 sm:p-8">
+          <h2 class="font-xeroda text-xl font-semibold tracking-[-0.015em]">How this is calculated</h2>
+          <ul class="mt-3 grid gap-2.5 text-[13px] leading-[1.65] text-[#555]">
+            {howItWorks.map((line) => <li class="border-l-2 border-[#0a0a0a]/15 pl-3">{line}</li>)}
+          </ul>
+        </div>
 
         <!-- Next step, right where the price is: submit the repo -->
         <div data-calc-submit class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -258,6 +364,36 @@ const fieldClass =
             counts your lines with cloc (or scc) and checks the repo is ready to share.{" "}
             <a href="/code/prepare/" class="link-underline font-semibold text-[#0a0a0a]">How to use it</a>.
           </p>
+
+          <div id="count-history" class={`mt-8 scroll-mt-24 ${labelClass}`}>4. Count your history (optional)</div>
+          <p class="mt-3 text-[13px] leading-[1.65] text-[#555]">
+            Run these from the root of your repo, after <code class="font-mono text-[12.5px]">git fetch</code>.
+            They only read your history and change nothing. On Windows, run them in Git Bash.
+          </p>
+          <ul class="mt-3 grid gap-2">
+            {
+              historyFields.map((f) => (
+                <li class="rounded-2xl bg-[#0a0a0a] px-5 py-4 text-[#f4f2ef]">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-[12px] text-[#f4f2ef]/60">{f.label}</span>
+                    <button type="button" data-copy={f.cmd} aria-label={`Copy the ${f.label.toLowerCase()} command`} class="cursor-pointer text-[11px] font-semibold tracking-[0.12em] text-[#f4f2ef]/60 uppercase hover:text-[#f4f2ef]">Copy</button>
+                  </div>
+                  <code class="mt-1.5 block font-mono text-[13px] break-all">{f.cmd}</code>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-3 text-[13px] leading-[1.65] text-[#555]">
+            The branch command lists your local branches and the ones on{" "}
+            <code class="font-mono text-[12.5px]">origin</code>, strips the prefixes and counts each
+            name once, so <code class="font-mono text-[12.5px]">main</code> and{" "}
+            <code class="font-mono text-[12.5px]">origin/main</code> are one branch. The commit
+            command likewise counts each commit once across local branches, <code class="font-mono text-[12.5px]">origin</code> and tags.
+            The pull request command needs the{" "}
+            <a href="https://cli.github.com/" target="_blank" rel="noopener noreferrer" class="link-underline font-semibold text-[#0a0a0a]">GitHub CLI</a>,
+            signed in.
+          </p>
+          <p data-copy-status aria-live="polite" class="sr-only"></p>
         </div>
 
         <!-- INTERNAL EVALUATION: only with ?advanced -->
@@ -323,12 +459,12 @@ const fieldClass =
             </div>
 
             <dl data-adv-lines class="tnum mt-5 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-[14px] text-[#555]"></dl>
-            <p data-adv-jump hidden class="mt-3 text-[12.5px] leading-snug text-[#666]"></p>
+            <p data-adv-range hidden class="tnum mt-3 text-[12.5px] leading-snug text-[#666]"></p>
 
             <div class="my-5 h-px bg-[#0a0a0a]/10" role="presentation"></div>
 
             <dl class="tnum grid grid-cols-[1fr_auto] gap-x-4 gap-y-3 text-[15px]">
-              <dt class="font-semibold">Base price</dt>
+              <dt class="font-semibold">Likely value</dt>
               <dd class="text-right font-semibold" data-adv-base>–</dd>
               <dt class="font-semibold">Quality bonus <span class="font-medium text-[#888]" data-adv-bonus-rate></span></dt>
               <dd class="text-right font-semibold" data-adv-bonus>–</dd>
@@ -344,8 +480,9 @@ const fieldClass =
 
             <p class="mt-4 text-[12.5px] leading-relaxed text-[#666]">
               Priced on verified lines when entered, otherwise on the submitted
-              count. Every offer needs Apta's approval and ownership checks
-              before acquisition.
+              count, with the history credit from the commits, pull requests and
+              branches above. Every offer needs Apta's approval and ownership
+              checks before acquisition.
             </p>
 
             <div class="mt-5 flex flex-wrap items-center gap-4">
@@ -422,10 +559,10 @@ const fieldClass =
       import {
         ACQUISITION_PRICING,
         QUALITY_LEVELS,
-        RATE_JUMPS,
         calculateAcquisitionOffer,
-        calculateBasePrice,
+        estimateValue,
         type QualityLevel,
+        type RepoSize,
       } from "../../scripts/code_rate";
 
       const DEMO_LOC = [35_000, 75_000, 250_000, 500_000];
@@ -435,7 +572,9 @@ const fieldClass =
 
       const fmt = (n: number) => n.toLocaleString("en-US");
       const ugx = (n: number) => "UGX " + fmt(n);
-      const digitsOf = (s: string) => s.replace(/\D/g, "").replace(/^0+(?=\d)/, "").slice(0, MAX_DIGITS);
+      // Whole numbers only: anything from a decimal point on is dropped, so "1.5" reads as 1, never 15.
+      const digitsOf = (s: string) =>
+        s.split(".")[0].replace(/\D/g, "").replace(/^0+(?=\d)/, "").slice(0, MAX_DIGITS);
       const parse = (s: string) => {
         const d = digitsOf(s);
         return d ? Number(d) : null;
@@ -502,26 +641,97 @@ const fieldClass =
         const note = $("[data-calc-note]");
         const currency = $("[data-calc-currency]");
         const price = roller($("[data-calc-price]"), reducedMotion);
+        const low = roller($("[data-calc-low]"), reducedMotion);
+        const high = roller($("[data-calc-high]"), reducedMotion);
+        const creditNote = $("[data-calc-credit]");
+        const locError = $("[data-calc-loc-error]");
+        const live = $("[data-calc-live]");
         const presets = root.querySelectorAll<HTMLButtonElement>("[data-calc-preset]");
+        const historyInputs = root.querySelectorAll<HTMLInputElement>("[data-calc-history]");
+        const historyInput = (key: string) => $<HTMLInputElement>(`[data-calc-history="${key}"]`);
+        const historyError = (key: string) => $(`[data-calc-history-error="${key}"]`);
+        const pct = (n: number) => `${Math.round(n * 1000) / 10}%`;
+        // Announce once typing settles, not on every keystroke.
+        let liveTimer: ReturnType<typeof setTimeout> | undefined;
+        const announce = (text: string) => {
+          clearTimeout(liveTimer);
+          liveTimer = setTimeout(() => (live.textContent = text), 600);
+        };
 
-        // ── Public calculator: base price only ─────────────────────────────
-        function render(isDemo: boolean) {
+        // Blank history fields earn no credit; out-of-range values are clamped and say so.
+        function readHistory(): Omit<RepoSize, "loc"> {
+          const { limits } = ACQUISITION_PRICING;
+          const read = (key: string, min: number, max: number, minMsg: string) => {
+            const field = historyInput(key);
+            const n = parse(field.value);
+            let msg = "";
+            if (n !== null && n < min) msg = minMsg;
+            else if (n !== null && n > max) msg = `Counted as ${fmt(max)}, the most the estimate uses.`;
+            historyError(key).textContent = msg;
+            field.setAttribute("aria-invalid", String(msg !== "" && n !== null && n < min));
+            return n;
+          };
+          return {
+            commits: read("commits", limits.commits.min, limits.commits.max, ""),
+            pullRequests: read("prs", limits.pullRequests.min, limits.pullRequests.max, ""),
+            branches: read("branches", limits.branches.min, limits.branches.max, "A repository has at least 1 branch. Counted as 1."),
+          };
+        }
+
+        function creditText(e: ReturnType<typeof estimateValue>) {
+          if (e.credits.total === 0) return "No history credit. Add your commits, pull requests and branches if you have them.";
+          const parts = [
+            e.credits.commits > 0 && `${pct(e.credits.commits)} history depth`,
+            e.credits.pullRequests > 0 && `${pct(e.credits.pullRequests)} review record`,
+            e.credits.branches > 0 && `${pct(e.credits.branches)} breadth`,
+          ].filter(Boolean);
+          return `Includes a +${pct(e.credits.total)} history credit (${parts.join(", ")})${capNote(e)}.`;
+        }
+
+        // The parts can add to more than the total cap; say so when the cap is what applies.
+        function capNote(e: ReturnType<typeof estimateValue>) {
+          const sum = e.credits.commits + e.credits.pullRequests + e.credits.branches;
+          return sum > e.credits.total + 1e-9 ? `, capped at ${pct(ACQUISITION_PRICING.maxHistoryCredit)}` : "";
+        }
+
+        // ── Public calculator: indicative range ────────────────────────────
+        // `silent`: update the figures without announcing them (the reduced-motion example at load).
+        function render(isDemo: boolean, silent = false) {
           const loc = parse(input.value);
+          const speak = !isDemo && !silent;
+          const maxLoc = ACQUISITION_PRICING.limits.loc.max;
+          locError.textContent =
+            loc !== null && loc > maxLoc ? `Counted as ${fmt(maxLoc)}, the most the estimate uses.` : "";
           // Mid-keystroke demo values ("3", "35") stay neutral rather than flashing "Not eligible".
           const ineligible = loc !== null && loc < MIN_LOC;
+          const history = readHistory();
 
           if (loc === null || (isDemo && ineligible)) {
             note.textContent = "Enter your lines of code.";
             currency.hidden = true;
             price.clear("–");
+            low.clear("–");
+            high.clear("–");
+            creditNote.textContent = "";
+            if (speak) announce("");
           } else if (ineligible) {
             note.textContent = `Repositories start at ${fmt(MIN_LOC)} lines. This one is ${fmt(MIN_LOC - loc)} short.`;
             currency.hidden = true;
             price.clear("Not eligible");
+            low.clear("–");
+            high.clear("–");
+            creditNote.textContent = "";
+            if (speak) announce(note.textContent ?? "");
           } else {
-            note.textContent = `Calculated from ${fmt(loc)} declared lines of code.`;
+            const e = estimateValue({ loc, ...history });
+            note.textContent = `Calculated from ${fmt(e.linesOfCode)} declared lines of code.`;
             currency.hidden = false;
-            price.to(calculateBasePrice(loc).basePrice);
+            price.to(e.likely);
+            low.to(e.low);
+            high.to(e.high);
+            creditNote.textContent = creditText(e);
+            if (speak)
+              announce(`Likely ${ugx(e.likely)}, range ${ugx(e.low)} to ${ugx(e.high)}. ${creditText(e)}`);
           }
 
           presets.forEach((p) =>
@@ -542,7 +752,7 @@ const fieldClass =
         const qualityButtons = root.querySelectorAll<HTMLButtonElement>("[data-adv-quality]");
         const status = $("[data-adv-status]");
         const lines = $("[data-adv-lines]");
-        const jump = $("[data-adv-jump]");
+        const range = $("[data-adv-range]");
         const base = roller($("[data-adv-base]"), reducedMotion);
         const bonus = roller($("[data-adv-bonus]"), reducedMotion);
         const bonusRate = $("[data-adv-bonus-rate]");
@@ -565,26 +775,32 @@ const fieldClass =
             base.clear(text);
             bonus.clear("–");
             offer.clear(text);
-            jump.hidden = true;
+            range.hidden = true;
             return;
           }
 
-          const result = calculateAcquisitionOffer(loc, quality);
-          lines.innerHTML = result.breakdown
-            .map((l) => `<dt>${fmt(l.lines)} lines × UGX ${l.rate}</dt><dd class="text-right">${fmt(l.amount)}</dd>`)
-            .join("");
-          base.to(result.basePrice);
+          const result = calculateAcquisitionOffer({ loc, ...readHistory() }, quality);
+          const c = result.credits;
+          const credit = (label: string, n: number, share: number) =>
+            `<dt>${label}: ${fmt(n)} <span class="text-[#888]">(+${pct(share)})</span></dt><dd class="text-right">${fmt(Math.round(result.basePrice * share))}</dd>`;
+          const rows = [
+            `<dt>${fmt(result.linesOfCode)} lines of code</dt><dd class="text-right">${fmt(result.basePrice)}</dd>`,
+            credit("Commits", result.commits, c.commits),
+            credit("Pull requests", result.pullRequests, c.pullRequests),
+            credit("Branches", result.branches, c.branches),
+          ];
+          // When the parts add to more than the total cap, a Cap row takes off the excess so the rows sum to the applied credit.
+          const excess = c.commits + c.pullRequests + c.branches - c.total;
+          if (excess > 1e-9)
+            rows.push(
+              `<dt>Cap at ${pct(ACQUISITION_PRICING.maxHistoryCredit)} <span class="text-[#888]">(−${pct(excess)})</span></dt><dd class="text-right">−${fmt(Math.round(result.basePrice * excess))}</dd>`,
+            );
+          lines.innerHTML = rows.join("");
+          base.to(result.likely);
           bonus.to(result.bonus);
           offer.to(result.estimatedOffer);
-
-          // The whole repo jumps to a higher rate at 50,000 and 100,000 lines; flag repos sitting just under one.
-          const next = RATE_JUMPS.find((at) => at > loc && at - loc <= 5_000);
-          jump.hidden = next === undefined;
-          if (next !== undefined) {
-            const gain = calculateBasePrice(next).basePrice - result.basePrice;
-            const rate = calculateBasePrice(next).breakdown[0].rate;
-            jump.textContent = `${fmt(next - loc)} lines short of ${fmt(next)}, where the rate moves to UGX ${rate}/line (+${ugx(gain)} base).`;
-          }
+          range.hidden = false;
+          range.textContent = `Range before quality bonus: ${ugx(result.low)} to ${ugx(result.high)}. History credit +${pct(c.total)}${capNote(result)}.`;
         }
 
         function quoteText() {
@@ -592,7 +808,7 @@ const fieldClass =
           const verifiedLoc = parse(verified.value);
           const loc = pricedLoc() ?? 0;
           const level = QUALITY_LEVELS.find((q) => q.key === quality)!;
-          const r = calculateAcquisitionOffer(loc, quality);
+          const r = calculateAcquisitionOffer({ loc, ...readHistory() }, quality);
           const rate = Math.round(ACQUISITION_PRICING.qualityBonuses[quality] * 100);
           const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
           return [
@@ -600,8 +816,11 @@ const fieldClass =
             `Repository: ${repo.value.trim() || "–"}`,
             `Submitted LOC: ${submitted === null ? "–" : fmt(submitted)}`,
             `Verified LOC: ${verifiedLoc === null ? "Not yet verified" : fmt(verifiedLoc)}`,
+            `History: ${fmt(r.commits)} commits, ${fmt(r.pullRequests)} pull requests, ${fmt(r.branches)} branches (credit +${pct(r.credits.total)})`,
             `Quality: ${level.label} (+${rate}%)`,
-            r.eligible ? `Base price: ${ugx(r.basePrice)}` : `Base price: Not eligible (under ${fmt(MIN_LOC)} LOC)`,
+            r.eligible
+              ? `Likely value: ${ugx(r.likely)} (range ${ugx(r.low)} to ${ugx(r.high)})`
+              : `Likely value: Not eligible (under ${fmt(MIN_LOC)} LOC)`,
             `Quality bonus: ${ugx(r.bonus)}`,
             `Estimated offer: ${ugx(r.estimatedOffer)}`,
             `Status: ${verifiedLoc === null ? "Estimated value" : "Verified value"}, pending approval`,
@@ -639,20 +858,24 @@ const fieldClass =
           });
           $("[data-adv-reset]").addEventListener("click", () => {
             input.value = repo.value = verified.value = "";
+            historyInputs.forEach((h) => (h.value = ""));
             quality = "standard";
             qualityButtons.forEach((q, i) => q.setAttribute("aria-pressed", String(i === 0)));
             render(false);
           });
         }
 
-        // Copy buttons on the counting commands.
+        // Copy buttons on the counting commands, announced through one polite status line.
+        const copyStatus = root.querySelector<HTMLElement>("[data-copy-status]");
         root.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((b) =>
           b.addEventListener("click", async () => {
             try {
               await navigator.clipboard.writeText(b.dataset.copy!);
               b.textContent = "Copied";
+              if (copyStatus) copyStatus.textContent = `Copied: ${b.dataset.copy}`;
             } catch {
               b.textContent = "Select it";
+              if (copyStatus) copyStatus.textContent = "Couldn't copy. Select the command and copy it manually.";
             }
             setTimeout(() => (b.textContent = "Copy"), 1600);
           }),
@@ -747,7 +970,8 @@ const fieldClass =
           takenOver = true;
           if (!advanced) input.value = fmt(DEMO_LOC[1]);
           hint.textContent = advanced ? "The size the developer submitted." : takeOverHint;
-          render(false);
+          // Silent: a screen reader shouldn't hear the worked example announced on page load.
+          render(false, true);
         } else {
           // Watch the field itself: the block below it (how to count) is taller than the screen.
           observer.observe(input);
@@ -774,6 +998,14 @@ const fieldClass =
           p.addEventListener("click", () => {
             takeOver();
             input.value = fmt(Number(p.dataset.calcPreset));
+            render(false);
+          }),
+        );
+        // History fields end the demo too, then re-price on every keystroke.
+        historyInputs.forEach((h) =>
+          h.addEventListener("input", () => {
+            takeOver();
+            reformat(h);
             render(false);
           }),
         );

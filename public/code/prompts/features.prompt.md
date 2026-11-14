@@ -45,6 +45,18 @@ RULES
   copilot-instructions.md, or any .claude/, .cursor/ or similar folder, and
   do not edit code.
 - Do not commit. I will review the file and commit it myself.
+- Never run git commit, push, cherry-pick, merge, force-push or any history
+  rewrite on your own. If I ask for help with one, show me the exact command
+  and run it only after I say yes to that exact command.
+
+AFTER YOU WRITE IT
+The sale ships EVERY branch and tag, so FEATURES.md must be committed at the root
+of every branch, before the history clean-up. Once I have reviewed it, give me
+the commands (do not run them): commit it on my default branch and push, then,
+for each other branch from `git branch -r`, one at a time:
+  git switch <branch> && git cherry-pick <default-branch> && git push origin <branch>
+Tell me to do this before running clean-history.sh (guide:
+https://xephas.me/code/prepare/#steps).
 
 When you are done, tell me how many feature areas and bullets you wrote, and
 list anything you were unsure about.

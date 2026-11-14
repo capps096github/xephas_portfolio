@@ -1,0 +1,370 @@
+---
+import "../../styles/global.css";
+import Head from "../../components/Head.astro";
+import FloatingNav from "../../components/FloatingNav.astro";
+import Footer from "../../components/Footer.astro";
+import Download from "../../components/icons/Download.astro";
+import RichText from "../../components/RichText.astro";
+import SubmitCta from "../../components/SubmitCta.astro";
+import CopyPageMenu from "../../components/CopyPageMenu.astro";
+import FinishCard from "../../components/FinishCard.astro";
+import { CHECK_FORM_URL, finishNext } from "../../scripts/code_prepare";
+import { IMG_DIR, intro, routes, routeBSteps, beforeYouStart, mustContain, githubSteps, gitlabSteps, faqs, aiPrompt, aiRules, exportFinishSend } from "../../scripts/code_export";
+import type { Step } from "../../scripts/code_export";
+import { company } from "../../scripts/code_offer";
+
+const pageTitle = "Exporting Your Repo | " + company + " through Cephas";
+const pageDescription =
+  "How sellers get the .tar.gz archive of a repository with its full commit history and pull requests: export it yourself with GitHub's Migration API or GitLab's project export, or have us build it on the handover call.";
+
+const sections: { id: string; title: string; lead: string; steps: Step[] }[] = [
+  {
+    id: "github",
+    title: "Route A on GitHub: the Migration API",
+    lead: "Seven steps: a token, three API calls, and a check. Every command uses placeholders: replace <YOUR_TOKEN>, <MIGRATION_ID>, <YOUR_ORG_NAME> and username/repo with yours.",
+    steps: githubSteps,
+  },
+  {
+    id: "gitlab",
+    title: "Route A on GitLab: the project export",
+    lead: "The same idea on GitLab: a token, then start, wait and download.",
+    steps: gitlabSteps,
+  },
+];
+
+// Links inside the data's plain text: /code/prepare and full URLs. The rest goes through RichText.
+const LINK_RE = /(https:\/\/\S+|\/code\/prepare)/;
+const pre = "overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]";
+const copyBtn =
+  "absolute top-2.5 right-2.5 rounded-full border border-[#f4f2ef]/25 bg-[#0a0a0a] px-2.5 py-1 text-[11px] font-semibold text-[#f4f2ef] transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]";
+const link = "font-semibold break-words text-[#1a56db] transition-colors hover:text-[#0b3a9e]";
+---
+
+<!doctype html>
+<html lang="en">
+  <Head pageTitle={pageTitle} pageDescription={pageDescription} canonicalPath="code/export/" />
+  <body class="bg-white text-[#0a0a0a] antialiased">
+    <FloatingNav />
+
+    <!-- HERO -->
+    <section class="spotlight z-10 border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+      <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
+        <a href="/code/" class="link-underline inline-block">{company} · Source Code Acquisition</a>
+      </div>
+      <h1
+        class="font-xeroda mt-6 max-w-4xl text-[34px] leading-[1.08] font-semibold tracking-[-0.02em] text-balance sm:text-5xl lg:text-[56px]"
+        data-reveal
+      >
+        Get the archive: full history and pull requests.
+      </h1>
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-[#555]">{intro}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href="#routes"
+          class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+        >
+          Pick your route
+        </a>
+        <a href="#github" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">GitHub export</a>
+        <a href="#gitlab" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">GitLab export</a>
+        <a href="#verify" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Verify the archive</a>
+        <a href="#ai" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">AI walkthrough</a>
+        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">Submit your report</a>
+        <CopyPageMenu md="/code/export.md" />
+      </div>
+    </section>
+
+    <!-- ROUTES: two ways to the archive -->
+    <section id="routes" class="scroll-mt-16 px-6 pt-14 pb-14 sm:px-10">
+      <div class="text-[11px] font-semibold tracking-[0.18em] text-[#0a0a0a] uppercase">The crucial step</div>
+      <h2 class="font-xeroda mt-3 text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Two routes to the archive</h2>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+        {
+          routes.map((r) => (
+            <div id={r.id} class="flex min-w-0 scroll-mt-24 flex-col rounded-2xl border-2 border-[#0a0a0a] p-5 sm:p-6">
+              <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">{r.label}</div>
+              <h3 class="mt-2 text-[18px] font-semibold tracking-[-0.01em]">{r.title}</h3>
+              <p class="mt-3 text-[14px] leading-[1.65] font-semibold">{r.who}</p>
+              <p class="mt-3 text-[14px] leading-[1.65] text-[#555]">
+                {r.body.split(LINK_RE).map((part) => (LINK_RE.test(part) ? <a href="/code/prepare/" class={link}>{part}</a> : part))}
+              </p>
+              <p class="mt-3 flex-1 text-[14px] leading-[1.65] text-[#555]">{r.prs}</p>
+              <a href={r.href} class="mt-5 inline-block text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">{r.cta}</a>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- BEFORE YOU START -->
+    <section id="before" class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Before you start</h2>
+      <ol class="mt-6 max-w-3xl">
+        {
+          beforeYouStart.map((t, i) => (
+            <li class="flex gap-4 border-t border-[#e5e3df] py-5">
+              <div class="w-8 shrink-0 text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
+              <p class="min-w-0 flex-1 text-[14px] leading-[1.65] text-[#555]">
+                {t.split(LINK_RE).map((part) => (LINK_RE.test(part) ? <a href={part === "/code/prepare" ? "/code/prepare/" : part} class={link}>{part}</a> : <RichText text={part} />))}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <h3 class="mt-10 text-[18px] font-semibold tracking-[-0.01em]">What must be inside the archive</h3>
+      <div class="mt-4 grid max-w-5xl grid-cols-1 gap-x-10 sm:grid-cols-3" data-reveal>
+        {
+          mustContain.map((m) => (
+            <div class="border-t border-[#e5e3df] py-5">
+              <div class="text-[15px] font-semibold">{m.title}</div>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{m.body}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <a
+          href="/code/run_instruction.template.md"
+          download
+          class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+        >
+          <Download class="h-3.5 w-3.5" />
+          run_instruction.md template
+        </a>
+        <a href="/code/prepare/#run-instruction" class="text-[13px] font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">What run_instruction.md must cover</a>
+      </div>
+    </section>
+
+    <!-- GITHUB / GITLAB -->
+    {
+      sections.map((sec, si) => (
+        <section id={sec.id} class:list={["scroll-mt-16 px-6 pt-14 pb-14 sm:px-10", si === 0 ? "bg-[#f7f6f4]" : "border-t border-[#0a0a0a]"]}>
+          <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">{sec.title}</h2>
+          <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">{sec.lead}</p>
+          <ol class="mt-8 max-w-4xl">
+            {sec.steps.map((s, i) => (
+              <li
+                id={s.title === "Verify the archive" ? "verify" : `${sec.id}-step-${i + 1}`}
+                class="min-w-0 scroll-mt-24 border-t border-[#e5e3df] py-6"
+              >
+                <div class="flex gap-4">
+                  <div class="w-8 shrink-0 text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-[16px] font-semibold">{s.title}</h3>
+                    <p class="mt-2 max-w-3xl text-[14px] leading-[1.65] text-[#555]"><RichText text={s.body} /></p>
+                    {s.note && (
+                      <p class="mt-3 max-w-3xl rounded-xl border border-[#0a0a0a] bg-white px-4 py-3 text-[14px] leading-[1.65] font-semibold">
+                        {s.note.split(LINK_RE).map((part) => (LINK_RE.test(part) ? <a href={part} target="_blank" rel="noopener" class={link}>{part}<span class="sr-only"> (opens in a new tab)</span></a> : part))}
+                      </p>
+                    )}
+                    {s.codes?.map((c) => (
+                      <div class="mt-4 max-w-3xl">
+                        {c.label && <div class="mb-2 text-[13px] font-semibold">{c.label}</div>}
+                        <div class="relative">
+                          <pre class={pre}><code>{c.code}</code></pre>
+                          <button type="button" data-copy class={copyBtn}>
+                            <span data-copy-text aria-live="polite">Copy</span><span class="sr-only"> command: {s.title}{c.label ? `, ${c.label}` : ""}</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {s.example && (
+                      <div class="mt-4 max-w-3xl">
+                        <div class="mb-2 text-[13px] text-[#555]">{s.example.label}</div>
+                        <pre class="overflow-x-auto rounded-xl border border-[#e5e3df] bg-white p-4 font-mono text-[12.5px] leading-[1.6] text-[#333]"><code>{s.example.code}</code></pre>
+                      </div>
+                    )}
+                    {s.shots && (
+                      <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {s.shots.map((sh) => (
+                          <a
+                            href={IMG_DIR + sh.src}
+                            target="_blank"
+                            rel="noopener"
+                            class:list={[
+                              "flex min-w-0 items-center justify-center overflow-hidden rounded-xl border border-[#e5e3df] bg-white focus-visible:ring-2 focus-visible:ring-[#0a0a0a] focus-visible:outline-none",
+                              sh.w >= 1000 && "md:col-span-2",
+                            ]}
+                          >
+                            <img
+                              src={IMG_DIR + sh.src}
+                              width={sh.w}
+                              height={sh.h}
+                              loading="lazy"
+                              decoding="async"
+                              alt={sh.alt}
+                              class="h-auto max-h-[480px] w-auto max-w-full"
+                            />
+                            <span class="sr-only"> (full size, opens in a new tab)</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+
+    <!-- ROUTE B -->
+    <section id="route-b-steps" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Route B: we build it on the call</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">No token and no commands on your side. Works the same for GitHub and GitLab.</p>
+      <ol class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+        {
+          routeBSteps.map((s, i) => (
+            <li class="border-t border-[#e5e3df] py-5">
+              <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{String(i + 1).padStart(2, "0")}</div>
+              <h3 class="mt-2 text-[15px] font-semibold">{s.title}</h3>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">
+                {s.body.split(LINK_RE).map((part) => (LINK_RE.test(part) ? <a href="/code/prepare/" class={link}>{part}</a> : <RichText text={part} />))}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- AI WALKTHROUGH -->
+    <section id="ai" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Let an AI assistant walk you through it</h2>
+      <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
+        Open your repo in an AI coding assistant (Claude Code, Cursor or
+        similar) and paste the prompt. It reads your repo and guides you through
+        your route step by step. You stay in charge:
+      </p>
+      <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
+        {aiRules.map((r) => <li>— {r}</li>)}
+      </ul>
+      <div class="mt-8 max-w-3xl border-t border-[#e5e3df] pt-5">
+        <div class="font-mono text-[14px] font-semibold">{aiPrompt.title}</div>
+        <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{aiPrompt.body}</p>
+        <div class="mt-4">
+          <div class="mb-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              data-copy-prompt
+              data-label="Copy the export prompt"
+              aria-live="polite"
+              class="btn-anim inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-6 py-3 text-xs font-semibold tracking-[0.12em] text-[#f4f2ef] uppercase"
+            >
+              Copy the export prompt
+            </button>
+            <a
+              href={`/code/${aiPrompt.file}`}
+              download
+              class="inline-flex items-center gap-1.5 rounded-full border border-[#0a0a0a]/15 bg-white px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#0a0a0a] hover:text-[#f4f2ef]"
+            >
+              <Download class="h-3.5 w-3.5" />
+              Download
+            </a>
+          </div>
+          <pre class="max-h-80 overflow-auto rounded-xl bg-[#0a0a0a] p-4 font-mono text-[12px] leading-[1.6] whitespace-pre-wrap text-[#f4f2ef]"><code>{aiPrompt.text}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
+      <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Questions</h2>
+      <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 md:grid-cols-2" data-reveal>
+        {
+          faqs.map((f) => (
+            <div class="border-t border-[#e5e3df] py-5">
+              <h3 class="text-[15px] font-semibold">{f.q}</h3>
+              <p class="mt-2 text-[14px] leading-[1.65] text-[#555]"><RichText text={f.a} /></p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- FINAL STEP: submit the check report -->
+    <FinishCard
+      eyebrow="Final step"
+      heading="Submit your check report"
+      lead="When the archive is verified (route A) or your clean-up is done (route B), send us your report in the check-report form. It opens in a new tab."
+      send={exportFinishSend}
+      next={finishNext}
+      formUrl={CHECK_FORM_URL}
+    />
+
+    <!-- CTA -->
+    <SubmitCta
+      eyebrow="Stuck?"
+      heading="Send us the error message, never the token, and we'll tell you what to fix."
+      secondary={{ href: "/code/prepare/", label: "Back to preparing" }}
+    />
+
+    <Footer />
+
+    <!-- Copy buttons -->
+    <script>
+      document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const code = btn.parentElement?.querySelector("code")?.textContent ?? "";
+          // Only the visible label changes; the hidden context keeps each button's name distinct.
+          const label = btn.querySelector<HTMLElement>("[data-copy-text]");
+          if (!label) return;
+          try {
+            await navigator.clipboard.writeText(code);
+            label.textContent = "Copied";
+          } catch {
+            label.textContent = "Select & copy";
+          }
+          setTimeout(() => (label.textContent = "Copy"), 1600);
+        });
+      });
+      // Prompt button sits above its block; copy the whole prompt in one click.
+      document.querySelectorAll<HTMLButtonElement>("[data-copy-prompt]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const code = btn.closest("div")?.parentElement?.querySelector("pre code")?.textContent ?? "";
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = "Copied. Paste it into your AI assistant";
+          } catch {
+            btn.textContent = "Select the text below and copy";
+          }
+          setTimeout(() => (btn.textContent = btn.dataset.label ?? "Copy prompt"), 2400);
+        });
+      });
+    </script>
+
+    <!-- Hover spotlight pattern -->
+    <script>
+      import "../../scripts/spotlight";
+    </script>
+
+    <!-- Scroll reveal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const els = document.querySelectorAll("[data-reveal]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const target = entry.target as HTMLElement;
+                target.style.opacity = "1";
+                target.style.transform = "translateY(0)";
+                io.unobserve(target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => {
+          const target = el as HTMLElement;
+          target.style.opacity = "0";
+          target.style.transform = "translateY(28px)";
+          target.style.transition =
+            "opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1)";
+          io.observe(target);
+        });
+      });
+    </script>
+  </body>
+</html>

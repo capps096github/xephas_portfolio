@@ -9,11 +9,12 @@ import CopyHandle from "../../components/CopyHandle.astro";
 import RichText from "../../components/RichText.astro";
 import SubmitCta from "../../components/SubmitCta.astro";
 import CopyPageMenu from "../../components/CopyPageMenu.astro";
+import FinishCard from "../../components/FinishCard.astro";
 import { baseUrl, githubHandle } from "../../scripts/constants.js";
 
 import {
-  branch, workBranch, prompts, downloads, handover, TOKEN_RE, tokenFor, steps,
-  checkSteps, stepChecks, pad, checklist, remove, keep, runInstruction, faqs,
+  prompts, downloads, handover, TOKEN_RE, tokenFor, steps,
+  checkSteps, stepChecks, pad, checklist, remove, keep, runInstruction, faqs, exportSummary, finishSend, finishNext,
 } from "../../scripts/code_prepare";
 import { company } from "../../scripts/code_offer";
 const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
@@ -41,7 +42,7 @@ const pageDescription =
     <FloatingNav />
 
     <!-- HERO -->
-    <section class="spotlight border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
+    <section class="spotlight z-10 border-b border-[#0a0a0a] px-6 pt-28 pb-14 sm:px-10 sm:pt-32">
       <div class="text-[11px] tracking-[0.18em] text-[#888] uppercase">
         <a href="/code/" class="link-underline inline-block">{company} · Source Code Acquisition</a>
       </div>
@@ -66,6 +67,8 @@ const pageDescription =
         </a>
         <a href="#checklist" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">See the checklist</a>
         <a href="#downloads" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Download the scripts</a>
+        <a href="#export" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Export the archive</a>
+        <a href="#finish" class="inline-block text-[13px] font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">Submit your report</a>
         <CopyPageMenu md="/code/prepare.md" />
       </div>
     </section>
@@ -90,9 +93,10 @@ const pageDescription =
     <section id="steps" class="bg-[#f7f6f4] px-6 pt-14 pb-14 sm:px-10">
       <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Step by step</h2>
       <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
-        These steps take your repo from where it is today to a cleaned branch
-        that is ready for submission. Enter your GitHub username and
-        repository name and every command below fills them in. Keep a backup of your repo before you start.
+        These steps take your repo from where it is today to a cleaned
+        repository, every branch and tag, ready for export. Enter your GitHub
+        username and repository name and every command below fills them in.
+        Make the backup in step 01 before anything else.
       </p>
       <p class="mt-3 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
         Use this section to generate the exact commands and scripts for your
@@ -253,10 +257,84 @@ const pageDescription =
       </ol>
       <p class="mt-4 max-w-3xl border-t border-[#0a0a0a] pt-5 text-[14px] leading-[1.65]">
         <span class="font-semibold">When every box is ticked:</span> you confirm in
-        <a href={CHECK_FORM_URL} target="_blank" rel="noopener" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">the form</a> that every item is done on the repo and its full history. We
+        <a href="#finish" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">the form</a> that every item is done on the repo and its full history. We
         then build the archive together on a call, and payment is released once
         it passes the checks.
       </p>
+    </section>
+
+
+    <!-- EXPORT: the crucial step. Short version; full guide on /code/export -->
+    <section id="export" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+      <div class="max-w-3xl rounded-2xl border-2 border-[#0a0a0a] bg-white p-5 sm:p-8">
+        <div class="text-[11px] font-semibold tracking-[0.18em] text-[#0a0a0a] uppercase">The crucial step</div>
+        <h2 class="font-xeroda mt-3 text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">Export the archive</h2>
+        <p class="mt-4 text-[15px] leading-[1.7] text-[#555]">{exportSummary.lead}</p>
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {
+            [exportSummary.routeA, exportSummary.routeB].map((r) => (
+              <div class="min-w-0 rounded-xl border border-[#0a0a0a] p-4">
+                <h3 class="text-[15px] font-semibold">{r.title}</h3>
+                <p class="mt-2 text-[13px] leading-[1.6] font-semibold">{r.who}</p>
+                <p class="mt-2 text-[14px] leading-[1.65] text-[#555]">{r.body}</p>
+              </div>
+            ))
+          }
+        </div>
+        <h3 class="mt-8 text-[15px] font-semibold">Route A in brief (GitHub)</h3>
+        <ol class="mt-3 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+          {
+            exportSummary.points.map((p, i) => (
+              <li class="min-w-0 border-t border-[#e5e3df] py-4">
+                <div class="text-[11px] tracking-[0.18em] text-[#999] uppercase">{pad(i + 1)}</div>
+                <div class="mt-1 text-[15px] font-semibold">{p.title}</div>
+                <p class="mt-1 text-[14px] leading-[1.65] break-words text-[#555]">{p.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="mt-4 rounded-xl border border-[#0a0a0a] px-4 py-3 text-[14px] leading-[1.65] font-semibold">{exportSummary.warning}</p>
+        <p class="mt-3 text-[14px] leading-[1.65] text-[#555]">
+          {exportSummary.pullNote.split(/(step \d\d)/).map((part) =>
+            /^step \d\d$/.test(part) ? <a href={`#step-${Number(part.slice(5))}`} class="font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">{part}</a> : part,
+          )}
+        </p>
+        <div class="relative mt-5">
+          <pre class="overflow-x-auto rounded-xl bg-[#0a0a0a] p-4 pr-16 font-mono text-[12.5px] leading-[1.6] text-[#f4f2ef]"><code>{exportSummary.code}</code></pre>
+          <button
+            type="button"
+            data-copy
+            class="absolute top-2.5 right-2.5 rounded-full border border-[#f4f2ef]/25 bg-[#0a0a0a] px-2.5 py-1 text-[11px] font-semibold text-[#f4f2ef] transition-colors hover:bg-[#f4f2ef] hover:text-[#0a0a0a]"
+          >
+            Copy
+          </button>
+        </div>
+        <div class="mt-6 text-[11px] tracking-[0.18em] text-[#888] uppercase">The archive must contain</div>
+        <ul class="mt-2 space-y-1 text-[14px] leading-[1.6]">
+          {
+            exportSummary.inside.map((it) => (
+              <li class="flex gap-2">
+                <span class="text-[#999]">—</span>
+                <span class="min-w-0 break-words">{it}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-4 text-[14px] leading-[1.65] text-[#555]">
+          {exportSummary.runNote.split(/(step \d\d)/).map((part) =>
+            /^step \d\d$/.test(part) ? <a href={`#step-${Number(part.slice(5))}`} class="font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">{part}</a> : part,
+          )}{" "}
+          <a href="#run-instruction" class="font-semibold text-[#1a56db] transition-colors hover:text-[#0b3a9e]">What it must cover</a>.
+        </p>
+        <a
+          href="/code/export/"
+          class="btn-anim mt-6 inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-4 text-xs font-semibold tracking-[0.14em] text-[#f4f2ef] uppercase"
+        >
+          Both routes in full, with screenshots
+          <ArrowUpRight class="h-3.5 w-3.5" />
+        </a>
+        <p class="mt-3 text-[13px] leading-[1.6] text-[#666]">Includes GitLab, organisation repositories, and how to verify the archive.</p>
+      </div>
     </section>
 
     <!-- REMOVE / KEEP -->
@@ -339,7 +417,7 @@ const pageDescription =
     </section>
 
     <!-- RUN INSTRUCTIONS -->
-    <section class="border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
+    <section id="run-instruction" class="scroll-mt-16 border-t border-[#0a0a0a] px-6 pt-14 pb-14 sm:px-10">
       <h2 class="font-xeroda text-2xl font-semibold tracking-[-0.015em] sm:text-3xl">run_instruction.md</h2>
       <p class="mt-4 max-w-2xl text-[15px] leading-[1.7] text-[#555]">
         A required file at the root of the repo. Write it for a developer who
@@ -379,7 +457,7 @@ const pageDescription =
       <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
         <li>— Read every line before you commit it, and fix anything that's wrong.</li>
         <li>— Make sure the tool didn't add its own files (CLAUDE.md, AGENTS.md, .cursor/). clean-history.sh removes them anyway.</li>
-        <li>— Commit both files on sale-prep and push it before you run clean-history.sh.</li>
+        <li>— Commit both files on every branch and push them before you run clean-history.sh (step 05).</li>
       </ul>
       <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-2">
         {
@@ -428,6 +506,16 @@ const pageDescription =
         }
       </div>
     </section>
+
+    <!-- FINAL STEP: submit the check report -->
+    <FinishCard
+      eyebrow="Final step"
+      heading="Submit your check report"
+      lead="When every step and checklist item is done, send us your report in the check-report form. It opens in a new tab."
+      send={finishSend}
+      next={finishNext}
+      formUrl={CHECK_FORM_URL}
+    />
 
     <!-- CTA -->
     <SubmitCta

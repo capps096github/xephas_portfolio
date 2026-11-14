@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# clean-history.sh: remove files and secrets from a repo's ENTIRE git history
+# clean-history.sh: remove files and secrets from EVERY branch and tag of a
+#                   repo, through its entire git history
 #
 # Apta Innovations Limited. Full guide: https://xephas.me/code/prepare/
 #
 # WHY
-#   A sale includes the full .git history. Anything that was ever committed
-#   ships with it, even if a later commit deleted it and .gitignore now ignores
-#   it. .gitignore has no effect on history. The only way out is to rewrite
-#   history, which is what this script does, safely.
+#   A sale includes the full .git history of every branch and tag: the export
+#   has no branch filter. Anything that was ever committed on any of them ships,
+#   even if a later commit deleted it and .gitignore now ignores it. The only
+#   way out is to rewrite history, on every branch and tag at once, which is
+#   what this script does, safely.
 #
 # USAGE
 #   bash clean-history.sh <repo-url-or-path> [paths or globs to remove...]
+#
+#   Use the repo URL (a fresh copy of what is on GitHub/GitLab). A local path
+#   works too, but only branches that exist in that clone are cleaned.
 #
 # EXAMPLES
 #   See what would be removed, change nothing:
 #     DRY_RUN=1 bash clean-history.sh https://github.com/<github-username>/<repo>.git .env build/
 #
-#   Remove files and folders from every commit:
+#   Remove files and folders from every commit on every branch and tag:
 #     bash clean-history.sh https://github.com/<github-username>/<repo>.git .env android/app/build/ '*.jks'
 #
 #   Also replace secret strings everywhere in history (the file keeps existing):
@@ -35,12 +40,20 @@
 #   Only the named FILE is removed. .github/copilot-instructions.md goes,
 #   the rest of .github/ (your CI workflows) stays.
 #
+# WHAT IS KEPT
+#   Every commit, with its message, author, author date and committer date.
+#   Only the commit IDs change: an ID is a hash of the content. A commit whose
+#   only change was a removed file stays, as an empty commit. To drop those
+#   instead, set PRUNE_EMPTY=1 (the commit count then goes down; say so in the
+#   form).
+#
 # SAFETY
 #   1. Works on a fresh copy in ./<name>-clean.git. Your repo is never changed.
-#   2. Never pushes. It prints the command that pushes the cleaned history to a
-#      NEW branch named cleaned_version. Your existing branches stay as they are.
-#   3. Verifies: removed paths are gone from every commit, and lists every file
-#      that differs at the tip so you can confirm nothing else was lost.
+#   2. Never pushes. It prints the force-push commands, one per branch and tag,
+#      each pinned to the SHA the remote holds now, for you to run yourself.
+#      Make the backup first: https://xephas.me/code/prepare/#step-1
+#   3. Verifies every branch and tag: same commits, authors and dates as
+#      before, removed paths gone, and the files that differ at each tip.
 #
 # NEEDS
 #   git, python3 and git-filter-repo:
@@ -52,17 +65,15 @@
 set -euo pipefail
 
 if [ $# -lt 1 ]; then
-  sed -n '2,49p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,61p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 fi
 
 SOURCE="$1"; shift
 REMOVE=("$@")
 DRY_RUN="${DRY_RUN:-0}"
-# The branch to deliver (default: the repo's default branch), and where it goes.
-SOURCE_BRANCH="${SOURCE_BRANCH:-}"
-TARGET_BRANCH="cleaned_version"
 DEFAULTS="${DEFAULTS:-1}"
+PRUNE_EMPTY="${PRUNE_EMPTY:-0}"
 SECRETS_FILE="${SECRETS_FILE:-}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -70,12 +81,18 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [ -d "$SOURCE" ]; then
   SOURCE="$(cd "$SOURCE" && pwd)"
   NAME="$(basename "$SOURCE" .git)"
-  REMOTE_URL="$(git -C "$SOURCE" remote get-url origin 2>/dev/null || echo '<your-repo-url>')"
+  REMOTE_URL="$(git -C "$SOURCE" remote get-url origin 2>/dev/null || echo '')"
 else
   NAME="$(basename "$SOURCE" .git)"
   REMOTE_URL="$SOURCE"
 fi
 OUT="${OUT_DIR:-$PWD/${NAME}-clean.git}"
+
+if [ "$PRUNE_EMPTY" = "1" ]; then
+  PRUNE_ARGS=(--prune-empty always --prune-degenerate auto)
+else
+  PRUNE_ARGS=(--prune-empty never --prune-degenerate never)
+fi
 
 DEFAULT_REGEX=(
   '(?i)(^|.*/)(CLAUDE\.md|AGENTS\.md|GEMINI\.md|copilot-instructions\.md|\.cursorrules|\.clinerules|\.windsurfrules)$'
@@ -88,13 +105,14 @@ DEFAULT_REGEX=(
 )
 
 echo "=============================================================="
-echo " History clean-up: $NAME"
+echo " History clean-up, every branch and tag: $NAME"
 echo "=============================================================="
 echo " Source   : $SOURCE"
 echo " Output   : $OUT"
 echo " Removing : ${REMOVE[*]:-(nothing extra)}"
 [ "$DEFAULTS" = "1" ] && echo "            + AI tooling, machine files, home paths (DEFAULTS=1)"
 [ -n "$SECRETS_FILE" ] && echo " Secrets  : $SECRETS_FILE"
+[ "$PRUNE_EMPTY" = "1" ] && echo " Commits  : PRUNE_EMPTY=1, commits left empty are dropped"
 [ "$DRY_RUN" = "1" ] && echo " MODE     : DRY RUN, nothing is rewritten"
 echo "=============================================================="
 echo
@@ -120,13 +138,14 @@ if [ -e "$OUT" ]; then
 fi
 
 # --- Copy ---------------------------------------------------------------------
-echo "[1/5] Copying the repo (your original is not touched)..."
-# --bare takes branches and tags only, not GitHub's read-only pull/* refs.
+echo "[1/5] Copying every branch and tag (your original is not touched)..."
+# --bare takes branches and tags only, not GitHub's read-only refs/pull/*
+# (those can't be pushed back, so there is nothing to clean them into).
 # --no-local forces a real copy, so nothing is shared with your original.
 git clone --bare --no-local --quiet "$SOURCE" "$OUT"
 touch "$OUT/.clean-history"
 if [ -d "$SOURCE" ]; then
-  # Branches that exist only as origin/<name> in your local repo.
+  # Branches that exist only as origin/<name> in your local clone.
   git -C "$OUT" fetch --quiet "$SOURCE" '+refs/remotes/origin/*:refs/remotes/src/*' 2>/dev/null || true
   git -C "$OUT" for-each-ref --format='%(refname)' refs/remotes/src | while read -r ref; do
     b="${ref#refs/remotes/src/}"
@@ -135,22 +154,28 @@ if [ -d "$SOURCE" ]; then
     git -C "$OUT" update-ref -d "$ref"
   done
 fi
-[ -n "$SOURCE_BRANCH" ] || SOURCE_BRANCH=$(git -C "$OUT" symbolic-ref --short HEAD)
-git -C "$OUT" show-ref --verify --quiet "refs/heads/$SOURCE_BRANCH" ||
-  { echo "ERROR: branch $SOURCE_BRANCH not found. Set SOURCE_BRANCH=<branch>."; exit 1; }
-git -C "$OUT" symbolic-ref HEAD "refs/heads/$SOURCE_BRANCH"
-# Keep only the branch being delivered, so the clean-up, the check and the
-# delivery all cover exactly the same history. (Scratch copy only.)
-git -C "$OUT" for-each-ref --format='%(refname)' refs/heads refs/tags | while read -r ref; do
-  [ "$ref" = "refs/heads/$SOURCE_BRANCH" ] || git -C "$OUT" update-ref -d "$ref"
+# Only branches and tags are cleaned and pushed back; drop anything else in the copy.
+git -C "$OUT" for-each-ref --format='%(refname)' | while read -r ref; do
+  case "$ref" in refs/heads/* | refs/tags/*) ;; *) git -C "$OUT" update-ref -d "$ref" ;; esac
 done
-BEFORE=$(git -C "$OUT" rev-list --count --all)
-BRANCHES=$(git -C "$OUT" for-each-ref --format='%(refname:short)' refs/heads | tr '\n' ' ')
-echo "      $BEFORE commits, branches: $BRANCHES"
+git -C "$OUT" for-each-ref --format='%(refname)' refs/heads refs/tags >"$OUT/.refs"
+N_HEADS=$(grep -c '^refs/heads/' "$OUT/.refs" || true)
+N_TAGS=$(grep -c '^refs/tags/' "$OUT/.refs" || true)
+BEFORE=$(git -C "$OUT" rev-list --count --branches --tags)
+echo "      $BEFORE commits across $N_HEADS branch(es) and $N_TAGS tag(s):"
+sed -n 's#^refs/heads/#        branch  #p; s#^refs/tags/#        tag     #p' "$OUT/.refs"
 echo
 
+# Record each ref's commits (author, dates, subject) before the rewrite.
+mkdir -p "$OUT/.before"
+while read -r ref; do
+  f="$OUT/.before/$(printf '%s' "$ref" | tr '/' '_')"
+  git -C "$OUT" log --format='%an|%ae|%ad|%cd|%s' --date=raw "$ref" >"$f" 2>/dev/null || : >"$f"
+  git -C "$OUT" ls-tree -r "$ref" >"$f.tip" 2>/dev/null || : >"$f.tip"
+done <"$OUT/.refs"
+
 # --- Build the filter -----------------------------------------------------------
-ARGS=(--force --invert-paths)
+ARGS=(--force --invert-paths "${PRUNE_ARGS[@]}")
 if [ "$DEFAULTS" = "1" ]; then
   for r in "${DEFAULT_REGEX[@]}"; do ARGS+=(--path-regex "$r"); done
 fi
@@ -173,9 +198,8 @@ if [ -n "$SECRETS_FILE" ]; then
 fi
 
 # --- Report -------------------------------------------------------------------
-echo "[2/5] Finding what will be removed..."
-git -C "$OUT" rev-list --objects --all | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$OUT/.paths-before"
-git -C "$OUT" ls-tree -r HEAD >"$OUT/.tip-before" 2>/dev/null || : >"$OUT/.tip-before"
+echo "[2/5] Finding what will be removed (every branch and tag)..."
+git -C "$OUT" rev-list --objects --branches --tags | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$OUT/.paths-before"
 python3 - "$OUT/.paths-before" "$DEFAULTS" "${DEFAULT_REGEX[@]}" -- ${REMOVE[@]+"${REMOVE[@]}"} >"$OUT/.matches" <<'PY'
 import re, sys, fnmatch
 paths = open(sys.argv[1]).read().splitlines()
@@ -220,56 +244,108 @@ if [ "$N_MATCH" = "0" ] && [ "$REPL_RULES" = "0" ]; then
 fi
 
 # --- Rewrite ------------------------------------------------------------------
-echo "[3/5] Rewriting history..."
+echo "[3/5] Rewriting every branch and tag..."
 # --invert-paths means REMOVE these paths. Without it, --path means "keep ONLY
-# these", which would delete the rest of the repository.
+# these", which would delete the rest of the repository. No --refs: every
+# branch and tag in the copy is rewritten in the same pass.
 [ "$N_MATCH" != "0" ] && git -C "$OUT" filter-repo "${ARGS[@]}" >/dev/null
-[ "$REPL_RULES" != "0" ] && git -C "$OUT" filter-repo --force --replace-text "$REPLACE" >/dev/null
+[ "$REPL_RULES" != "0" ] && git -C "$OUT" filter-repo --force "${PRUNE_ARGS[@]}" --replace-text "$REPLACE" >/dev/null
 git -C "$OUT" reflog expire --expire=now --all
 git -C "$OUT" gc --prune=now --quiet
 echo "      done."
 echo
 
 # --- Verify -------------------------------------------------------------------
-echo "[4/5] Verifying..."
-AFTER=$(git -C "$OUT" rev-list --count --all)
-echo "      Commits: $AFTER (was $BEFORE)"
-if [ "$AFTER" != "$BEFORE" ]; then
-  echo "      $((BEFORE - AFTER)) commit(s) dropped because they ONLY touched removed files."
-  echo "      That is expected. Mention the number when you submit."
-fi
-git -C "$OUT" rev-list --objects --all | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$OUT/.paths-after"
-STILL=$(comm -12 "$OUT/.matches" "$OUT/.paths-after" | wc -l | tr -d ' ')
-if [ "$STILL" != "0" ]; then
-  echo "      *** $STILL removed path(s) still present. Do NOT push: ***"
-  comm -12 "$OUT/.matches" "$OUT/.paths-after" | head -10 | sed 's/^/        /'
-  exit 1
-fi
-echo "      Removed paths are gone from every commit."
-git -C "$OUT" ls-tree -r HEAD >"$OUT/.tip-after" 2>/dev/null || : >"$OUT/.tip-after"
-python3 - "$OUT/.tip-before" "$OUT/.tip-after" <<'PY'
-import sys
-def load(f):
-    out = {}
-    for line in open(f, errors="replace"):
-        meta, _, path = line.rstrip("\n").partition("\t")
+echo "[4/5] Verifying each branch and tag..."
+git -C "$OUT" for-each-ref --format='%(refname)' refs/heads refs/tags >"$OUT/.refs-after"
+mkdir -p "$OUT/.after"
+while read -r ref; do
+  f="$OUT/.after/$(printf '%s' "$ref" | tr '/' '_')"
+  git -C "$OUT" log --format='%an|%ae|%ad|%cd|%s' --date=raw "$ref" >"$f" 2>/dev/null || : >"$f"
+  git -C "$OUT" ls-tree -r "$ref" >"$f.tip" 2>/dev/null || : >"$f.tip"
+done <"$OUT/.refs-after"
+AFTER=$(git -C "$OUT" rev-list --count --branches --tags)
+git -C "$OUT" rev-list --objects --branches --tags | awk 'NF>1 {sub(/^[^ ]+ /, ""); print}' | sort -u >"$OUT/.paths-after"
+HOME_LEFT=$(git -C "$OUT" log --branches --tags -p --no-color --format= 2>/dev/null |
+  grep -E '^\+' | grep -oE '/Users/[A-Za-z0-9._-]+/|/home/[A-Za-z0-9._-]+/' |
+  grep -cvE '/Users/(you|Shared)/|/home/(you|runner)/' || true)
+
+set +e
+python3 - "$OUT" "$PRUNE_EMPTY" "$BEFORE" "$AFTER" "$HOME_LEFT" "$DEFAULTS" <<'PY'
+import os, sys
+out, prune, before, after, home_left, defaults = sys.argv[1], sys.argv[2] == "1", int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), sys.argv[6] == "1"
+rc = 0
+refs_before = open(os.path.join(out, ".refs")).read().split()
+refs_after = set(open(os.path.join(out, ".refs-after")).read().split())
+def key(ref): return ref.replace("/", "_")
+def tip(path):
+    res = {}
+    for line in open(path, errors="replace"):
+        meta, _, p = line.rstrip("\n").partition("\t")
         parts = meta.split()
         if len(parts) == 3 and parts[1] == "blob":
-            out[path] = parts[2]
-    return out
-before, after = load(sys.argv[1]), load(sys.argv[2])
-gone = sorted(set(before) - set(after))
-changed = sorted(p for p in set(before) & set(after) if before[p] != after[p])
-print(f"      Files at the tip of the default branch: {len(after)} (was {len(before)})")
-for label, items in (("removed", gone), ("changed by string replacement", changed)):
-    if items:
-        print(f"      {len(items)} file(s) {label}. Check this list, nothing else should be here:")
-        for p in items[:30]:
-            print(f"        {p}")
-        if len(items) > 30:
-            print(f"        ... and {len(items) - 30} more")
+            res[p] = parts[2]
+    return res
+
+print(f"      Commits, all branches and tags: {after} (was {before})")
+if not prune and after != before:
+    print("      *** commit count changed. Do NOT push. ***"); rc = 1
+elif prune and after != before:
+    print(f"      {before - after} commit(s) dropped (PRUNE_EMPTY=1). Mention the number in the form.")
+
+matches = set(open(os.path.join(out, ".matches")).read().splitlines())
+left = sorted(matches & set(open(os.path.join(out, ".paths-after")).read().splitlines()))
+if left:
+    print(f"      *** {len(left)} removed path(s) still present. Do NOT push: ***")
+    for p in left[:10]: print(f"        {p}")
+    rc = 1
+else:
+    print("      Removed paths are gone from every commit on every branch and tag.")
+if defaults:
+    if home_left:
+        print(f"      *** {home_left} home-folder path line(s) still in history. ***"); rc = 1
+    else:
+        print("      No home-folder paths left in history.")
+print()
+
+for ref in refs_before:
+    name = ref.split("/", 2)[2]
+    kind = "branch" if ref.startswith("refs/heads/") else "tag"
+    if ref not in refs_after:
+        print(f"      {kind} {name}: *** MISSING after the rewrite. Do NOT push. ***"); rc = 1; continue
+    b = open(os.path.join(out, ".before", key(ref))).read().splitlines()
+    a = open(os.path.join(out, ".after", key(ref))).read().splitlines()
+    if prune:
+        kept = "ok" if set(a) <= set(b) else "*** commits changed ***"
+        if kept != "ok": rc = 1
+        line = f"{len(a)} commits (was {len(b)}), authors/dates {kept}"
+    else:
+        same = a == b
+        if not same: rc = 1
+        line = f"{len(a)} commits, messages/authors/dates {'identical' if same else '*** DIFFER ***'}"
+    tb, ta = tip(os.path.join(out, ".before", key(ref) + ".tip")), tip(os.path.join(out, ".after", key(ref) + ".tip"))
+    gone = sorted(set(tb) - set(ta)); changed = sorted(p for p in set(tb) & set(ta) if tb[p] != ta[p])
+    added = sorted(set(ta) - set(tb))
+    if added: rc = 1
+    ri = "run_instruction.md yes" if "run_instruction.md" in ta else "run_instruction.md MISSING"
+    print(f"      {kind:6} {name}: {line}; tip: {len(gone)} removed, {len(changed)} changed; {ri}")
+    for label, items in (("removed", gone), ("changed", changed), ("*** ADDED ***", added)):
+        for p in items[:8]: print(f"          {label}: {p}")
+        if len(items) > 8: print(f"          ... and {len(items) - 8} more {label}")
+sys.exit(rc)
 PY
-rm -f "$OUT"/.paths-before "$OUT"/.paths-after "$OUT"/.matches "$OUT"/.tip-before "$OUT"/.tip-after
+VERIFY_RC=$?
+set -e
+rm -rf "$OUT/.before" "$OUT/.after" "$OUT"/.paths-before "$OUT"/.paths-after "$OUT"/.matches "$OUT"/.refs-after
+echo
+if [ "$VERIFY_RC" -ne 0 ]; then
+  echo "=============================================================="
+  echo " VERIFICATION FAILED. Do not push."
+  echo " Nothing outside $OUT was changed."
+  echo "=============================================================="
+  exit 1
+fi
+echo "      Check the removed/changed lists above: nothing else should be there."
 echo
 
 if [ -f "$SCRIPT_DIR/check-repo.sh" ]; then
@@ -281,33 +357,87 @@ else
   echo "      https://xephas.me/code/check-repo.sh"
 fi
 
+# --- Push commands ------------------------------------------------------------
+# Each line is pinned to the SHA the remote holds right now (read-only ls-remote),
+# so a push fails instead of overwriting something that changed since.
+URL="${REMOTE_URL:-<your-repo-url>}"
+REMOTE_REFS="$OUT/.remote-refs"
+: >"$REMOTE_REFS"
+if [ -n "$REMOTE_URL" ]; then
+  git ls-remote --heads --tags "$REMOTE_URL" 2>/dev/null | grep -v '\^{}$' >"$REMOTE_REFS" || true
+fi
+remote_sha() { awk -v r="$1" '$2==r {print $1}' "$REMOTE_REFS"; }
+
+echo
+echo "=============================================================="
+echo " Cleaned copy: $OUT"
+echo " Nothing has been pushed."
+echo
+echo " 1. INSPECT IT FIRST"
+echo "      git -C \"$OUT\" log --all --oneline | head -30"
+echo "      bash check-repo.sh \"$OUT\""
+echo
+echo " 2. MAKE SURE YOUR BACKUP EXISTS (guide step 1). The push below overwrites"
+echo "    the remote and can't be undone there; the backup is the way back."
+echo
+echo " 3. MERGE OR CLOSE OPEN PULL REQUESTS before pushing (guide step 3)."
+echo
+echo " 4. FORCE-PUSH EVERY BRANCH AND TAG IN PLACE (yours to run, from $OUT)."
+echo "    Run the first line alone and check it, then the rest. A line fails"
+echo "    with 'stale info' if the remote changed since this run: re-run the script."
+echo
+FIRST=1
+LINES=()
+while read -r ref; do
+  sha=$(remote_sha "$ref")
+  # Unknown remote: placeholder. Known remote without this ref: an empty lease
+  # means "only if it doesn't exist there yet".
+  [ -n "$sha" ] || [ -s "$REMOTE_REFS" ] || sha="<current-remote-sha>"
+  LINES+=("git -C \"$OUT\" push --force-with-lease=$ref:$sha $URL $ref:$ref")
+done <"$OUT/.refs"
+for i in "${!LINES[@]}"; do
+  if [ "$FIRST" = "1" ]; then
+    echo "      ${LINES[$i]}"
+    echo
+    FIRST=0
+  elif [ "$i" -lt $((${#LINES[@]} - 1)) ]; then
+    echo "      ${LINES[$i]} && \\"
+  else
+    echo "      ${LINES[$i]}"
+  fi
+done
+# Anything on the remote that this run did not clean would ship dirty.
+if [ -s "$REMOTE_REFS" ]; then
+  awk '{print $2}' "$REMOTE_REFS" | sort -u | comm -23 - <(sort -u "$OUT/.refs") >"$OUT/.not-cleaned" || true
+  if [ -s "$OUT/.not-cleaned" ]; then
+    echo
+    echo "    *** On the remote but NOT cleaned by this run (they would ship as they are):"
+    sed 's/^/          /' "$OUT/.not-cleaned"
+    echo "    Re-run with the repo URL, or delete them from the remote if they are"
+    echo "    backups:  git push $URL --delete <branch-or-tag>"
+  fi
+  rm -f "$OUT/.not-cleaned"
+fi
 cat <<EOF
 
-==============================================================
- Cleaned copy: $OUT
- Nothing has been pushed.
+ 5. DELETE ANY BACKUP OR PRE-CLEAN BRANCHES FROM THE REMOTE before the export:
+    the export ships every branch, so a backup there ships the old history.
+      git push $URL --delete <backup-branch>
+    Keep your offline backup (mirror or bundle) until the sale is done.
 
- 1. INSPECT IT FIRST
-      git -C "$OUT" log --oneline | head -30
-      bash check-repo.sh "$OUT"
-
- 2. PUSH IT TO A NEW BRANCH NAMED $TARGET_BRANCH (yours to run)
-      git -C "$OUT" push $REMOTE_URL $SOURCE_BRANCH:refs/heads/$TARGET_BRANCH
-
-    This adds one branch, $TARGET_BRANCH, holding the cleaned history of
-    $SOURCE_BRANCH ($AFTER commits). Your other branches, your pull requests
-    and your own clone are not changed. $TARGET_BRANCH is the only branch
-    copied into the sale archive.
-
-    To deliver another branch: SOURCE_BRANCH=<branch> bash clean-history.sh ...
-
- 3. CHECK WHAT YOU PUSHED (a fresh copy of only that branch)
-      git clone --bare --single-branch --branch $TARGET_BRANCH $REMOTE_URL check.git
-      bash check-repo.sh check.git
-
-    Never merge $TARGET_BRANCH into your other branches: it shares no
-    commits with them, and a merge would bring the removed files back.
-    If a real secret was ever committed, rotate it: it still exists in
-    your original branches.
+ 6. AFTER THE PUSH
+    - Every existing clone is stale. You and every collaborator must re-clone;
+      a git pull would merge the old history back in.
+    - Check a fresh copy:  git clone --mirror $URL check.git
+                           bash check-repo.sh check.git
+    - List the pull request refs and send the output with your report:
+        git ls-remote $URL 'refs/pull/*'
+      GitHub never rewrites them and you can't delete them, so they still hold
+      each pull request's pre-clean files, and the export includes them.
+      Rotating every secret makes those copies useless; personal data there
+      is decided with you on the call.
+    - Rotate every real secret you scrubbed: it still exists in your backup
+      and may survive in refs/pull/*.
 ==============================================================
 EOF
+rm -f "$REMOTE_REFS"

@@ -1,6 +1,9 @@
 ---
 // Prose that auto-links: the GitHub handle (copy chip), the downloadable
-// script names (download links) and "the form" (check-report Tally form).
+// script names (download links) and "the form", which jumps to the blue
+// "Submit your check report" card (#finish) on the same page; that card holds
+// the check-report Tally link. Only /code/prepare and /code/export use this,
+// and both render the card.
 import CopyHandle from "./CopyHandle.astro";
 import { githubHandle } from "../scripts/constants.js";
 
@@ -8,12 +11,11 @@ interface Props {
   text: string;
 }
 
-const CHECK_FORM_URL = "https://tally.so/r/BEdoGN";
+const FORM_ANCHOR = "#finish";
 const FORM_TEXT = "the form";
 const fileLinks: Record<string, string> = {
   "check-repo.sh": "/code/check-repo.sh",
   "clean-history.sh": "/code/clean-history.sh",
-  "build-archive.sh": "/code/build-archive.sh",
   "secrets.example.txt": "/code/secrets.example.txt",
   "run_instruction.template.md": "/code/run_instruction.template.md",
 };
@@ -25,6 +27,6 @@ const parts = Astro.props.text.split(RICH_RE);
 {parts.map((part) =>
   part === githubHandle ? <CopyHandle /> :
   part in fileLinks ? <a href={fileLinks[part]} download class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">{part}</a> :
-  part === FORM_TEXT ? <a href={CHECK_FORM_URL} target="_blank" rel="noopener" class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">{part}</a> :
+  part === FORM_TEXT ? <a href={FORM_ANCHOR} class="font-semibold text-[#1a56db] hover:text-[#0b3a9e] transition-colors">{part}</a> :
   part
 )}
