@@ -13,6 +13,8 @@ import { baseUrl, githubHandle } from "../../scripts/constants.js";
 import { readFileSync } from "node:fs";
 import { company } from "../../scripts/code_offer";
 const branch = "cleaned_version";
+// Working branch the seller creates first, so nothing below touches their main branch.
+const workBranch = "sale-prep";
 
 // AI prompts for the two docs. Read from public/code/prompts/ at build time so the
 // page and the downloadable files never drift apart.
@@ -89,6 +91,13 @@ const tokenFor = { __USER__: { key: "user", placeholder: "{github-username}" }, 
 
 const steps = [
   {
+    title: `Create a new branch to work on: ${workBranch}`,
+    body: `Do this first, in your own clone of the repo. Everything on this page (adding the two docs, cleaning, checking) is done on ${workBranch}, so your main branch and your working code are never rewritten or lost. The cleaning itself runs on a separate copy, and the result is pushed as another new branch, ${branch}.`,
+    code: `cd path/to/__REPO__
+git switch -c ${workBranch} main
+git push -u origin ${workBranch}`,
+  },
+  {
     title: "Install the tools",
     body: "You need git, Python 3, git-filter-repo and cloc. On Windows, use Git Bash or WSL.",
     code: `# macOS
@@ -104,14 +113,14 @@ curl -O https://xephas.me/code/clean-history.sh
 curl -O https://xephas.me/code/secrets.example.txt`,
   },
   {
-    title: "Check the branch you're selling",
-    body: "Usually main. This copy is only for checking; it doesn't touch your repo. The report shows every file and string that needs to go, with counts.",
-    code: `git clone --bare --single-branch --branch main https://github.com/__USER__/__REPO__.git __REPO__.git
+    title: `Check ${workBranch}`,
+    body: "This copy is only for checking; it doesn't touch your repo. The report shows every file and string that needs to go, with counts.",
+    code: `git clone --bare --single-branch --branch ${workBranch} https://github.com/__USER__/__REPO__.git __REPO__.git
 bash check-repo.sh __REPO__.git | tee before.txt`,
   },
   {
     title: "Add run_instruction.md and FEATURES.md",
-    body: "Write both at the root of main, by hand from the template or with the AI prompts further down this page. Review them, then commit them before you clean so they are part of the cleaned history. A buyer must be able to build and run the project from run_instruction.md alone.",
+    body: `Write both at the root of ${workBranch}, by hand from the template or with the AI prompts further down this page. Review them, then commit them and push them to ${workBranch} before you clean so they are part of the cleaned history. A buyer must be able to build and run the project from run_instruction.md alone.`,
     link: { href: "#ai-docs", label: "AI prompts for both files" },
   },
   {
@@ -125,22 +134,19 @@ bash check-repo.sh __REPO__.git | tee before.txt`,
   {
     title: "Dry run",
     body: "List the files and folders to remove from every commit: the ones the report flagged. AI tooling, .DS_Store, machine files and home paths are removed automatically. A dry run shows what would go and changes nothing.",
-    code: `DRY_RUN=1 SECRETS_FILE=secrets.txt bash clean-history.sh \\
+    code: `SOURCE_BRANCH=${workBranch} DRY_RUN=1 SECRETS_FILE=secrets.txt bash clean-history.sh \\
   https://github.com/__USER__/__REPO__.git  .env  android/app/build/  '*.jks'  seed-data/`,
   },
   {
     title: "Clean",
     body: `Run it again without DRY_RUN. It works on a copy named after your repo (your-repo-clean.git), keeps only the branch you're selling, rewrites it, verifies it and runs check-repo.sh on the result. Repeat until the check passes.`,
-    code: `SECRETS_FILE=secrets.txt bash clean-history.sh \\
-  https://github.com/__USER__/__REPO__.git  .env  android/app/build/  '*.jks'  seed-data/
-
-# selling a branch other than the default one?
-SOURCE_BRANCH=develop SECRETS_FILE=secrets.txt bash clean-history.sh ...`,
+    code: `SOURCE_BRANCH=${workBranch} SECRETS_FILE=secrets.txt bash clean-history.sh \\
+  https://github.com/__USER__/__REPO__.git  .env  android/app/build/  '*.jks'  seed-data/`,
   },
   {
     title: `Push it to a new branch: ${branch}`,
     body: `This adds one branch holding the cleaned history. Nothing is force-pushed, your other branches and pull requests are untouched, and ${branch} is the only branch we copy. Never merge it into your other branches: that would bring the removed files back.`,
-    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git main:refs/heads/${branch}`,
+    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git ${workBranch}:refs/heads/${branch}`,
   },
   {
     title: "Check what you pushed",
@@ -163,8 +169,8 @@ https://github.com/__USER__/__REPO__/settings/access`,
 // The checklist sellers tick off before inviting us. Codes use String.raw so regex backslashes survive.
 // Cross-links between the step-by-step list and the checklist (1-based numbers).
 // checkSteps[i]: the steps that do checklist item i+1. stepChecks[i]: the checklist items step i+1 covers.
-const checkSteps: number[][] = [[6], [4, 6], [4, 6], [5, 6], [6], [5, 6], [3], [6], [7], [7], [8], [9]];
-const stepChecks: number[][] = [[], [1, 2, 3, 4, 5, 6], [7], [2, 3], [1, 4, 5, 6], [1, 2, 3, 4, 5, 6, 8], [9, 10], [11], [12]];
+const checkSteps: number[][] = [[7], [5, 7], [5, 7], [6, 7], [7], [6, 7], [4], [7], [8], [8], [9], [10]];
+const stepChecks: number[][] = [[], [], [1, 2, 3, 4, 5, 6], [7], [2, 3], [1, 4, 5, 6], [1, 2, 3, 4, 5, 6, 8], [9, 10], [11], [12]];
 const pad = (n: number) => String(n).padStart(2, "0");
 
 const checklist: { title: string; body: string; items?: string[]; code?: string; codeNote?: string; link?: { href: string; label: string } }[] = [
@@ -216,7 +222,7 @@ const checklist: { title: string; body: string; items?: string[]; code?: string;
   {
     title: `Push the cleaned code to a new branch: ${branch}`,
     body: `Push it to the same repo as a new branch. Don't force-push over main and don't move it to a new repo. ${branch} is the only branch we copy; your pull requests stay on the repo and we export them on the call. Never merge ${branch} into your other branches: that brings the removed files back.`,
-    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git main:refs/heads/${branch}`,
+    code: `git -C __REPO__-clean.git push https://github.com/__USER__/__REPO__.git ${workBranch}:refs/heads/${branch}`,
   },
   {
     title: `Don't change ${branch} after you submit`,
@@ -644,7 +650,7 @@ const faqs = [
       <ul class="mt-4 max-w-2xl space-y-1 text-[14px] leading-[1.65] text-[#555]">
         <li>— Read every line before you commit it, and fix anything that's wrong.</li>
         <li>— Make sure the tool didn't add its own files (CLAUDE.md, AGENTS.md, .cursor/). clean-history.sh removes them anyway.</li>
-        <li>— Commit both files on main before you run clean-history.sh.</li>
+        <li>— Commit both files on sale-prep and push it before you run clean-history.sh.</li>
       </ul>
       <div class="mt-8 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-2">
         {
